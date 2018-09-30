@@ -1,4 +1,4 @@
-package com.study.thesuperiorstanislav.decisiontheorylab1
+package com.study.thesuperiorstanislav.edaapp
 
 /**
  * Use cases are the entry points to the domain layer.
@@ -31,7 +31,7 @@ abstract class UseCase<Q : UseCase.RequestValues, P : UseCase.ResponseValue> {
 
     interface UseCaseCallback<R> {
         fun onSuccess(response: R)
-        fun onError(error:Error)
+        fun onError(error: Error)
     }
 
     data class Error(var type: Int,var message:String?){

@@ -2,7 +2,7 @@ package com.study.thesuperiorstanislav.edaapp.main
 
 import com.study.thesuperiorstanislav.decisiontheorylab1.BasePresenter
 import com.study.thesuperiorstanislav.decisiontheorylab1.BaseView
-import com.study.thesuperiorstanislav.decisiontheorylab1.UseCase
+import com.study.thesuperiorstanislav.edaapp.UseCase
 
 interface MainContract {
 

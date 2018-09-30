@@ -1,4 +1,4 @@
-package com.study.thesuperiorstanislav.decisiontheorylab1
+package com.study.thesuperiorstanislav.edaapp
 
 interface UseCaseScheduler {
 
@@ -7,6 +7,6 @@ interface UseCaseScheduler {
     fun <V : UseCase.ResponseValue> notifyResponse(response: V,
                                                    useCaseCallback: UseCase.UseCaseCallback<V>)
 
-    fun <V : UseCase.ResponseValue> onError(error:UseCase.Error,
+    fun <V : UseCase.ResponseValue> onError(error: UseCase.Error,
                                             useCaseCallback: UseCase.UseCaseCallback<V>)
 }
