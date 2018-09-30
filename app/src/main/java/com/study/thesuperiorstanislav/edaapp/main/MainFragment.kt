@@ -13,14 +13,13 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import com.study.thesuperiorstanislav.decisiontheorylab1.UseCase
 
 import com.study.thesuperiorstanislav.edaapp.R
+import com.study.thesuperiorstanislav.edaapp.UseCase
 import kotlinx.android.synthetic.main.fragment_main.*
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
-import java.lang.Exception
 
 
 class MainFragment : Fragment(), MainContract.View {
@@ -68,18 +67,6 @@ class MainFragment : Fragment(), MainContract.View {
         dialog?.dismiss()
     }
 
-    @Throws(IOException::class)
-    private fun readTextFromUri(uri: Uri) {
-            val inputStream = activity?.contentResolver?.openInputStream(uri)
-            val reader = BufferedReader(InputStreamReader(inputStream))
-            var line: String?
-            line = reader.readLine()
-            while (line != null) {
-                Log.i("test",line)
-                line = reader.readLine()
-            }
-    }
-
     override fun setPresenter(presenter: MainContract.Presenter) {
         this.presenter = presenter
     }
@@ -101,20 +88,141 @@ class MainFragment : Fragment(), MainContract.View {
             val uri: Uri?
             if (resultData != null) {
                 uri = resultData.data
-                try {
-                    readTextFromUri(uri)
-                    dialog?.dismiss()
-                }catch (e:Exception){
-                    onError(UseCase.Error(UseCase.Error.UNKNOWN_ERROR,"Wrong file format"))
-                }
+                readTextFromUri(uri)
+                dialog?.dismiss()
             }
         }
+    }
+
+    @Throws(IOException::class)
+    private fun readTextFromUri(uri: Uri) {
+        val inputStream = activity?.contentResolver?.openInputStream(uri)
+        val reader = BufferedReader(InputStreamReader(inputStream))
+        val line = reader.readLine()
+        if (line == "\$PACKAGES") {
+            readAllegro(reader)
+        }
+    }
+
+    private fun readAllegro(reader :BufferedReader) {
+        val listElements = mutableListOf<String>()
+        val listNets = mutableListOf<String>()
+        val listConnectors = mutableListOf<String>()
+        val listConnectorsElements = mutableListOf<MutableList<String>>()
+        val listConnectorsNets = mutableListOf<MutableList<String>>()
+
+        var line = reader.readLine()
+        while (line != "\$NETS") {
+            line = reader.readLine()
+        }
+        line = reader.readLine()
+        var lastNet = ""
+        var isNetOver = true
+        while (line != "\$END") {
+            val splitLine = line
+                    .split(" ")
+                    .asSequence()
+                    .filter { it != "" }
+                    .toMutableList()
+
+            if (isNetOver) {
+                listNets.add(splitLine[0]
+                        .replace(";", ""))
+                listConnectorsNets.add(mutableListOf())
+                lastNet = listNets.last()
+                splitLine.remove(listNets.last() + ";")
+            }
+
+            isNetOver = line.last() != ','
+
+            splitLine.forEach {
+
+                val splitIt = it
+                        .replace(",", "")
+                        .split(".")
+
+                if (!listElements.contains(splitIt[0])) {
+                    listElements.add(splitIt[0])
+                    listConnectorsElements.add(mutableListOf())
+                }
+
+                listConnectorsElements[listElements.indexOf(splitIt[0])].add(it)
+                listConnectorsNets[listNets.indexOf(lastNet)].add(it)
+                listConnectors.add(it)
+            }
+            line = reader.readLine()
+        }
+//        listElements.forEach {
+//            Log.i("Elements", it)
+//        }
+//        listNets.forEach {
+//            Log.i("Nets", it)
+//        }
+//        listConnectorsElements.forEach { mutableList ->
+//            var text = ""
+//            mutableList.forEach {
+//                text += "$it "
+//            }
+//            Log.i("ElementsConnectors", text)
+//        }
+//        listConnectorsNets.forEach { mutableList ->
+//            var text = ""
+//            mutableList.forEach {
+//                text += "$it "
+//            }
+//            Log.i("NetsConnectors", text)
+//        }
+
+        val matrixA = Array(listConnectors.size) { connectorIndex ->
+            Array(listNets.size) { netIndex ->
+                if (listConnectorsNets[netIndex].contains(listConnectors[connectorIndex]))
+                    1
+                else
+                    0
+            }
+        }
+
+        val matrixB = Array(listConnectors.size) { connectorIndex ->
+            Array(listElements.size) { elementsIndex ->
+                if (listConnectorsElements[elementsIndex].contains(listConnectors[connectorIndex]))
+                    1
+                else
+                    0
+            }
+        }
+
+//        var textMatrixA = "\n"
+//
+//        matrixA.forEach { mutableList ->
+//            var text = ""
+//            mutableList.forEach {
+//                text += "$it "
+//            }
+//            textMatrixA += "$text \n"
+//
+//        }
+//
+//        Log.i("matrix A", textMatrixA)
+//
+//        var textMatrixB = "\n"
+//
+//        matrixB.forEach { mutableList ->
+//            var text = ""
+//            mutableList.forEach {
+//                text += "$it "
+//            }
+//            textMatrixB += "$text \n"
+//
+//        }
+//
+//        Log.i("matrix B", textMatrixB)
+
     }
 
     private fun performFileSearch() {
         val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
         intent.addCategory(Intent.CATEGORY_OPENABLE)
-        intent.type = "text/plain"
+        intent.type = "*/*"
         startActivityForResult(intent, READ_REQUEST_CODE)
     }
 
