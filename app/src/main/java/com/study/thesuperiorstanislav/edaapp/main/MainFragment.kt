@@ -8,7 +8,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -16,6 +15,8 @@ import android.view.ViewGroup
 
 import com.study.thesuperiorstanislav.edaapp.R
 import com.study.thesuperiorstanislav.edaapp.UseCase
+import com.study.thesuperiorstanislav.edaapp.main.domain.model.Element
+import com.study.thesuperiorstanislav.edaapp.main.domain.model.Net
 import kotlinx.android.synthetic.main.fragment_main.*
 import java.io.BufferedReader
 import java.io.IOException
@@ -74,7 +75,7 @@ class MainFragment : Fragment(), MainContract.View {
     override fun onError(error: UseCase.Error) {
         dialog?.dismiss()
         val snackBar = Snackbar.make(main_layout, error.message!!, Snackbar.LENGTH_SHORT)
-        snackBar.setAction("¯\\(°_o)/¯") { _ ->  }
+        snackBar.setAction("¯\\(°_o)/¯") { _ -> }
         snackBar.show()
     }
 
@@ -101,24 +102,23 @@ class MainFragment : Fragment(), MainContract.View {
         val line = reader.readLine()
         if (line == "\$PACKAGES") {
             readAllegro(reader)
-        }else{
-            readCalay90(line,reader)
+        } else {
+            readCalay90(line, reader)
         }
     }
 
-    private fun readAllegro(reader :BufferedReader){
-        val listElements = mutableListOf<String>()
-        val listNets = mutableListOf<String>()
-        val listConnectors = mutableListOf<String>()
-        val listConnectorsElements = mutableListOf<MutableList<String>>()
-        val listConnectorsNets = mutableListOf<MutableList<String>>()
+    private fun readAllegro(reader: BufferedReader) {
+
+        val listElements = mutableListOf<Element>()
+        val listNets = mutableListOf<Net>()
+        val listPins = mutableListOf<String>()
 
         var line = reader.readLine()
         while (line != "\$NETS") {
             line = reader.readLine()
         }
         line = reader.readLine()
-        var lastNet = ""
+        var lastNet = Net("")
         var isNetOver = true
         while (line != "\$END") {
             val splitLine = line
@@ -128,109 +128,43 @@ class MainFragment : Fragment(), MainContract.View {
                     .toMutableList()
 
             if (isNetOver) {
-                listNets.add(splitLine[0]
-                        .replace(";", ""))
-                listConnectorsNets.add(mutableListOf())
+                listNets.add(Net(splitLine[0]
+                        .replace(";", "")))
                 lastNet = listNets.last()
-                splitLine.remove(listNets.last() + ";")
+                splitLine.remove(listNets.last().toString() + ";")
             }
 
             isNetOver = line.last() != ','
 
-            splitLine.forEach {
+            splitLine.forEach { str ->
 
-                val splitIt = it
+                val splitIt = str
                         .replace(",", "")
                         .split(".")
 
-                if (!listElements.contains(splitIt[0])) {
-                    listElements.add(splitIt[0])
-                    listConnectorsElements.add(mutableListOf())
+                if (!listElements.contains(Element(splitIt.first()))) {
+                    listElements.add(Element(splitIt.first()))
                 }
 
-                listConnectorsElements[listElements.indexOf(splitIt[0])].add(it)
-                listConnectorsNets[listNets.indexOf(lastNet)].add(it)
-                listConnectors.add(it)
+                listElements.find { it == Element(splitIt.first()) }
+                        ?.setPin(splitIt.last().toInt() - 1, str)
+                lastNet.addPin(str)
+                listPins.add(str)
             }
             line = reader.readLine()
         }
-        listElements.forEach {
-            Log.i("Elements", it)
-        }
-        listNets.forEach {
-            Log.i("Nets", it)
-        }
-        listConnectorsElements.forEach { mutableList ->
-            var text = ""
-            mutableList.forEach {
-                text += "$it "
-            }
-            Log.i("ElementsConnectors", text)
-        }
-        listConnectorsNets.forEach { mutableList ->
-            var text = ""
-            mutableList.forEach {
-                text += "$it "
-            }
-            Log.i("NetsConnectors", text)
-        }
 
-        val matrixA = Array(listConnectors.size) { connectorIndex ->
-            Array(listNets.size) { netIndex ->
-                if (listConnectorsNets[netIndex].contains(listConnectors[connectorIndex]))
-                    1
-                else
-                    0
-            }
-        }
-
-        val matrixB = Array(listConnectors.size) { connectorIndex ->
-            Array(listElements.size) { elementsIndex ->
-                if (listConnectorsElements[elementsIndex].contains(listConnectors[connectorIndex]))
-                    1
-                else
-                    0
-            }
-        }
-
-        var textMatrixA = "\n"
-
-        matrixA.forEach { mutableList ->
-            var text = ""
-            mutableList.forEach {
-                text += "$it "
-            }
-            textMatrixA += "$text \n"
-
-        }
-
-        Log.i("matrix A", textMatrixA)
-
-        var textMatrixB = "\n"
-
-        matrixB.forEach { mutableList ->
-            var text = ""
-            mutableList.forEach {
-                text += "$it "
-            }
-            textMatrixB += "$text \n"
-
-        }
-
-        Log.i("matrix B", textMatrixB)
-
+        createMatrixAB(listElements, listNets, listPins)
 
     }
 
-    private fun readCalay90(firstLine: String?,reader :BufferedReader) {
-        val listElements = mutableListOf<String>()
-        val listNets = mutableListOf<String>()
-        val listConnectors = mutableListOf<String>()
-        val listConnectorsElements = mutableListOf<MutableList<String>>()
-        val listConnectorsNets = mutableListOf<MutableList<String>>()
+    private fun readCalay90(firstLine: String?, reader: BufferedReader) {
+        val listElements = mutableListOf<Element>()
+        val listNets = mutableListOf<Net>()
+        val listPins = mutableListOf<String>()
 
         var line = firstLine
-        var lastNet = ""
+        var lastNet = Net("")
         var isNetOver = true
         while (line != null) {
             val splitLine = line
@@ -240,98 +174,59 @@ class MainFragment : Fragment(), MainContract.View {
                     .toMutableList()
 
             if (isNetOver) {
-                listNets.add(splitLine[0])
-                listConnectorsNets.add(mutableListOf())
+                listNets.add(Net(splitLine[0]))
                 lastNet = listNets.last()
-                splitLine.remove(listNets.last())
+                splitLine.remove(listNets.last().toString())
             }
 
             isNetOver = line.last() == ';'
 
-            splitLine.forEach {
+            splitLine.forEach { str ->
 
-                val splitIt = it
+                val splitIt = str
                         .replace(",", "")
                         .replace(";", "")
                         .replace("(", "")
                         .replace(")", "")
                         .split("'")
 
-                if (!listElements.contains(splitIt[0])) {
-                    listElements.add(splitIt[0])
-                    listConnectorsElements.add(mutableListOf())
+                if (!listElements.contains(Element(splitIt.first()))) {
+                    listElements.add(Element(splitIt.first()))
                 }
 
-                listConnectorsElements[listElements.indexOf(splitIt[0])].add(it)
-                listConnectorsNets[listNets.indexOf(lastNet)].add(it)
-                listConnectors.add(it)
+                val strPin = str.replace(";","")
+
+                listElements.find { it == Element(splitIt.first()) }
+                        ?.setPin(splitIt.last().toInt() - 1, strPin)
+                lastNet.addPin(strPin)
+                listPins.add(strPin)
             }
             line = reader.readLine()
         }
-        listElements.forEach {
-            Log.i("Elements", it)
-        }
-        listNets.forEach {
-            Log.i("Nets", it)
-        }
-        listConnectorsElements.forEach { mutableList ->
-            var text = ""
-            mutableList.forEach {
-                text += "$it "
-            }
-            Log.i("ElementsConnectors", text)
-        }
-        listConnectorsNets.forEach { mutableList ->
-            var text = ""
-            mutableList.forEach {
-                text += "$it "
-            }
-            Log.i("NetsConnectors", text)
-        }
 
-        val matrixA = Array(listConnectors.size) { connectorIndex ->
+        createMatrixAB(listElements, listNets, listPins)
+    }
+
+    private fun createMatrixAB(listElements: MutableList<Element>,
+                               listNets: MutableList<Net>,
+                               listPins: MutableList<String>) {
+        val matrixA = Array(listPins.size) { connectorIndex ->
             Array(listNets.size) { netIndex ->
-                if (listConnectorsNets[netIndex].contains(listConnectors[connectorIndex]))
+                if (listNets[netIndex].getPins().contains(listPins[connectorIndex]))
                     1
                 else
                     0
             }
         }
 
-        val matrixB = Array(listConnectors.size) { connectorIndex ->
+        val matrixB = Array(listPins.size) { connectorIndex ->
             Array(listElements.size) { elementsIndex ->
-                if (listConnectorsElements[elementsIndex].contains(listConnectors[connectorIndex]))
+                if (listElements[elementsIndex].getPins().contains(listPins[connectorIndex]))
                     1
                 else
                     0
             }
         }
-
-        var textMatrixA = "\n"
-
-        matrixA.forEach { mutableList ->
-            var text = ""
-            mutableList.forEach {
-                text += "$it "
-            }
-            textMatrixA += "$text \n"
-
-        }
-
-        Log.i("matrix A", textMatrixA)
-
-        var textMatrixB = "\n"
-
-        matrixB.forEach { mutableList ->
-            var text = ""
-            mutableList.forEach {
-                text += "$it "
-            }
-            textMatrixB += "$text \n"
-
-        }
-
-        Log.i("matrix B", textMatrixB)
     }
 
     private fun performFileSearch() {
