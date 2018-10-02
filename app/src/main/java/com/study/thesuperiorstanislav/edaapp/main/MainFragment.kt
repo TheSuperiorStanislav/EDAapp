@@ -34,7 +34,7 @@ class MainFragment : Fragment(), MainContract.View {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        retainInstance = true;
+        retainInstance = true
         return inflater.inflate(R.layout.fragment_main, container, false)
     }
 
@@ -101,10 +101,12 @@ class MainFragment : Fragment(), MainContract.View {
         val line = reader.readLine()
         if (line == "\$PACKAGES") {
             readAllegro(reader)
+        }else{
+            readCalay90(line,reader)
         }
     }
 
-    private fun readAllegro(reader :BufferedReader) {
+    private fun readAllegro(reader :BufferedReader){
         val listElements = mutableListOf<String>()
         val listNets = mutableListOf<String>()
         val listConnectors = mutableListOf<String>()
@@ -152,26 +154,26 @@ class MainFragment : Fragment(), MainContract.View {
             }
             line = reader.readLine()
         }
-//        listElements.forEach {
-//            Log.i("Elements", it)
-//        }
-//        listNets.forEach {
-//            Log.i("Nets", it)
-//        }
-//        listConnectorsElements.forEach { mutableList ->
-//            var text = ""
-//            mutableList.forEach {
-//                text += "$it "
-//            }
-//            Log.i("ElementsConnectors", text)
-//        }
-//        listConnectorsNets.forEach { mutableList ->
-//            var text = ""
-//            mutableList.forEach {
-//                text += "$it "
-//            }
-//            Log.i("NetsConnectors", text)
-//        }
+        listElements.forEach {
+            Log.i("Elements", it)
+        }
+        listNets.forEach {
+            Log.i("Nets", it)
+        }
+        listConnectorsElements.forEach { mutableList ->
+            var text = ""
+            mutableList.forEach {
+                text += "$it "
+            }
+            Log.i("ElementsConnectors", text)
+        }
+        listConnectorsNets.forEach { mutableList ->
+            var text = ""
+            mutableList.forEach {
+                text += "$it "
+            }
+            Log.i("NetsConnectors", text)
+        }
 
         val matrixA = Array(listConnectors.size) { connectorIndex ->
             Array(listNets.size) { netIndex ->
@@ -191,32 +193,145 @@ class MainFragment : Fragment(), MainContract.View {
             }
         }
 
-//        var textMatrixA = "\n"
-//
-//        matrixA.forEach { mutableList ->
-//            var text = ""
-//            mutableList.forEach {
-//                text += "$it "
-//            }
-//            textMatrixA += "$text \n"
-//
-//        }
-//
-//        Log.i("matrix A", textMatrixA)
-//
-//        var textMatrixB = "\n"
-//
-//        matrixB.forEach { mutableList ->
-//            var text = ""
-//            mutableList.forEach {
-//                text += "$it "
-//            }
-//            textMatrixB += "$text \n"
-//
-//        }
-//
-//        Log.i("matrix B", textMatrixB)
+        var textMatrixA = "\n"
 
+        matrixA.forEach { mutableList ->
+            var text = ""
+            mutableList.forEach {
+                text += "$it "
+            }
+            textMatrixA += "$text \n"
+
+        }
+
+        Log.i("matrix A", textMatrixA)
+
+        var textMatrixB = "\n"
+
+        matrixB.forEach { mutableList ->
+            var text = ""
+            mutableList.forEach {
+                text += "$it "
+            }
+            textMatrixB += "$text \n"
+
+        }
+
+        Log.i("matrix B", textMatrixB)
+
+
+    }
+
+    private fun readCalay90(firstLine: String?,reader :BufferedReader) {
+        val listElements = mutableListOf<String>()
+        val listNets = mutableListOf<String>()
+        val listConnectors = mutableListOf<String>()
+        val listConnectorsElements = mutableListOf<MutableList<String>>()
+        val listConnectorsNets = mutableListOf<MutableList<String>>()
+
+        var line = firstLine
+        var lastNet = ""
+        var isNetOver = true
+        while (line != null) {
+            val splitLine = line
+                    .split(" ")
+                    .asSequence()
+                    .filter { it != "" }
+                    .toMutableList()
+
+            if (isNetOver) {
+                listNets.add(splitLine[0])
+                listConnectorsNets.add(mutableListOf())
+                lastNet = listNets.last()
+                splitLine.remove(listNets.last())
+            }
+
+            isNetOver = line.last() == ';'
+
+            splitLine.forEach {
+
+                val splitIt = it
+                        .replace(",", "")
+                        .replace(";", "")
+                        .replace("(", "")
+                        .replace(")", "")
+                        .split("'")
+
+                if (!listElements.contains(splitIt[0])) {
+                    listElements.add(splitIt[0])
+                    listConnectorsElements.add(mutableListOf())
+                }
+
+                listConnectorsElements[listElements.indexOf(splitIt[0])].add(it)
+                listConnectorsNets[listNets.indexOf(lastNet)].add(it)
+                listConnectors.add(it)
+            }
+            line = reader.readLine()
+        }
+        listElements.forEach {
+            Log.i("Elements", it)
+        }
+        listNets.forEach {
+            Log.i("Nets", it)
+        }
+        listConnectorsElements.forEach { mutableList ->
+            var text = ""
+            mutableList.forEach {
+                text += "$it "
+            }
+            Log.i("ElementsConnectors", text)
+        }
+        listConnectorsNets.forEach { mutableList ->
+            var text = ""
+            mutableList.forEach {
+                text += "$it "
+            }
+            Log.i("NetsConnectors", text)
+        }
+
+        val matrixA = Array(listConnectors.size) { connectorIndex ->
+            Array(listNets.size) { netIndex ->
+                if (listConnectorsNets[netIndex].contains(listConnectors[connectorIndex]))
+                    1
+                else
+                    0
+            }
+        }
+
+        val matrixB = Array(listConnectors.size) { connectorIndex ->
+            Array(listElements.size) { elementsIndex ->
+                if (listConnectorsElements[elementsIndex].contains(listConnectors[connectorIndex]))
+                    1
+                else
+                    0
+            }
+        }
+
+        var textMatrixA = "\n"
+
+        matrixA.forEach { mutableList ->
+            var text = ""
+            mutableList.forEach {
+                text += "$it "
+            }
+            textMatrixA += "$text \n"
+
+        }
+
+        Log.i("matrix A", textMatrixA)
+
+        var textMatrixB = "\n"
+
+        matrixB.forEach { mutableList ->
+            var text = ""
+            mutableList.forEach {
+                text += "$it "
+            }
+            textMatrixB += "$text \n"
+
+        }
+
+        Log.i("matrix B", textMatrixB)
     }
 
     private fun performFileSearch() {
