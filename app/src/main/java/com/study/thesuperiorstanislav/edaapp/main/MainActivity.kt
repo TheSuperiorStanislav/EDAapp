@@ -5,6 +5,10 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import com.study.thesuperiorstanislav.edaapp.R
+import com.study.thesuperiorstanislav.edaapp.data.source.CircuitRepository
+import com.study.thesuperiorstanislav.edaapp.main.domain.usecase.CacheDataFromFile
+import com.study.thesuperiorstanislav.edaapp.main.domain.usecase.CreateMatrix
+import com.study.thesuperiorstanislav.edaapp.main.domain.usecase.GetData
 
 class MainActivity : AppCompatActivity() {
 
@@ -18,7 +22,7 @@ class MainActivity : AppCompatActivity() {
         val ft = supportFragmentManager.beginTransaction()
 
         val fragment = MainFragment()
-        fragment.setPresenter(MainPresenter(fragment))
+        fragment.setPresenter(MainPresenter(fragment, GetData(CircuitRepository, CreateMatrix()), CacheDataFromFile(CircuitRepository)))
         ft.replace(R.id.content_frame, fragment)
         if (!isFinishing)
             ft.commitAllowingStateLoss()

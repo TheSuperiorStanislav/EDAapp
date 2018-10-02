@@ -15,6 +15,7 @@ import android.view.ViewGroup
 
 import com.study.thesuperiorstanislav.edaapp.R
 import com.study.thesuperiorstanislav.edaapp.UseCase
+import com.study.thesuperiorstanislav.edaapp.main.domain.model.Circuit
 import com.study.thesuperiorstanislav.edaapp.main.domain.model.Element
 import com.study.thesuperiorstanislav.edaapp.main.domain.model.Net
 import kotlinx.android.synthetic.main.fragment_main.*
@@ -65,11 +66,37 @@ class MainFragment : Fragment(), MainContract.View {
         dialog = ProgressDialog.show(context, getString(R.string.processing_data),
                 getString(R.string.please_wait), true)
         presenter?.start()
-        dialog?.dismiss()
     }
 
     override fun setPresenter(presenter: MainContract.Presenter) {
         this.presenter = presenter
+    }
+
+    override fun showData(matrixA: Array<Array<Int>>, matrixB: Array<Array<Int>>) {
+        var textMatrix = ""
+
+        matrixA.forEach { mutableList ->
+            var text = ""
+            mutableList.forEach {
+                text += "$it "
+            }
+            textMatrix += "$text \n"
+
+        }
+
+        textMatrix += "\n"
+
+        matrixB.forEach { mutableList ->
+            var text = ""
+            mutableList.forEach {
+                text += "$it "
+            }
+            textMatrix += "$text \n"
+
+        }
+
+        test.text = textMatrix
+        dialog?.dismiss()
     }
 
     override fun onError(error: UseCase.Error) {
@@ -154,7 +181,7 @@ class MainFragment : Fragment(), MainContract.View {
             line = reader.readLine()
         }
 
-        createMatrixAB(listElements, listNets, listPins)
+        presenter?.cacheCircuit(Circuit(listElements,listNets,listPins))
 
     }
 
@@ -204,30 +231,10 @@ class MainFragment : Fragment(), MainContract.View {
             line = reader.readLine()
         }
 
-        createMatrixAB(listElements, listNets, listPins)
+        presenter?.cacheCircuit(Circuit(listElements,listNets,listPins))
     }
 
-    private fun createMatrixAB(listElements: MutableList<Element>,
-                               listNets: MutableList<Net>,
-                               listPins: MutableList<String>) {
-        val matrixA = Array(listPins.size) { connectorIndex ->
-            Array(listNets.size) { netIndex ->
-                if (listNets[netIndex].getPins().contains(listPins[connectorIndex]))
-                    1
-                else
-                    0
-            }
-        }
 
-        val matrixB = Array(listPins.size) { connectorIndex ->
-            Array(listElements.size) { elementsIndex ->
-                if (listElements[elementsIndex].getPins().contains(listPins[connectorIndex]))
-                    1
-                else
-                    0
-            }
-        }
-    }
 
     private fun performFileSearch() {
         val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
