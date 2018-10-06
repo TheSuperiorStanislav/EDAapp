@@ -36,7 +36,6 @@ class MainFragment : Fragment(), MainContract.View {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        retainInstance = true
         return inflater.inflate(R.layout.fragment_main, container, false)
     }
 
@@ -73,7 +72,7 @@ class MainFragment : Fragment(), MainContract.View {
     }
 
     override fun showData(matrixA: Array<Array<Int>>, matrixB: Array<Array<Int>>) {
-        var textMatrix = ""
+        var textMatrix = "Matrix A\n"
 
         matrixA.forEach { mutableList ->
             var text = ""
@@ -84,7 +83,7 @@ class MainFragment : Fragment(), MainContract.View {
 
         }
 
-        textMatrix += "\n"
+        textMatrix += "Matrix B\n"
 
         matrixB.forEach { mutableList ->
             var text = ""
