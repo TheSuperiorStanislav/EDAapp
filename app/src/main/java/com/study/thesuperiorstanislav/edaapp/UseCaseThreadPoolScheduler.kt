@@ -1,6 +1,7 @@
-package com.study.thesuperiorstanislav.decisiontheorylab1
+package com.study.thesuperiorstanislav.edaapp
 
 import android.os.Handler
+import com.study.thesuperiorstanislav.edaapp.UseCase
 
 import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.ThreadPoolExecutor
