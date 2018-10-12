@@ -26,7 +26,8 @@ class MainPresenter(private val mainView: MainContract.View,
                             return
                         }
 
-                        mainView.showData(response.matrixA, response.matrixB)
+                        mainView.showData(response.matrixA, response.matrixB,
+                                response.matrixQ, response.matrixR)
                     }
 
                     override fun onError(error: UseCase.Error) {

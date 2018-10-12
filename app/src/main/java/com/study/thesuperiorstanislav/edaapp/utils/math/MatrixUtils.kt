@@ -14,7 +14,7 @@ object MatrixUtils{
     }
 
     fun createMatrixQ(matrixA: Array<Array<Int>>,matrixB: Array<Array<Int>>): Array<Array<Int>>{
-        return multiply(matrixB, transpose(matrixA))
+        return multiplyBoolean(matrixB, transpose(matrixA))
     }
 
     @Throws(IndexOutOfBoundsException::class)
@@ -35,6 +35,21 @@ object MatrixUtils{
                     c += matrixA[indexColumn][index]*matrixB[index][indexRow]
                 }
                 c
+            }
+        }
+    }
+
+    private fun multiplyBoolean(matrixA: Array<Array<Int>>, matrixB: Array<Array<Int>>):Array<Array<Int>>{
+        return Array(matrixA.size) { indexColumn ->
+            Array(matrixB.first().size) { indexRow ->
+                var c = 0
+                for (index in 0 until matrixB.size) {
+                    c += matrixA[indexColumn][index] * matrixB[index][indexRow]
+                }
+                if (c > 0)
+                    1
+                else
+                    0
             }
         }
     }

@@ -2,6 +2,7 @@ package com.study.thesuperiorstanislav.edaapp.main.domain.usecase
 
 import com.study.thesuperiorstanislav.edaapp.UseCase
 import com.study.thesuperiorstanislav.edaapp.main.domain.model.Circuit
+import com.study.thesuperiorstanislav.edaapp.utils.math.MatrixUtils
 
 class CreateMatrix: UseCase<CreateMatrix.RequestValues, CreateMatrix.ResponseValue>() {
 
@@ -9,14 +10,16 @@ class CreateMatrix: UseCase<CreateMatrix.RequestValues, CreateMatrix.ResponseVal
         if (requestValues != null) {
             val circuit = requestValues.circuit
             val matrixPair = createMatrixAB(circuit)
-            val responseValue = ResponseValue(matrixPair.first,matrixPair.second)
+            val matrixQ = MatrixUtils.createMatrixQ(matrixPair.first, matrixPair.second)
+            val matrixR = MatrixUtils.createMatrixR(matrixQ)
+            val responseValue = ResponseValue(MatrixUtils.transpose(matrixPair.first), matrixPair.second, matrixQ, matrixR)
             useCaseCallback?.onSuccess(responseValue)
         }
     }
 
-    private fun createMatrixAB(circuit: Circuit): Pair<Array<Array<Int>>,Array<Array<Int>>> {
-        val matrixA = Array(circuit.listPins.size) { connectorIndex ->
-            Array(circuit.listNets.size) { netIndex ->
+    private fun createMatrixAB(circuit: Circuit): Pair<Array<Array<Int>>, Array<Array<Int>>> {
+        val matrixA = Array(circuit.listNets.size) { netIndex ->
+            Array(circuit.listPins.size) { connectorIndex ->
                 if (circuit.listNets[netIndex].getPins().contains(circuit.listPins[connectorIndex]))
                     1
                 else
@@ -24,8 +27,8 @@ class CreateMatrix: UseCase<CreateMatrix.RequestValues, CreateMatrix.ResponseVal
             }
         }
 
-        val matrixB = Array(circuit.listPins.size) { connectorIndex ->
-            Array(circuit.listElements.size) { elementsIndex ->
+        val matrixB = Array(circuit.listElements.size) { elementsIndex ->
+            Array(circuit.listPins.size) { connectorIndex ->
                 if (circuit.listElements[elementsIndex].getPins().contains(circuit.listPins[connectorIndex]))
                     1
                 else
@@ -38,5 +41,6 @@ class CreateMatrix: UseCase<CreateMatrix.RequestValues, CreateMatrix.ResponseVal
 
     class RequestValues(val circuit: Circuit) : UseCase.RequestValues
 
-    class ResponseValue(val matrixA: Array<Array<Int>>,val matrixB: Array<Array<Int>>) : UseCase.ResponseValue
+    class ResponseValue(val matrixA: Array<Array<Int>>, val matrixB: Array<Array<Int>>,
+                        val matrixQ: Array<Array<Int>>, val matrixR: Array<Array<Int>>) : UseCase.ResponseValue
 }

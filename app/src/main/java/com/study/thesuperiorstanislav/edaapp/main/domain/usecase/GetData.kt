@@ -17,7 +17,8 @@ class GetData (private val circuitRepository: CircuitDataSource,
                     UseCaseHandler.execute(createMatrix, requestValue,
                             object : UseCase.UseCaseCallback<CreateMatrix.ResponseValue> {
                                 override fun onSuccess(response: CreateMatrix.ResponseValue) {
-                                    val responseValue = ResponseValue(response.matrixA,response.matrixB)
+                                    val responseValue = ResponseValue(response.matrixA,response.matrixB,
+                                            response.matrixQ, response.matrixR)
                                     useCaseCallback?.onSuccess(responseValue)
                                 }
 
@@ -38,5 +39,6 @@ class GetData (private val circuitRepository: CircuitDataSource,
 
     class RequestValues : UseCase.RequestValues
 
-    class ResponseValue(val matrixA: Array<Array<Int>>,val matrixB: Array<Array<Int>>) : UseCase.ResponseValue
+    class ResponseValue(val matrixA: Array<Array<Int>>,val matrixB: Array<Array<Int>>,
+                        val matrixQ: Array<Array<Int>>, val matrixR: Array<Array<Int>>) : UseCase.ResponseValue
 }

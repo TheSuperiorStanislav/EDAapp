@@ -71,7 +71,8 @@ class MainFragment : Fragment(), MainContract.View {
         this.presenter = presenter
     }
 
-    override fun showData(matrixA: Array<Array<Int>>, matrixB: Array<Array<Int>>) {
+    override fun showData(matrixA: Array<Array<Int>>, matrixB: Array<Array<Int>>,
+                          matrixQ: Array<Array<Int>>, matrixR: Array<Array<Int>>) {
         var textMatrix = "Matrix A\n"
 
         matrixA.forEach { mutableList ->
@@ -93,6 +94,29 @@ class MainFragment : Fragment(), MainContract.View {
             textMatrix += "$text \n"
 
         }
+
+        textMatrix += "Matrix Q\n"
+
+        matrixQ.forEach { mutableList ->
+            var text = ""
+            mutableList.forEach {
+                text += "$it "
+            }
+            textMatrix += "$text \n"
+
+        }
+
+        textMatrix += "Matrix R\n"
+
+        matrixR.forEach { mutableList ->
+            var text = ""
+            mutableList.forEach {
+                text += "$it "
+            }
+            textMatrix += "$text \n"
+
+        }
+
 
         test.text = textMatrix
         dialog?.dismiss()
