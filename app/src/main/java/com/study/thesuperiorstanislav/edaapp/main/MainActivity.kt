@@ -1,7 +1,7 @@
 package com.study.thesuperiorstanislav.edaapp.main
 
 import android.content.Intent
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import com.study.thesuperiorstanislav.edaapp.R
