@@ -1,4 +1,4 @@
-package com.study.thesuperiorstanislav.decisiontheorylab1
+package com.study.thesuperiorstanislav.edaapp
 
 interface BasePresenter {
 

@@ -1,7 +1,7 @@
 package com.study.thesuperiorstanislav.edaapp.main
 
-import com.study.thesuperiorstanislav.decisiontheorylab1.BasePresenter
-import com.study.thesuperiorstanislav.decisiontheorylab1.BaseView
+import com.study.thesuperiorstanislav.edaapp.BasePresenter
+import com.study.thesuperiorstanislav.edaapp.BaseView
 import com.study.thesuperiorstanislav.edaapp.UseCase
 import com.study.thesuperiorstanislav.edaapp.main.domain.model.Circuit
 
