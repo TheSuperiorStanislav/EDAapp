@@ -3,9 +3,13 @@ package com.study.thesuperiorstanislav.edaapp.main
 
 import android.app.Activity
 import android.app.ProgressDialog
+import android.content.Context
 import android.content.Intent
+import android.graphics.Canvas
+import android.graphics.Paint
 import android.net.Uri
 import android.os.Bundle
+import android.util.AttributeSet
 import com.google.android.material.snackbar.Snackbar
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -21,6 +25,7 @@ import kotlinx.android.synthetic.main.fragment_main.*
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
+
 
 
 class MainFragment : Fragment(), MainContract.View {
@@ -117,7 +122,7 @@ class MainFragment : Fragment(), MainContract.View {
         }
 
 
-        test.text = textMatrix
+        //test.text = textMatrix
         dialog?.dismiss()
     }
 
@@ -162,6 +167,7 @@ class MainFragment : Fragment(), MainContract.View {
         intent.type = "*/*"
         startActivityForResult(intent, READ_REQUEST_CODE)
     }
+
 
 
 }

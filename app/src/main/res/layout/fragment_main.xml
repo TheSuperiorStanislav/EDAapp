@@ -5,19 +5,13 @@
     android:layout_height="match_parent"
     tools:context=".main.MainFragment"
     android:id="@+id/main_layout">
-    <!-- TODO: Update blank fragment layout -->
-    <ScrollView
+
+
+    <com.study.thesuperiorstanislav.edaapp.main.CircuitView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:id="@+id/circuitView"/>
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/test"
-            android:text="@string/hello_blank_fragment"
-            android:textAlignment="center"/>
-
-    </ScrollView>
 
 
 
