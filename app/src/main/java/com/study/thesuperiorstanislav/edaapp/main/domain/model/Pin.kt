@@ -1,7 +1,6 @@
 package com.study.thesuperiorstanislav.edaapp.main.domain.model
 
-class Net(private val name:String) {
-    private val pins = mutableListOf<Pin>()
+class Pin(private val name: String,private var element: Element) {
     private val point = Point(-1,-1)
 
     override fun toString(): String {
@@ -17,8 +16,8 @@ class Net(private val name:String) {
             return false
         }
 
-        val otherNet = other as Net
-        if (this.name != otherNet.name) {
+        val otherPin = other as Pin
+        if (this.name != otherPin.name) {
             return false
         }
 
@@ -26,25 +25,16 @@ class Net(private val name:String) {
     }
 
     override fun hashCode(): Int {
-        var hash = 3 * this.name.hashCode()
-        hash += 4 * hash + this.pins.hashCode()
-        return hash
-    }
-
-    fun getPins(): ArrayList<Pin> {
-        return ArrayList(pins)
-    }
-
-    fun addPin(pin: Pin){
-        pins.add(pin)
-    }
-
-    fun deletePin(pin: Pin){
-        pins.remove(pin)
+        var result = name.hashCode()
+        result = 31 * result + element.hashCode()
+        result = 31 * result + point.hashCode()
+        return result
     }
 
     fun move(x:Int, y:Int){
         point.x = x
         point.y = y
     }
+
+
 }

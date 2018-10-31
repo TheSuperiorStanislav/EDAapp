@@ -1,10 +1,13 @@
 package com.study.thesuperiorstanislav.edaapp.main.domain.model
 
 
-
 class Element(private val name: String){
-    private val pins = Array(16){ _ -> ""}
+    private val point = Point(-1,-1)
     private val typeElement = makeType(name)
+    private val pinArraySize = initPinArraySize()
+    private val pins = Array(pinArraySize){ num ->
+        Pin("$name.$num",this)}
+
 
     override fun toString(): String {
         return name
@@ -33,12 +36,17 @@ class Element(private val name: String){
         return hash
     }
 
-    fun getPins(): Array<String> {
+    fun getPins(): Array<Pin> {
         return pins
     }
 
-    fun setPin(num: Int,pin: String){
+    fun setPin(num: Int,pin: Pin){
         pins[num] = pin
+    }
+
+    fun move(x:Int, y:Int){
+        point.x = x
+        point.y = y
     }
 
     private fun makeType(name: String): String{
@@ -48,6 +56,21 @@ class Element(private val name: String){
                 type += it
         }
         return type
+
+    }
+
+    private fun initPinArraySize(): Int{
+        return when (typeElement) {
+            "DD" -> {
+                16
+            }
+            "SB", "HL", "C", "VD", "RX" -> {
+                2
+            }
+            else -> {
+                0
+            }
+        }
     }
 
 }

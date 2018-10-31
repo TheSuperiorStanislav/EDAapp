@@ -5,8 +5,6 @@ import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
 import android.view.MotionEvent
-import android.R.attr.y
-import android.R.attr.x
 
 
 
