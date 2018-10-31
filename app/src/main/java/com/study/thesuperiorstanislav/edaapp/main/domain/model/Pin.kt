@@ -2,6 +2,7 @@ package com.study.thesuperiorstanislav.edaapp.main.domain.model
 
 class Pin(private val name: String,private var element: Element) {
     private val point = Point(-1,-1)
+    private var isConnected = false
 
     override fun toString(): String {
         return name
@@ -29,6 +30,14 @@ class Pin(private val name: String,private var element: Element) {
         result = 31 * result + element.hashCode()
         result = 31 * result + point.hashCode()
         return result
+    }
+
+    fun setIsConnected(boolean: Boolean){
+        isConnected = boolean
+    }
+
+    fun IsConnected():Boolean{
+        return isConnected
     }
 
     fun move(x:Int, y:Int){

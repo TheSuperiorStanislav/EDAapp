@@ -3,13 +3,14 @@ package com.study.thesuperiorstanislav.edaapp.utils.file
 import com.study.thesuperiorstanislav.edaapp.main.domain.model.Circuit
 import com.study.thesuperiorstanislav.edaapp.main.domain.model.Element
 import com.study.thesuperiorstanislav.edaapp.main.domain.model.Net
+import com.study.thesuperiorstanislav.edaapp.main.domain.model.Pin
 import java.io.BufferedReader
 
 object Calay90File {
     fun read(firstLine: String?, reader: BufferedReader): Circuit {
         val listElements = mutableListOf<Element>()
         val listNets = mutableListOf<Net>()
-        val listPins = mutableListOf<String>()
+        val listPins = mutableListOf<Pin>()
 
         var line = firstLine
         var lastNet = Net("")
@@ -42,12 +43,12 @@ object Calay90File {
                     listElements.add(Element(splitIt.first()))
                 }
 
-                val strPin = str.replace(";", "")
+                val curElement = listElements.find { it == Element(splitIt.first()) }
 
-                listElements.find { it == Element(splitIt.first()) }
-                        ?.setPin(splitIt.last().toInt() - 1, strPin)
-                lastNet.addPin(strPin)
-                listPins.add(strPin)
+                curElement?.setPin(splitIt.last().toInt() - 1, true)
+                lastNet.addPin(curElement?.getPins()!![splitIt.last().toInt() - 1])
+                listPins.add(curElement.getPins()[splitIt.last().toInt() - 1])
+
             }
             line = reader.readLine()
         }

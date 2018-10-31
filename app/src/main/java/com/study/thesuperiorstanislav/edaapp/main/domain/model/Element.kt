@@ -40,8 +40,8 @@ class Element(private val name: String){
         return pins
     }
 
-    fun setPin(num: Int,pin: Pin){
-        pins[num] = pin
+    fun setPin(num: Int,boolean: Boolean){
+        pins[num].setIsConnected(boolean)
     }
 
     fun move(x:Int, y:Int){

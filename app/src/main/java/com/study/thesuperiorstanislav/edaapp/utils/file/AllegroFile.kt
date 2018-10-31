@@ -3,6 +3,7 @@ package com.study.thesuperiorstanislav.edaapp.utils.file
 import com.study.thesuperiorstanislav.edaapp.main.domain.model.Circuit
 import com.study.thesuperiorstanislav.edaapp.main.domain.model.Element
 import com.study.thesuperiorstanislav.edaapp.main.domain.model.Net
+import com.study.thesuperiorstanislav.edaapp.main.domain.model.Pin
 import java.io.BufferedReader
 
 object AllegroFile {
@@ -10,7 +11,7 @@ object AllegroFile {
 
         val listElements = mutableListOf<Element>()
         val listNets = mutableListOf<Net>()
-        val listPins = mutableListOf<String>()
+        val listPins = mutableListOf<Pin>()
 
         var line = reader.readLine()
         while (line != "\$NETS") {
@@ -45,10 +46,11 @@ object AllegroFile {
                     listElements.add(Element(splitIt.first()))
                 }
 
-                listElements.find { it == Element(splitIt.first()) }
-                        ?.setPin(splitIt.last().toInt() - 1, str)
-                lastNet.addPin(str)
-                listPins.add(str)
+                val curElement = listElements.find { it == Element(splitIt.first()) }
+
+                curElement?.setPin(splitIt.last().toInt() - 1, true)
+                lastNet.addPin(curElement?.getPins()!![splitIt.last().toInt() - 1])
+                listPins.add(curElement.getPins()[splitIt.last().toInt() - 1])
             }
             line = reader.readLine()
         }
