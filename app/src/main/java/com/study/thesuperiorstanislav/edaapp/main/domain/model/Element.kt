@@ -61,10 +61,10 @@ class Element(private val name: String){
 
     private fun initPinArraySize(): Int{
         return when (typeElement) {
-            "DD" -> {
+            "DD", "X" -> {
                 16
             }
-            "SB", "HL", "C", "VD", "RX" -> {
+            "SB", "HL", "C", "VD", "RX" , "R" -> {
                 2
             }
             else -> {
