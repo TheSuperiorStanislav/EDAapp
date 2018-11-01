@@ -6,7 +6,7 @@ class Element(private val name: String){
     val typeElement = makeType(name)
     private val pinArraySize = initPinArraySize()
     private val pins = Array(pinArraySize){ num ->
-        Pin("$name.$num",this)}
+        Pin("$name.${num + 1}",this)}
 
 
     override fun toString(): String {

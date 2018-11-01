@@ -31,6 +31,10 @@ class Net(private val name:String) {
         return hash
     }
 
+    fun getPoint(): Point{
+        return point
+    }
+
     fun getPins(): ArrayList<Pin> {
         return ArrayList(pins)
     }

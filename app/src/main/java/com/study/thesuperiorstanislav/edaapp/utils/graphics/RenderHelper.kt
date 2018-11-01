@@ -4,11 +4,12 @@ import android.graphics.*
 import android.util.Log
 import com.study.thesuperiorstanislav.edaapp.main.domain.model.Circuit
 import com.study.thesuperiorstanislav.edaapp.main.domain.model.Element
+import com.study.thesuperiorstanislav.edaapp.main.domain.model.Net
 import com.study.thesuperiorstanislav.edaapp.main.domain.model.Pin
 import com.study.thesuperiorstanislav.edaapp.main.domain.model.draw.DrawObject
 import com.study.thesuperiorstanislav.edaapp.main.domain.model.draw.DrawPoint
 import com.study.thesuperiorstanislav.edaapp.main.domain.model.draw.DrawType.*
-import com.study.thesuperiorstanislav.edaapp.main.domain.model.draw.ObjectType
+import com.study.thesuperiorstanislav.edaapp.main.domain.model.draw.ObjectType.*
 
 class RenderHelper(private val rect: Rect) {
     private var drawMatrix: Array<Array<DrawObject?>>
@@ -20,7 +21,7 @@ class RenderHelper(private val rect: Rect) {
     private val pinPaint = Paint()
     private val connectorPaint = Paint()
 
-    private var sizeX = 35
+    private var sizeX = 50
     private var sizeY:Int
     private var step = 0f
 
@@ -48,7 +49,19 @@ class RenderHelper(private val rect: Rect) {
         }
     }
 
-    fun drawElement(element: Element,canvas: Canvas) {
+    fun drawCircuit(circuit: Circuit,canvas: Canvas){
+        circuit.listElements.forEach {
+            drawElement(it, canvas)
+        }
+        circuit.listNets.forEach {
+            drawNet(it,canvas)
+            it.getPins().forEach { pin ->
+
+            }
+        }
+    }
+
+    private fun drawElement(element: Element, canvas: Canvas) {
         element.getPins().forEach {
             drawPin(it, canvas)
         }
@@ -137,9 +150,44 @@ class RenderHelper(private val rect: Rect) {
         canvas.drawCircle(drawPoint.x + step/2,drawPoint.y + step/2,step/6,pinPaint)
     }
 
+    private fun drawNet(net: Net, canvas: Canvas){
+        val point = net.getPoint()
+        val drawPoint = drawMatrix[point.y][point.x]!!.drawPoint
+        canvas.drawCircle(drawPoint.x + step/2,drawPoint.y + step/2,step/2f,netPaint)
+        canvas.drawCircle(drawPoint.x + step/2,drawPoint.y + step/2,step/2.5f,netPaint)
+        canvas.drawCircle(drawPoint.x + step/2,drawPoint.y + step/2,step/3.5f,netPaint)
+        canvas.drawCircle(drawPoint.x + step/2,drawPoint.y + step/2,step/5.5f,netPaint)
+
+        val path = Path()
+        path.moveTo(drawPoint.x + step / 2, drawPoint.y)
+        path.lineTo(drawPoint.x + step / 2, drawPoint.y + step)
+        path.moveTo(drawPoint.x + step / 2, drawPoint.y + step)
+        canvas.drawPath(path,netPaint)
+        path.reset()
+        path.moveTo(drawPoint.x, drawPoint.y + step/2)
+        path.lineTo(drawPoint.x + step, drawPoint.y + step / 2)
+        path.moveTo(drawPoint.x + step, drawPoint.y + step / 2)
+        canvas.drawPath(path,netPaint)
+        path.reset()
+        path.moveTo(drawPoint.x, drawPoint.y)
+        path.lineTo(drawPoint.x + step, drawPoint.y + step)
+        path.moveTo(drawPoint.x + step, drawPoint.y + step)
+        canvas.drawPath(path,netPaint)
+        path.reset()
+        path.moveTo(drawPoint.x, drawPoint.y + step)
+        path.lineTo(drawPoint.x + step, drawPoint.y)
+        path.moveTo(drawPoint.x + step, drawPoint.y)
+        canvas.drawPath(path,netPaint)
+    }
+
+
+
     fun initDrawMatrix(circuit: Circuit){
         circuit.listElements.forEach {
             placeElement(it)
+        }
+        circuit.listNets.forEach {
+            placeNet(it)
         }
         isMatrixInit = true
     }
@@ -147,7 +195,7 @@ class RenderHelper(private val rect: Rect) {
     private fun placeElement(element: Element){
         drawMatrix.forEachIndexed { yIndex, arrayOfDrawObjects ->
             arrayOfDrawObjects.forEachIndexed { xIndex, _ ->
-                if (checkPositionVertical(element,xIndex,yIndex)){
+                if (checkElementPositionVertical(element,xIndex,yIndex)){
                     placeElementVertical(element, xIndex, yIndex)
                     return
                 }
@@ -156,20 +204,30 @@ class RenderHelper(private val rect: Rect) {
         }
     }
 
-    private fun checkPositionVertical(element: Element, x:Int, y:Int):Boolean {
+    private fun checkElementPositionVertical(element: Element, x:Int, y:Int):Boolean {
         when (element.typeElement) {
             "DD", "X" -> {
                 return if (y + 1 > sizeY - 1 || y + 2 > sizeY-1 || y + 3 > sizeY -1
+                        || y + 4 > sizeY - 1 || y + 5 > sizeY-1 || y + 6 > sizeY -1
+                        || y + 7 > sizeY -1
                         || x - 1 < 0 || x + 1 > sizeX - 1 || x + 2 > sizeX - 1)
                     false
                 else (drawMatrix[y][x] == null && drawMatrix[y][x + 1] == null
                         && drawMatrix[y + 1][x] == null && drawMatrix[y + 1][x + 1] == null
                         && drawMatrix[y + 2][x] == null && drawMatrix[y + 2][x + 1] == null
                         && drawMatrix[y + 3][x] == null && drawMatrix[y + 3][x + 1] == null
+                        && drawMatrix[y + 4][x] == null && drawMatrix[y + 4][x + 1] == null
+                        && drawMatrix[y + 5][x] == null && drawMatrix[y + 5][x + 1] == null
+                        && drawMatrix[y + 6][x] == null && drawMatrix[y + 6][x + 1] == null
+                        && drawMatrix[y + 7][x] == null && drawMatrix[y + 7][x + 1] == null
                         && drawMatrix[y][x - 1] == null && drawMatrix[y][x + 2] == null
                         && drawMatrix[y + 1][x - 1] == null && drawMatrix[y + 1][x + 2] == null
                         && drawMatrix[y + 2][x - 1] == null && drawMatrix[y + 2][x + 2] == null
-                        && drawMatrix[y + 3][x - 1] == null && drawMatrix[y + 3][x + 2] == null)
+                        && drawMatrix[y + 3][x - 1] == null && drawMatrix[y + 3][x + 2] == null
+                        && drawMatrix[y + 4][x - 1] == null && drawMatrix[y + 4][x + 2] == null
+                        && drawMatrix[y + 5][x - 1] == null && drawMatrix[y + 5][x + 2] == null
+                        && drawMatrix[y + 6][x - 1] == null && drawMatrix[y + 6][x + 2] == null
+                        && drawMatrix[y + 7][x - 1] == null && drawMatrix[y + 7][x + 2] == null)
             }
             "SB", "HL", "C", "VD", "RX", "R" -> {
                 return if (y + 1 > sizeY - 1
@@ -188,7 +246,7 @@ class RenderHelper(private val rect: Rect) {
     private fun placeElementVertical(element: Element, x:Int, y:Int){
         when (element.typeElement) {
             "DD", "X" -> {
-                place8PartVertical(element,x,y)
+                place16PartVertical(element,x,y)
             }
             "SB", "HL", "C", "VD", "RX", "R" -> {
                 place2PartVertical(element,x,y)
@@ -197,46 +255,134 @@ class RenderHelper(private val rect: Rect) {
 
     }
 
-    private fun place8PartVertical(element: Element, x:Int, y:Int) {
+    private fun place16PartVertical(element: Element, x:Int, y:Int) {
         element.getPins().forEachIndexed { index, pin ->
             when (index + 1) {
                 1 -> {
-                    val drawObject = DrawObject(DrawPoint(step * x, step * y), ObjectType.Pin, PIN_CORNER_UP_LEFT)
+                    val drawObject = DrawObject(DrawPoint(step * x, step * y), Pin, PIN_CORNER_UP_LEFT)
                     drawMatrix[y][x] = drawObject
                     pin.move(x, y)
                 }
                 2 -> {
-                    val drawObject = DrawObject(DrawPoint(step * (x + 1), step * y), ObjectType.Pin, PIN_CORNER_UP_RIGHT)
+                    val drawObject = DrawObject(DrawPoint(step * (x + 1), step * y), Pin, PIN_CORNER_UP_RIGHT)
                     drawMatrix[y][x + 1] = drawObject
                     pin.move(x + 1, y)
                 }
                 3 -> {
-                    val drawObject = DrawObject(DrawPoint(step * x, step * (y + 1)), ObjectType.Pin, PIN_SIDE_LEFT)
+                    val drawObject = DrawObject(DrawPoint(step * x, step * (y + 1)), Pin, PIN_SIDE_LEFT)
                     drawMatrix[y + 1][x] = drawObject
                     pin.move(x, y + 1)
                 }
                 4 -> {
-                    val drawObject = DrawObject(DrawPoint(step * (x + 1), step * (y + 1)), ObjectType.Pin, PIN_SIDE_RIGHT)
+                    val drawObject = DrawObject(DrawPoint(step * (x + 1), step * (y + 1)), Pin, PIN_SIDE_RIGHT)
                     drawMatrix[y + 1][x + 1] = drawObject
                     pin.move(x + 1, y + 1)
                 }
                 5 -> {
-                    val drawObject = DrawObject(DrawPoint(step * x, step * (y + 2)), ObjectType.Pin, PIN_SIDE_LEFT)
+                    val drawObject = DrawObject(DrawPoint(step * x, step * (y + 2)), Pin, PIN_SIDE_LEFT)
                     drawMatrix[y + 2][x] = drawObject
                     pin.move(x, y + 2)
                 }
                 6 -> {
-                    val drawObject = DrawObject(DrawPoint(step * (x + 1), step * (y + 2)), ObjectType.Pin, PIN_SIDE_RIGHT)
+                    val drawObject = DrawObject(DrawPoint(step * (x + 1), step * (y + 2)), Pin, PIN_SIDE_RIGHT)
                     drawMatrix[y + 2][x + 1] = drawObject
                     pin.move(x + 1, y + 2)
                 }
                 7 -> {
-                    val drawObject = DrawObject(DrawPoint(step * x, step * (y + 3)), ObjectType.Pin, PIN_CORNER_DOWN_LEFT)
+                    val drawObject = DrawObject(DrawPoint(step * x, step * (y + 3)), Pin, PIN_SIDE_LEFT)
                     drawMatrix[y + 3][x] = drawObject
                     pin.move(x, y + 3)
                 }
                 8 -> {
-                    val drawObject = DrawObject(DrawPoint(step * (x + 1), step * (y + 3)), ObjectType.Pin, PIN_CORNER_DOWN_RIGHT)
+                    val drawObject = DrawObject(DrawPoint(step * (x + 1), step * (y + 3)), Pin, PIN_SIDE_RIGHT)
+                    drawMatrix[y + 3][x + 1] = drawObject
+                    pin.move(x + 1, y + 3)
+                }
+                9 -> {
+                    val drawObject = DrawObject(DrawPoint(step * x, step * (y + 4)), Pin, PIN_SIDE_LEFT)
+                    drawMatrix[y + 4][x] = drawObject
+                    pin.move(x, y + 4)
+                }
+                10 -> {
+                    val drawObject = DrawObject(DrawPoint(step * (x + 1), step * (y + 4)), Pin, PIN_SIDE_RIGHT)
+                    drawMatrix[y + 4][x + 1] = drawObject
+                    pin.move(x + 1, y + 4)
+                }
+                11 -> {
+                    val drawObject = DrawObject(DrawPoint(step * x, step * (y + 5)), Pin, PIN_SIDE_LEFT)
+                    drawMatrix[y + 5][x] = drawObject
+                    pin.move(x, y + 5)
+                }
+                12 -> {
+                    val drawObject = DrawObject(DrawPoint(step * (x + 1), step * (y + 5)), Pin, PIN_SIDE_RIGHT)
+                    drawMatrix[y + 5][x + 1] = drawObject
+                    pin.move(x + 1, y + 5)
+                }
+                13 -> {
+                    val drawObject = DrawObject(DrawPoint(step * x, step * (y + 6)), Pin, PIN_SIDE_LEFT)
+                    drawMatrix[y + 6][x] = drawObject
+                    pin.move(x, y + 6)
+                }
+                14 -> {
+                    val drawObject = DrawObject(DrawPoint(step * (x + 1), step * (y + 6)), Pin, PIN_SIDE_RIGHT)
+                    drawMatrix[y + 6][x + 1] = drawObject
+                    pin.move(x + 1, y + 6)
+                }
+                15 -> {
+                    val drawObject = DrawObject(DrawPoint(step * x, step * (y + 7)), Pin, PIN_CORNER_DOWN_LEFT)
+                    drawMatrix[y + 7][x] = drawObject
+                    pin.move(x, y + 7)
+                }
+                16 -> {
+                    val drawObject = DrawObject(DrawPoint(step * (x + 1), step * (y + 7)), Pin, PIN_CORNER_DOWN_RIGHT)
+                    drawMatrix[y + 7][x + 1] = drawObject
+                    pin.move(x + 1, y + 7)
+                }
+            }
+        }
+        element.move(x, y)
+    }
+
+    private fun place8PartVertical(element: Element, x:Int, y:Int) {
+        element.getPins().forEachIndexed { index, pin ->
+            when (index + 1) {
+                1 -> {
+                    val drawObject = DrawObject(DrawPoint(step * x, step * y), Pin, PIN_CORNER_UP_LEFT)
+                    drawMatrix[y][x] = drawObject
+                    pin.move(x, y)
+                }
+                2 -> {
+                    val drawObject = DrawObject(DrawPoint(step * (x + 1), step * y), Pin, PIN_CORNER_UP_RIGHT)
+                    drawMatrix[y][x + 1] = drawObject
+                    pin.move(x + 1, y)
+                }
+                3 -> {
+                    val drawObject = DrawObject(DrawPoint(step * x, step * (y + 1)), Pin, PIN_SIDE_LEFT)
+                    drawMatrix[y + 1][x] = drawObject
+                    pin.move(x, y + 1)
+                }
+                4 -> {
+                    val drawObject = DrawObject(DrawPoint(step * (x + 1), step * (y + 1)), Pin, PIN_SIDE_RIGHT)
+                    drawMatrix[y + 1][x + 1] = drawObject
+                    pin.move(x + 1, y + 1)
+                }
+                5 -> {
+                    val drawObject = DrawObject(DrawPoint(step * x, step * (y + 2)), Pin, PIN_SIDE_LEFT)
+                    drawMatrix[y + 2][x] = drawObject
+                    pin.move(x, y + 2)
+                }
+                6 -> {
+                    val drawObject = DrawObject(DrawPoint(step * (x + 1), step * (y + 2)), Pin, PIN_SIDE_RIGHT)
+                    drawMatrix[y + 2][x + 1] = drawObject
+                    pin.move(x + 1, y + 2)
+                }
+                7 -> {
+                    val drawObject = DrawObject(DrawPoint(step * x, step * (y + 3)), Pin, PIN_CORNER_DOWN_LEFT)
+                    drawMatrix[y + 3][x] = drawObject
+                    pin.move(x, y + 3)
+                }
+                8 -> {
+                    val drawObject = DrawObject(DrawPoint(step * (x + 1), step * (y + 3)), Pin, PIN_CORNER_DOWN_RIGHT)
                     drawMatrix[y + 3][x + 1] = drawObject
                     pin.move(x + 1, y + 3)
                 }
@@ -249,18 +395,43 @@ class RenderHelper(private val rect: Rect) {
         element.getPins().forEachIndexed { index, pin ->
             when (index + 1) {
                 1-> {
-                    val drawObject = DrawObject(DrawPoint(step * x, step * y), ObjectType.Pin, PIN_LINE_UP)
+                    val drawObject = DrawObject(DrawPoint(step * x, step * y), Pin, PIN_LINE_UP)
                     drawMatrix[y][x] = drawObject
                     pin.move(x, y)
                 }
                 2 -> {
-                    val drawObject = DrawObject(DrawPoint(step * x, step * (y + 1)), ObjectType.Pin, PIN_LINE_DOWN)
+                    val drawObject = DrawObject(DrawPoint(step * x, step * (y + 1)), Pin, PIN_LINE_DOWN)
                     drawMatrix[y + 1][x] = drawObject
                     pin.move(x, y + 1)
                 }
             }
         }
         element.move(x, y)
+    }
+
+    private fun placeNet(net: Net){
+        drawMatrix.forEachIndexed { yIndex, arrayOfDrawObjects ->
+            arrayOfDrawObjects.forEachIndexed { xIndex, _ ->
+                if (checkNetPosition(xIndex,yIndex)){
+                    val drawObject = DrawObject(DrawPoint(step * xIndex, step * yIndex), Net, NET)
+                    drawMatrix[yIndex][xIndex] = drawObject
+                    net.move(xIndex, yIndex)
+                    return
+                }
+
+            }
+        }
+    }
+
+    private fun checkNetPosition(x:Int, y:Int):Boolean {
+        return if (y + 1 > sizeY - 1 || y - 1 < 0
+                || x - 1 < 0 || x + 1 > sizeX - 1)
+            false
+        else (drawMatrix[y][x] == null
+                && drawMatrix[y + 1][x] == null && drawMatrix[y - 1][x] == null
+                && drawMatrix[y][x - 1] == null && drawMatrix[y][x + 1] == null
+                && drawMatrix[y + 1][x + 1] == null && drawMatrix[y + 1][x - 1] == null
+                && drawMatrix[y - 1][x + 1] == null && drawMatrix[y - 1][x - 1] == null)
     }
 
     private fun initPaint(){
@@ -275,10 +446,10 @@ class RenderHelper(private val rect: Rect) {
         netPaint.isAntiAlias = true
         netPaint.isDither = true
         netPaint.color = Color.MAGENTA
-        netPaint.style = Paint.Style.FILL
+        netPaint.style = Paint.Style.STROKE
         netPaint.strokeJoin = Paint.Join.ROUND
         netPaint.strokeCap = Paint.Cap.ROUND
-        netPaint.strokeWidth = 3f
+        netPaint.strokeWidth = 2f
 
         elementPartPaint.isAntiAlias = true
         elementPartPaint.isDither = true
