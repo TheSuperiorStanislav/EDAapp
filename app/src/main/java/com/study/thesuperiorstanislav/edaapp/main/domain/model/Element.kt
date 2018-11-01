@@ -3,7 +3,7 @@ package com.study.thesuperiorstanislav.edaapp.main.domain.model
 
 class Element(private val name: String){
     private val point = Point(-1,-1)
-    private val typeElement = makeType(name)
+    val typeElement = makeType(name)
     private val pinArraySize = initPinArraySize()
     private val pins = Array(pinArraySize){ num ->
         Pin("$name.$num",this)}

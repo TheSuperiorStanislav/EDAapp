@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity() {
         val ft = supportFragmentManager.beginTransaction()
 
         val fragment = MainFragment()
-        fragment.setPresenter(MainPresenter(fragment, GetData(CircuitRepository, CreateMatrix()), CacheDataFromFile(CircuitRepository)))
+        fragment.setPresenter(MainPresenter(fragment, GetData(CircuitRepository), CacheDataFromFile(CircuitRepository)))
         ft.replace(R.id.content_frame, fragment)
         if (!isFinishing)
             ft.commitAllowingStateLoss()

@@ -11,8 +11,7 @@ interface MainContract {
 
         var isActive: Boolean
 
-        fun showData(matrixA: Array<Array<Int>>,matrixB: Array<Array<Int>>,
-                     matrixQ: Array<Array<Int>>, matrixR: Array<Array<Int>>)
+        fun showData(circuit: Circuit)
 
         fun onError(error: UseCase.Error)
 

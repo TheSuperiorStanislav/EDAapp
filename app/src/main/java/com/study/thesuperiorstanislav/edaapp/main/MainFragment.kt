@@ -19,6 +19,7 @@ import android.view.ViewGroup
 
 import com.study.thesuperiorstanislav.edaapp.R
 import com.study.thesuperiorstanislav.edaapp.UseCase
+import com.study.thesuperiorstanislav.edaapp.main.domain.model.Circuit
 import com.study.thesuperiorstanislav.edaapp.utils.file.AllegroFile
 import com.study.thesuperiorstanislav.edaapp.utils.file.Calay90File
 import kotlinx.android.synthetic.main.fragment_main.*
@@ -75,54 +76,8 @@ class MainFragment : Fragment(), MainContract.View {
         this.presenter = presenter
     }
 
-    override fun showData(matrixA: Array<Array<Int>>, matrixB: Array<Array<Int>>,
-                          matrixQ: Array<Array<Int>>, matrixR: Array<Array<Int>>) {
-        var textMatrix = "Matrix A\n"
-
-        matrixA.forEach { mutableList ->
-            var text = ""
-            mutableList.forEach {
-                text += "$it "
-            }
-            textMatrix += "$text \n"
-
-        }
-
-        textMatrix += "Matrix B\n"
-
-        matrixB.forEach { mutableList ->
-            var text = ""
-            mutableList.forEach {
-                text += "$it "
-            }
-            textMatrix += "$text \n"
-
-        }
-
-        textMatrix += "Matrix Q\n"
-
-        matrixQ.forEach { mutableList ->
-            var text = ""
-            mutableList.forEach {
-                text += "$it "
-            }
-            textMatrix += "$text \n"
-
-        }
-
-        textMatrix += "Matrix R\n"
-
-        matrixR.forEach { mutableList ->
-            var text = ""
-            mutableList.forEach {
-                text += "$it "
-            }
-            textMatrix += "$text \n"
-
-        }
-
-
-        //test.text = textMatrix
+    override fun showData(circuit: Circuit) {
+        circuitView.setCircuit(circuit)
         dialog?.dismiss()
     }
 

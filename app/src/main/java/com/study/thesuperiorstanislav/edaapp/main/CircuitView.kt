@@ -4,29 +4,40 @@ import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
-import android.view.MotionEvent
+import com.study.thesuperiorstanislav.edaapp.main.domain.model.Circuit
 import com.study.thesuperiorstanislav.edaapp.utils.graphics.RenderHelper
 
 
 class CircuitView : View {
-    constructor(context: Context) : super(context)
+    constructor(context: Context) : super(context){}
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
 
-    private var drawMatrix: Array<Array<Boolean>>? = null
 
     var sizeX = 30
     var sizeY = 0
     var step = 0f
+    val rect = Rect()
+    var renderHelper: RenderHelper? = null
+    private var circuit: Circuit? = null
+
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+        this.getLocalVisibleRect(rect)
+        renderHelper = RenderHelper(rect)
+    }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
-        val rect = Rect()
-        this.getLocalVisibleRect(rect)
+        renderHelper?.drawLines(canvas)
 
-        val renderHelper = RenderHelper(rect)
+        if (circuit != null && !renderHelper?.isMatrixInit!!)
+            renderHelper?.initDrawMatrix(circuit!!)
 
-        renderHelper.drawLines(canvas)
+        circuit?.listElements?.forEach {
+            renderHelper?.drawElement(it, canvas)
+        }
+
 
 //        if (drawMatrix != null){
 //            drawMatrix?.forEachIndexed { indexY, booleans ->
@@ -51,7 +62,6 @@ class CircuitView : View {
 //                }
 //            }
 //        }
-
     }
 
 //    override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -81,5 +91,9 @@ class CircuitView : View {
 //        }
 //    }
 
+    fun setCircuit(circuit: Circuit){
+        this.circuit = circuit
+        invalidate()
+    }
 
 }

@@ -1,5 +1,6 @@
 package com.study.thesuperiorstanislav.edaapp.main.domain.model
 
+
 class Pin(private val name: String,private var element: Element) {
     private val point = Point(-1,-1)
     private var isConnected = false
@@ -30,6 +31,10 @@ class Pin(private val name: String,private var element: Element) {
         result = 31 * result + element.hashCode()
         result = 31 * result + point.hashCode()
         return result
+    }
+
+    fun getPoint(): Point{
+        return point
     }
 
     fun setIsConnected(boolean: Boolean){
