@@ -10,6 +10,7 @@ import com.study.thesuperiorstanislav.edaapp.main.domain.model.draw.DrawObject
 import com.study.thesuperiorstanislav.edaapp.main.domain.model.draw.DrawPoint
 import com.study.thesuperiorstanislav.edaapp.main.domain.model.draw.DrawType.*
 import com.study.thesuperiorstanislav.edaapp.main.domain.model.draw.ObjectType.*
+import org.jetbrains.anko.collections.forEachReversedWithIndex
 
 class RenderHelper(private val rect: Rect) {
     private var drawMatrix: Array<Array<DrawObject?>>
@@ -49,14 +50,14 @@ class RenderHelper(private val rect: Rect) {
         }
     }
 
-    fun drawCircuit(circuit: Circuit,canvas: Canvas){
+    fun drawCircuit(circuit: Circuit,canvas: Canvas) {
         circuit.listElements.forEach {
             drawElement(it, canvas)
         }
         circuit.listNets.forEach {
-            drawNet(it,canvas)
+            drawNet(it, canvas)
             it.getPins().forEach { pin ->
-
+                drawConnectorRubber(it, pin, canvas)
             }
         }
     }
@@ -180,7 +181,17 @@ class RenderHelper(private val rect: Rect) {
         canvas.drawPath(path,netPaint)
     }
 
-
+    private fun drawConnectorRubber(net: Net, pin: Pin, canvas: Canvas){
+        val pointNet = net.getPoint()
+        val drawPointNet = drawMatrix[pointNet.y][pointNet.x]!!.drawPoint
+        val pointPin = pin.getPoint()
+        val drawPointPin = drawMatrix[pointPin.y][pointPin.x]!!.drawPoint
+        val path = Path()
+        path.moveTo(drawPointNet.x + step / 2, drawPointNet.y + step / 2)
+        path.lineTo(drawPointPin.x + step / 2, drawPointPin.y + step / 2)
+        path.moveTo(drawPointPin.x + step / 2, drawPointPin.y + step / 2)
+        canvas.drawPath(path,connectorPaint)
+    }
 
     fun initDrawMatrix(circuit: Circuit){
         circuit.listElements.forEach {
@@ -410,8 +421,8 @@ class RenderHelper(private val rect: Rect) {
     }
 
     private fun placeNet(net: Net){
-        drawMatrix.forEachIndexed { yIndex, arrayOfDrawObjects ->
-            arrayOfDrawObjects.forEachIndexed { xIndex, _ ->
+        drawMatrix.forEachReversedWithIndex { yIndex, arrayOfDrawObjects ->
+            arrayOfDrawObjects.forEachReversedWithIndex { xIndex, _ ->
                 if (checkNetPosition(xIndex,yIndex)){
                     val drawObject = DrawObject(DrawPoint(step * xIndex, step * yIndex), Net, NET)
                     drawMatrix[yIndex][xIndex] = drawObject
