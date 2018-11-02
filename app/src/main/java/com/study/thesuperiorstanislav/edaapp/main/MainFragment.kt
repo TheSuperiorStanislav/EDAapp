@@ -6,22 +6,22 @@ import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.Rect
 import android.net.Uri
 import android.os.Bundle
 import android.util.AttributeSet
+import android.view.*
 import com.google.android.material.snackbar.Snackbar
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
 
 import com.study.thesuperiorstanislav.edaapp.R
 import com.study.thesuperiorstanislav.edaapp.UseCase
 import com.study.thesuperiorstanislav.edaapp.main.domain.model.Circuit
 import com.study.thesuperiorstanislav.edaapp.utils.file.AllegroFile
 import com.study.thesuperiorstanislav.edaapp.utils.file.Calay90File
+import com.study.thesuperiorstanislav.edaapp.utils.graphics.RenderHelper
 import kotlinx.android.synthetic.main.fragment_main.*
 import java.io.BufferedReader
 import java.io.IOException
@@ -29,6 +29,7 @@ import java.io.InputStreamReader
 
 
 
+@Suppress("PLUGIN_WARNING")
 class MainFragment : Fragment(), MainContract.View {
 
     override var isActive: Boolean = false
@@ -77,14 +78,14 @@ class MainFragment : Fragment(), MainContract.View {
     }
 
     override fun showData(circuit: Circuit) {
-        circuitView.setCircuit(circuit)
+        (circuitView as CircuitView).setCircuit(circuit)
         dialog?.dismiss()
     }
 
     override fun onError(error: UseCase.Error) {
         dialog?.dismiss()
         val snackBar = Snackbar.make(main_layout, error.message!!, Snackbar.LENGTH_SHORT)
-        snackBar.setAction("¯\\(°_o)/¯") { _ -> }
+        snackBar.setAction("¯\\(°_o)/¯") { }
         snackBar.show()
     }
 
@@ -124,5 +125,65 @@ class MainFragment : Fragment(), MainContract.View {
     }
 
 
+
+    class CircuitView : View {
+        constructor(context: Context) : super(context) {}
+        constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
+
+
+        private val rect = Rect()
+        var renderHelper: RenderHelper? = null
+        private var circuit: Circuit? = null
+
+        var drawTouch = false
+        var xT = 0f
+        var yT = 0f
+
+        override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+            super.onSizeChanged(w, h, oldw, oldh)
+            this.getLocalVisibleRect(rect)
+            renderHelper = RenderHelper(rect)
+        }
+
+        override fun onDraw(canvas: Canvas) {
+            super.onDraw(canvas)
+
+            renderHelper?.drawLines(canvas)
+
+            if (circuit != null && !renderHelper?.isMatrixInit!!)
+                renderHelper?.initDrawMatrix(circuit!!)
+
+            if (circuit != null)
+                renderHelper?.drawCircuit(circuit!!, canvas)
+
+            val paint = Paint()
+            paint.color = Color.CYAN
+            paint.style = Paint.Style.FILL
+            if (drawTouch) {
+                canvas.drawCircle(xT, yT, 10f, paint)
+            }
+
+        }
+
+        override fun onTouchEvent(event: MotionEvent): Boolean {
+            val x = event.x
+            val y = event.y
+
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    drawTouch = true
+                    xT = x
+                    yT = y
+                    invalidate()
+                }
+            }
+            return true
+        }
+
+        fun setCircuit(circuit: Circuit) {
+            this.circuit = circuit
+            invalidate()
+        }
+    }
 
 }

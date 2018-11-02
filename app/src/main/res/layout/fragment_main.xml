@@ -7,7 +7,7 @@
     android:id="@+id/main_layout">
 
 
-    <com.study.thesuperiorstanislav.edaapp.main.CircuitView
+    <view class="com.study.thesuperiorstanislav.edaapp.main.MainFragment$CircuitView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/circuitView"/>
