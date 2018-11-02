@@ -3,6 +3,7 @@ package com.study.thesuperiorstanislav.edaapp.utils.graphics
 import com.study.thesuperiorstanislav.edaapp.main.domain.model.Circuit
 import com.study.thesuperiorstanislav.edaapp.main.domain.model.Element
 import com.study.thesuperiorstanislav.edaapp.main.domain.model.Net
+import com.study.thesuperiorstanislav.edaapp.main.domain.model.Point
 import com.study.thesuperiorstanislav.edaapp.main.domain.model.draw.DrawObject
 import com.study.thesuperiorstanislav.edaapp.main.domain.model.draw.DrawPoint
 import com.study.thesuperiorstanislav.edaapp.main.domain.model.draw.DrawType
@@ -21,6 +22,58 @@ class Placer(private val drawMatrix: Array<Array<DrawObject?>>,
             placeNet(it)
         }
         return drawMatrix
+    }
+
+    fun moveElement(element: Element,startPoint: Point, endPoint: Point):Boolean{
+        when (element.typeElement) {
+            "DD", "X" -> {
+                return if (drawMatrix[startPoint.y][startPoint.x + 2] != null){
+                    false
+                }else{
+                    removeElement(element)
+                    if (checkElementPositionVertical(element,endPoint.x,endPoint.y)) {
+                        place16PartVertical(element, endPoint.x, endPoint.y)
+                        true
+                    }else{
+                        place16PartVertical(element, startPoint.x, startPoint.y)
+                        false
+                    }
+                }
+            }
+            "SB", "HL", "C", "VD", "RX", "R" -> {
+                return if (drawMatrix[startPoint.y][startPoint.x + 1] != null){
+                    false
+                }else{
+                    removeElement(element)
+                    if (checkElementPositionVertical(element,endPoint.x,endPoint.y)) {
+                        place2PartVertical(element, endPoint.x, endPoint.y)
+                        true
+                    }else{
+                        place2PartVertical(element, startPoint.x, startPoint.y)
+                        false
+                    }
+                }
+            }
+            else -> {
+                return false
+            }
+        }
+    }
+
+    fun moveNet(net: Net,startPoint: Point, endPoint: Point):Boolean{
+        removeNet(net)
+        return if (checkNetPosition(endPoint.x, endPoint.y)){
+            val drawPoint = DrawPoint(endPoint.x * step,endPoint.y * step)
+            val drawObject = DrawObject(drawPoint,ObjectType.Net,DrawType.NET)
+            drawMatrix[endPoint.y][endPoint.x] = drawObject
+            true
+        }else {
+            val drawPoint = DrawPoint(startPoint.x * step,startPoint.y * step)
+            val drawObject = DrawObject(drawPoint,ObjectType.Net,DrawType.NET)
+            drawMatrix[startPoint.y][startPoint.x] = drawObject
+            false
+        }
+
     }
 
     private fun placeElement(element: Element){
@@ -288,5 +341,16 @@ class Placer(private val drawMatrix: Array<Array<DrawObject?>>,
                 && drawMatrix[y][x - 1] == null && drawMatrix[y][x + 1] == null
                 && drawMatrix[y + 1][x + 1] == null && drawMatrix[y + 1][x - 1] == null
                 && drawMatrix[y - 1][x + 1] == null && drawMatrix[y - 1][x - 1] == null)
+    }
+
+    fun removeElement(element: Element){
+        element.getPins().forEach { pin ->
+            val point = pin.getPoint()
+            drawMatrix[point.y][point.x] = null
+        }
+    }
+
+    fun removeNet(net: Net){
+        drawMatrix[net.getPoint().y][net.getPoint().x] = null
     }
 }

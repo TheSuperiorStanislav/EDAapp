@@ -37,6 +37,10 @@ class Pin(private val name: String,private var element: Element) {
         return point
     }
 
+    fun getElement():Element{
+        return element
+    }
+
     fun setIsConnected(boolean: Boolean){
         isConnected = boolean
     }

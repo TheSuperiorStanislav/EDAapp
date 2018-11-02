@@ -36,6 +36,10 @@ class Element(private val name: String){
         return hash
     }
 
+    fun getPoint():Point {
+        return point
+    }
+
     fun getPins(): Array<Pin> {
         return pins
     }

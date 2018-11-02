@@ -1,13 +1,15 @@
 package com.study.thesuperiorstanislav.edaapp.utils.graphics
 
-import android.graphics.*
+import android.graphics.Canvas
+import android.graphics.Path
+import android.graphics.Rect
+import android.graphics.Paint
+import android.graphics.Color
 import android.util.Log
-import com.study.thesuperiorstanislav.edaapp.main.domain.model.Circuit
-import com.study.thesuperiorstanislav.edaapp.main.domain.model.Element
-import com.study.thesuperiorstanislav.edaapp.main.domain.model.Net
-import com.study.thesuperiorstanislav.edaapp.main.domain.model.Pin
+import com.study.thesuperiorstanislav.edaapp.main.domain.model.*
 import com.study.thesuperiorstanislav.edaapp.main.domain.model.draw.DrawObject
 import com.study.thesuperiorstanislav.edaapp.main.domain.model.draw.DrawType.*
+import com.study.thesuperiorstanislav.edaapp.main.domain.model.draw.ObjectType
 
 class RenderHelper(private val rect: Rect) {
     private var placer: Placer
@@ -19,10 +21,11 @@ class RenderHelper(private val rect: Rect) {
     private val elementPartPaint = Paint()
     private val pinPaint = Paint()
     private val connectorPaint = Paint()
+    private val selectedPaint = Paint()
 
-    private var sizeX = 50
+    private var sizeX = 30
     private var sizeY:Int
-    private var step = 0f
+    var step = 0f
 
     init {
         val maxX = rect.right.toFloat()
@@ -32,6 +35,39 @@ class RenderHelper(private val rect: Rect) {
         drawMatrix = Array(sizeY) { Array(sizeX) { nullDrawObject } }
         initPaint()
         placer = Placer(drawMatrix, sizeX, sizeY, step)
+    }
+
+    fun initDrawMatrix(circuit: Circuit){
+        drawMatrix = placer.initDrawMatrix(circuit)
+        isMatrixInit = true
+    }
+
+    fun isTherePoint(startPoint: Point):Boolean {
+        return if (drawMatrix[startPoint.y][startPoint.x] != null)
+            drawMatrix[startPoint.y][startPoint.x]?.objectType == ObjectType.Pin
+        else
+            false
+    }
+
+    fun isThereNet(startPoint: Point):Boolean {
+        return if (drawMatrix[startPoint.y][startPoint.x] != null)
+            drawMatrix[startPoint.y][startPoint.x]?.objectType == ObjectType.Net
+        else
+            false
+    }
+
+    fun moveObject(obj: Any,startPoint: Point,endPoint: Point): Boolean {
+        return when (obj::class) {
+            Element::class -> {
+                placer.moveElement(obj as Element, startPoint, endPoint)
+            }
+            Net::class -> {
+                placer.moveNet(obj as Net, startPoint, endPoint)
+            }
+            else -> {
+                false
+            }
+        }
     }
 
     fun drawLines(canvas: Canvas){
@@ -46,6 +82,13 @@ class RenderHelper(private val rect: Rect) {
         for (i in 1 .. sizeY + 1){
             canvas.drawLine(0f,cordY,rect.right.toFloat(),cordY,linesPaint)
             cordY+= step
+        }
+    }
+
+    fun drawSelectedSquare(point: Point, canvas: Canvas) {
+        if (drawMatrix[point.y][point.x] != null) {
+            val drawPoint = drawMatrix[point.y][point.x]!!.drawPoint
+            canvas.drawCircle(drawPoint.x + step / 2, drawPoint.y + step / 2, step / 2, selectedPaint)
         }
     }
 
@@ -192,11 +235,6 @@ class RenderHelper(private val rect: Rect) {
         canvas.drawPath(path,connectorPaint)
     }
 
-    fun initDrawMatrix(circuit: Circuit){
-        drawMatrix = placer.initDrawMatrix(circuit)
-        isMatrixInit = true
-    }
-
     private fun initPaint(){
         linesPaint.isAntiAlias = true
         linesPaint.isDither = true
@@ -237,5 +275,13 @@ class RenderHelper(private val rect: Rect) {
         connectorPaint.strokeJoin = Paint.Join.ROUND
         connectorPaint.strokeCap = Paint.Cap.ROUND
         connectorPaint.strokeWidth = 3f
+
+        selectedPaint.isAntiAlias = true
+        selectedPaint.isDither = true
+        selectedPaint.color = Color.CYAN
+        selectedPaint.style = Paint.Style.FILL
+        selectedPaint.strokeJoin = Paint.Join.ROUND
+        selectedPaint.strokeCap = Paint.Cap.ROUND
+        selectedPaint.strokeWidth = 3f
     }
 }
