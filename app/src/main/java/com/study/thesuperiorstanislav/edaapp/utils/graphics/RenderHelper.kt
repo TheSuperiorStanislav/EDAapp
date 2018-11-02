@@ -193,34 +193,58 @@ class RenderHelper(private val rect: Rect) {
         canvas.drawCircle(drawPoint.x + step/2,drawPoint.y + step/2,step/6,pinPaint)
     }
 
-    private fun drawNet(net: Net, canvas: Canvas){
+    private fun drawNet(net: Net, canvas: Canvas) {
         val point = net.getPoint()
         val drawPoint = drawMatrix[point.y][point.x]!!.drawPoint
-        canvas.drawCircle(drawPoint.x + step/2,drawPoint.y + step/2,step/2f,netPaint)
-        canvas.drawCircle(drawPoint.x + step/2,drawPoint.y + step/2,step/2.5f,netPaint)
-        canvas.drawCircle(drawPoint.x + step/2,drawPoint.y + step/2,step/3.5f,netPaint)
-        canvas.drawCircle(drawPoint.x + step/2,drawPoint.y + step/2,step/5.5f,netPaint)
+        canvas.drawCircle(drawPoint.x + step / 2, drawPoint.y + step / 2, step / 2f, netPaint)
+        canvas.drawCircle(drawPoint.x + step / 2, drawPoint.y + step / 2, step / 2.5f, netPaint)
+        canvas.drawCircle(drawPoint.x + step / 2, drawPoint.y + step / 2, step / 3.5f, netPaint)
+        canvas.drawCircle(drawPoint.x + step / 2, drawPoint.y + step / 2, step / 5.5f, netPaint)
 
         val path = Path()
         path.moveTo(drawPoint.x + step / 2, drawPoint.y)
         path.lineTo(drawPoint.x + step / 2, drawPoint.y + step)
         path.moveTo(drawPoint.x + step / 2, drawPoint.y + step)
-        canvas.drawPath(path,netPaint)
+        canvas.drawPath(path, netPaint)
         path.reset()
-        path.moveTo(drawPoint.x, drawPoint.y + step/2)
+        path.moveTo(drawPoint.x, drawPoint.y + step / 2)
         path.lineTo(drawPoint.x + step, drawPoint.y + step / 2)
         path.moveTo(drawPoint.x + step, drawPoint.y + step / 2)
-        canvas.drawPath(path,netPaint)
+        canvas.drawPath(path, netPaint)
         path.reset()
-        path.moveTo(drawPoint.x, drawPoint.y)
-        path.lineTo(drawPoint.x + step, drawPoint.y + step)
-        path.moveTo(drawPoint.x + step, drawPoint.y + step)
-        canvas.drawPath(path,netPaint)
+        //From left up to right down
+        var degree = 225
+        val orgX = (drawPoint.x + step) - (drawPoint.x + step / 2)
+        val orgY = (drawPoint.y + step / 2) - (drawPoint.y + step / 2)
+        var rotatedX = orgX * Math.cos(degree * Math.PI / 180) -
+                orgY * Math.sin(degree * Math.PI / 180) + (drawPoint.x + step / 2)
+        var rotatedY = orgX * Math.sin(degree * Math.PI / 180) +
+                orgY * Math.cos(degree * Math.PI / 180) + (drawPoint.y + step / 2)
+        path.moveTo(rotatedX.toFloat(), rotatedY.toFloat())
+        degree = 45
+        rotatedX = orgX * Math.cos(degree * Math.PI / 180) -
+                orgY * Math.sin(degree * Math.PI / 180) + (drawPoint.x + step / 2)
+        rotatedY = orgX * Math.sin(degree * Math.PI / 180) +
+                orgY * Math.cos(degree * Math.PI / 180) + (drawPoint.y + step / 2)
+        path.lineTo(rotatedX.toFloat(), rotatedY.toFloat())
+        path.moveTo(rotatedX.toFloat(), rotatedY.toFloat())
+        canvas.drawPath(path, netPaint)
         path.reset()
-        path.moveTo(drawPoint.x, drawPoint.y + step)
-        path.lineTo(drawPoint.x + step, drawPoint.y)
-        path.moveTo(drawPoint.x + step, drawPoint.y)
-        canvas.drawPath(path,netPaint)
+        //From right up to left down
+        degree = 315
+        rotatedX = orgX * Math.cos(degree * Math.PI / 180) -
+                orgY * Math.sin(degree * Math.PI / 180) + (drawPoint.x + step / 2)
+        rotatedY = orgX * Math.sin(degree * Math.PI / 180) +
+                orgY * Math.cos(degree * Math.PI / 180) + (drawPoint.y + step / 2)
+        path.moveTo(rotatedX.toFloat(), rotatedY.toFloat())
+        degree = 135
+        rotatedX = orgX * Math.cos(degree * Math.PI / 180) -
+                orgY * Math.sin(degree * Math.PI / 180) + (drawPoint.x + step / 2)
+        rotatedY = orgX * Math.sin(degree * Math.PI / 180) +
+                orgY * Math.cos(degree * Math.PI / 180) + (drawPoint.y + step / 2)
+        path.lineTo(rotatedX.toFloat(), rotatedY.toFloat())
+        path.moveTo(rotatedX.toFloat(), rotatedY.toFloat())
+        canvas.drawPath(path, netPaint)
     }
 
     private fun drawConnectorRubber(net: Net, pin: Pin, canvas: Canvas){
