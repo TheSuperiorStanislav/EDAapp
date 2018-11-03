@@ -42,7 +42,7 @@ class RenderHelper(private val rect: Rect) {
         isMatrixInit = true
     }
 
-    fun isTherePoint(startPoint: Point):Boolean {
+    fun isTherePin(startPoint: Point):Boolean {
         return if (drawMatrix[startPoint.y][startPoint.x] != null)
             drawMatrix[startPoint.y][startPoint.x]?.objectType == ObjectType.Pin
         else
@@ -66,6 +66,20 @@ class RenderHelper(private val rect: Rect) {
             }
             else -> {
                 false
+            }
+        }
+    }
+
+    fun removeObject(obj: Any){
+        when (obj::class) {
+            Element::class -> {
+                placer.removeElement(obj as Element)
+            }
+            Net::class -> {
+                placer.removeNet(obj as Net)
+            }
+            else -> {
+                return
             }
         }
     }

@@ -48,7 +48,7 @@ object AllegroFile {
 
                 val curElement = listElements.find { it == Element(splitIt.first()) }
 
-                curElement?.setPin(splitIt.last().toInt() - 1, true)
+                curElement?.setPin(splitIt.last().toInt() - 1,true,lastNet)
                 lastNet.addPin(curElement?.getPins()!![splitIt.last().toInt() - 1])
                 listPins.add(curElement.getPins()[splitIt.last().toInt() - 1])
             }

@@ -4,6 +4,7 @@ package com.study.thesuperiorstanislav.edaapp.main.domain.model
 class Pin(private val name: String,private var element: Element) {
     private val point = Point(-1,-1)
     private var isConnected = false
+    private var net: Net? = null
 
     override fun toString(): String {
         return name
@@ -41,8 +42,20 @@ class Pin(private val name: String,private var element: Element) {
         return element
     }
 
+    fun setNet(net: Net){
+        this.net = net
+    }
+
     fun setIsConnected(boolean: Boolean){
         isConnected = boolean
+        if (!IsConnected())
+            removeFromNet()
+
+    }
+
+    fun removeFromNet(){
+        net?.deletePin(this)
+        net = null
     }
 
     fun IsConnected():Boolean{

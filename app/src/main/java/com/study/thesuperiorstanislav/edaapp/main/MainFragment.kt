@@ -11,6 +11,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.AttributeSet
 import android.view.*
+import androidx.appcompat.app.AlertDialog
 import com.google.android.material.snackbar.Snackbar
 import androidx.fragment.app.Fragment
 
@@ -22,7 +23,6 @@ import com.study.thesuperiorstanislav.edaapp.utils.file.AllegroFile
 import com.study.thesuperiorstanislav.edaapp.utils.file.Calay90File
 import com.study.thesuperiorstanislav.edaapp.utils.graphics.RenderHelper
 import kotlinx.android.synthetic.main.fragment_main.*
-import kotlinx.android.synthetic.main.fragment_main.view.*
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
@@ -135,7 +135,7 @@ class MainFragment : Fragment(), MainContract.View {
         var renderHelper: RenderHelper? = null
         private var circuit: Circuit? = null
 
-        var editEvent = EditEvent.MOVE_NET
+        var editEvent = EditEvent.DELETE_ELEMENT
         var drawTouch = false
         var startPoint = Point(-1,-1)
 
@@ -169,33 +169,31 @@ class MainFragment : Fragment(), MainContract.View {
 
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
-                    when (editEvent){
+                    when (editEvent) {
                         EditEvent.VIEW -> TODO()
                         EditEvent.ADD_ELEMENT -> TODO()
                         EditEvent.ADD_NET -> TODO()
                         EditEvent.ADD_CONNECTION -> TODO()
                         EditEvent.MOVE_ELEMENT -> {
-                            if (drawTouch){
+                            if (drawTouch) {
                                 val endPoint = Point((x / renderHelper?.step!!).toInt(),
                                         (y / renderHelper?.step!!).toInt())
                                 val obj = circuit?.listPins?.find {
                                     it.getPoint() == startPoint }!!.getElement()
-                                if (renderHelper?.moveObject(obj,startPoint,endPoint)!!){
+                                if (renderHelper?.moveObject(obj, startPoint, endPoint)!!) {
                                     obj.move(endPoint.x, endPoint.y)
                                     drawTouch = false
                                     invalidate()
-                                }else{
+                                } else {
                                     TODO()
                                 }
-                            }else{
+                            } else {
                                 startPoint = Point((x / renderHelper?.step!!).toInt(),
                                         (y / renderHelper?.step!!).toInt())
-                                if (renderHelper?.isTherePoint(startPoint)!!) {
+                                if (renderHelper?.isTherePin(startPoint)!!) {
                                     circuit?.listElements?.forEach { element ->
-                                        val point = element.getPins().
-                                                        find{ it.getPoint() == startPoint }?.
-                                                        getElement()?.getPoint()
-                                        if (point != null){
+                                        val point = element.getPins().find { it.getPoint() == startPoint }?.getElement()?.getPoint()
+                                        if (point != null) {
                                             startPoint = point
                                             drawTouch = true
                                             invalidate()
@@ -209,18 +207,20 @@ class MainFragment : Fragment(), MainContract.View {
                             }
                         }
                         EditEvent.MOVE_NET -> {
-                            if (drawTouch){
+                            if (drawTouch) {
                                 val endPoint = Point((x / renderHelper?.step!!).toInt(),
                                         (y / renderHelper?.step!!).toInt())
                                 val obj = circuit?.listNets?.find {
-                                    it.getPoint() == startPoint }!!
-                                if (renderHelper?.moveObject(obj,startPoint,endPoint)!!){
-                                    obj.
-                                            move(endPoint.x, endPoint.y)
+                                    it.getPoint() == startPoint
+                                }!!
+                                if (renderHelper?.moveObject(obj, startPoint, endPoint)!!) {
+                                    obj.move(endPoint.x, endPoint.y)
                                     drawTouch = false
                                     invalidate()
+                                } else {
+                                    TODO()
                                 }
-                            }else{
+                            } else {
                                 startPoint = Point((x / renderHelper?.step!!).toInt(),
                                         (y / renderHelper?.step!!).toInt())
                                 if (renderHelper?.isThereNet(startPoint)!!) {
@@ -229,8 +229,74 @@ class MainFragment : Fragment(), MainContract.View {
                                 }
                             }
                         }
-                        EditEvent.DELETE_ELEMENT -> TODO()
-                        EditEvent.DELETE_NET -> TODO()
+                        EditEvent.DELETE_ELEMENT -> {
+                            startPoint = Point((x / renderHelper?.step!!).toInt(),
+                                    (y / renderHelper?.step!!).toInt())
+                            if (renderHelper?.isTherePin(startPoint)!!) {
+                                circuit?.listElements?.forEach { element ->
+                                    val obj = element.getPins().
+                                            find { it.getPoint() == startPoint }?.getElement()
+                                    if (obj != null) {
+                                        val deleteDialog: AlertDialog = this.let {
+                                            val builder = AlertDialog.Builder(context)
+                                            builder.apply {
+                                                setTitle("Delete Element-$obj")
+                                                setMessage("Are you sure you want to delete this element?")
+                                                setPositiveButton("Yes") { dialog, _ ->
+                                                    renderHelper?.removeObject(obj)
+                                                    obj.getPins().forEach { pin ->
+                                                        pin.removeFromNet()
+                                                        circuit?.listPins?.remove(pin)
+                                                    }
+                                                    circuit?.listElements?.remove(obj)
+                                                    invalidate()
+                                                    dialog.dismiss()
+                                                }
+                                                setNegativeButton("No") { dialog, _ ->
+                                                    dialog.dismiss()
+                                                }
+
+                                            }
+                                            builder.create()
+                                        }
+                                        deleteDialog.show()
+                                        performClick()
+                                        return true
+                                    }
+                                }
+                            }
+                        }
+                        EditEvent.DELETE_NET -> {
+                            startPoint = Point((x / renderHelper?.step!!).toInt(),
+                                    (y / renderHelper?.step!!).toInt())
+                            if (renderHelper?.isThereNet(startPoint)!!) {
+                                val obj = circuit?.listNets?.find {
+                                    it.getPoint() == startPoint}!!
+
+                                val deleteDialog: AlertDialog = this.let {
+                                    val builder = AlertDialog.Builder(context)
+                                    builder.apply {
+                                        setTitle("Delete Net-$obj")
+                                        setMessage("Are you sure you want to delete this net?")
+                                        setPositiveButton("Yes") { dialog, _ ->
+                                            renderHelper?.removeObject(obj)
+                                            obj.getPins().forEach { pin ->
+                                                circuit?.listPins?.remove(pin)
+                                            }
+                                            circuit?.listNets?.remove(obj)
+                                            invalidate()
+                                            dialog.dismiss()
+                                        }
+                                        setNegativeButton("No") { dialog, _ ->
+                                            dialog.dismiss()
+                                        }
+
+                                    }
+                                    builder.create()
+                                }
+                                deleteDialog.show()
+                            }
+                        }
                         EditEvent.DELETE_CONNECTION -> TODO()
                     }
 
