@@ -12,6 +12,11 @@ import com.study.thesuperiorstanislav.edaapp.R
 import com.study.thesuperiorstanislav.edaapp.main.domain.model.Circuit
 import com.study.thesuperiorstanislav.edaapp.main.domain.model.Point
 import com.study.thesuperiorstanislav.edaapp.utils.graphics.RenderHelper
+import android.widget.LinearLayout
+import android.widget.EditText
+import android.content.DialogInterface
+import com.study.thesuperiorstanislav.edaapp.main.domain.model.Net
+
 
 class CircuitView : View {
     constructor(context: Context) : super(context)
@@ -22,7 +27,7 @@ class CircuitView : View {
     var renderHelper: RenderHelper? = null
     private var circuit: Circuit? = null
 
-    var editEvent = EditEvent.DELETE_CONNECTION
+    var editEvent = EditEvent.ADD_NET
     var drawTouch = false
     var startPoint = Point(-1, -1)
 
@@ -59,7 +64,7 @@ class CircuitView : View {
                 when (editEvent) {
                     EditEvent.VIEW -> TODO()
                     EditEvent.ADD_ELEMENT -> TODO()
-                    EditEvent.ADD_NET -> TODO()
+                    EditEvent.ADD_NET -> addNet(x, y)
                     EditEvent.ADD_CONNECTION -> TODO()
                     EditEvent.MOVE_ELEMENT -> moveElement(x, y)
                     EditEvent.MOVE_NET -> moveNet(x, y)
@@ -88,6 +93,46 @@ class CircuitView : View {
         drawTouch = false
     }
 
+    private fun addNet(x: Float, y: Float){
+        startPoint = Point((x / renderHelper?.step!!).toInt(),
+                (y / renderHelper?.step!!).toInt())
+        val pairForDialog = createViewForAddNetDialogAndId()
+
+        val addDialog: AlertDialog = this.let {
+            val builder = AlertDialog.Builder(context)
+            builder.apply {
+                setTitle(R.string.add_net)
+                setMessage(R.string.message_add_net)
+                setPositiveButton(R.string.add) { _, _ -> }
+                setNegativeButton(R.string.cancel) { dialog, _ ->
+                    dialog.dismiss()
+                }
+            }
+            builder.create()
+        }
+
+        addDialog.setOnShowListener { dialogInterface ->
+            val button = (dialogInterface as AlertDialog).getButton(AlertDialog.BUTTON_POSITIVE)
+            button.setOnClickListener {
+                val editText = dialogInterface.findViewById<EditText>(pairForDialog.second)
+                if (!editText?.text?.isEmpty()!!) {
+                    if (renderHelper?.addNet(startPoint)!!) {
+                        val net = Net(editText.text.toString())
+                        net.move(startPoint.x, startPoint.y)
+                        circuit?.listNets?.add(net)
+                        invalidate()
+                        dialogInterface.dismiss()
+                    } else {
+                        onError(formatResStr(R.string.error_place, resources.getString(R.string.net)))
+                    }
+                }
+            }
+        }
+
+        addDialog.setView(pairForDialog.first)
+        addDialog.show()
+    }
+
     private fun moveElement(x: Float, y: Float) {
         if (drawTouch) {
             val endPoint = Point((x / renderHelper?.step!!).toInt(),
@@ -100,7 +145,7 @@ class CircuitView : View {
                 drawTouch = false
                 invalidate()
             } else {
-                onError(formatResStr(R.string.error_move, obj))
+                onError(formatResStr(R.string.error_place, obj))
             }
         } else {
             startPoint = Point((x / renderHelper?.step!!).toInt(),
@@ -131,7 +176,7 @@ class CircuitView : View {
                 drawTouch = false
                 invalidate()
             } else {
-                onError(formatResStr(R.string.error_move, obj))
+                onError(formatResStr(R.string.error_place, obj))
             }
         } else {
             startPoint = Point((x / renderHelper?.step!!).toInt(),
@@ -262,6 +307,23 @@ class CircuitView : View {
                     onError(R.string.error_delete_connection)
             }
         }
+    }
+
+    private fun createViewForAddNetDialogAndId():Pair<View, Int>{
+        val linearLayout = LinearLayout(context)
+        val lp = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT)
+        val scale = resources.displayMetrics.density
+        val dpAsPixels16 = (16 * scale + 0.5f).toInt()
+        val dpAsPixels8 = (8 * scale + 0.5f).toInt()
+        lp.setMargins(dpAsPixels16,dpAsPixels8,dpAsPixels16,dpAsPixels8)
+        val input = EditText(context)
+        input.id = View.generateViewId()
+        input.layoutParams = lp
+        input.hint = resources.getString(R.string.hint_add_net)
+        linearLayout.addView(input, lp)
+        return Pair(linearLayout, input.id)
     }
 
     private fun formatResStr(idStr: Int, obj: Any): String {

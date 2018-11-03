@@ -56,6 +56,10 @@ class RenderHelper(private val rect: Rect) {
             false
     }
 
+    fun addNet(point: Point): Boolean{
+        return placer.addNet(point)
+    }
+
     fun moveObject(obj: Any,startPoint: Point,endPoint: Point): Boolean {
         return when (obj::class) {
             Element::class -> {

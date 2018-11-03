@@ -24,6 +24,15 @@ class Placer(private val drawMatrix: Array<Array<DrawObject?>>,
         return drawMatrix
     }
 
+    fun addNet(point: Point): Boolean{
+        return if (!checkNetPosition(point.x,point.y)) {
+            false
+        } else {
+            placeNet(point)
+            true
+        }
+    }
+
     fun moveElement(element: Element,startPoint: Point, endPoint: Point):Boolean{
         when (element.typeElement) {
             "DD", "X" -> {
@@ -330,6 +339,14 @@ class Placer(private val drawMatrix: Array<Array<DrawObject?>>,
                 }
             }
         }
+    }
+
+    private fun placeNet(point: Point){
+        val xIndex = point.x
+        val yIndex = point.y
+        val drawObject = DrawObject(DrawPoint(step * xIndex, step * yIndex),
+                ObjectType.Net, DrawType.NET)
+        drawMatrix[yIndex][xIndex] = drawObject
     }
 
     private fun checkNetPosition(x: Int, y: Int): Boolean {
