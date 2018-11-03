@@ -46,6 +46,10 @@ class Pin(private val name: String,private var element: Element) {
         this.net = net
     }
 
+    fun getNet():Net? {
+        return net
+    }
+
     fun setIsConnected(boolean: Boolean){
         isConnected = boolean
         if (!IsConnected())
