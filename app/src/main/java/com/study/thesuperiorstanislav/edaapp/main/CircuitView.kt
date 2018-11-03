@@ -14,7 +14,6 @@ import com.study.thesuperiorstanislav.edaapp.main.domain.model.Point
 import com.study.thesuperiorstanislav.edaapp.utils.graphics.RenderHelper
 import android.widget.LinearLayout
 import android.widget.EditText
-import android.content.DialogInterface
 import com.study.thesuperiorstanislav.edaapp.main.domain.model.Net
 
 
