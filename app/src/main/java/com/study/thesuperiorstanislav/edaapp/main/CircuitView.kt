@@ -22,10 +22,6 @@ import android.widget.ArrayAdapter
 import androidx.annotation.Nullable
 import com.study.thesuperiorstanislav.edaapp.main.domain.model.Element
 import android.widget.Toast
-import android.content.DialogInterface
-import androidx.core.content.ContextCompat.startActivity
-import android.content.Intent
-import android.widget.AdapterView
 import android.widget.AdapterView.OnItemClickListener
 
 
@@ -347,6 +343,7 @@ class CircuitView : View {
                             setMessage(R.string.sure_delete_connection)
                             setPositiveButton(R.string.yes) { dialog, _ ->
                                 obj.setIsConnected(false)
+                                circuit?.listPins?.remove(obj)
                                 invalidate()
                                 dialog.dismiss()
                             }

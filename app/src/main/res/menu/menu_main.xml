@@ -2,8 +2,23 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/menu_load"
         android:title="@string/load_file"/>
-    <!--    <item android:id="@+id/menu_history"
-            android:title="@string/history" />
-        <item android:id="@+id/menu_about"
-            android:title="@string/about" />-->
+    <item android:id="@+id/menu_save"
+        android:title="@string/save_file" />
+    <item android:id="@+id/add_element"
+        android:title="@string/add_element" />
+    <item android:id="@+id/add_net"
+        android:title="@string/add_net" />
+    <item android:id="@+id/add_connection"
+        android:title="@string/add_connection" />
+    <item android:id="@+id/move_element"
+        android:title="@string/move_element" />
+    <item android:id="@+id/move_net"
+        android:title="@string/move_net" />
+    <item android:id="@+id/delete_element"
+        android:title="@string/delete_element_menu" />
+    <item android:id="@+id/delete_net"
+        android:title="@string/delete_net_menu" />
+    <item android:id="@+id/delete_connection"
+        android:title="@string/delete_connection_menu" />
+
 </menu>

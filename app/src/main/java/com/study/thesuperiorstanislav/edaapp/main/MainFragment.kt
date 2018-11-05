@@ -56,12 +56,41 @@ class MainFragment : Fragment(), MainContract.View {
                 performFileSearch()
                 true
             }
-            /*R.id.menu_history -> {
+            R.id.menu_save -> {
                 true
             }
-            R.id.menu_about -> {
+            R.id.add_element -> {
+                circuitView.changeEditEvent(CircuitView.EditEvent.ADD_ELEMENT)
                 true
-            }*/
+            }
+            R.id.add_net-> {
+                circuitView.changeEditEvent(CircuitView.EditEvent.ADD_NET)
+                true
+            }
+            R.id.add_connection -> {
+                circuitView.changeEditEvent(CircuitView.EditEvent.ADD_CONNECTION)
+                true
+            }
+            R.id.move_element -> {
+                circuitView.changeEditEvent(CircuitView.EditEvent.MOVE_ELEMENT)
+                true
+            }
+            R.id.move_net -> {
+                circuitView.changeEditEvent(CircuitView.EditEvent.MOVE_NET)
+                true
+            }
+            R.id.delete_element -> {
+                circuitView.changeEditEvent(CircuitView.EditEvent.DELETE_ELEMENT)
+                true
+            }
+            R.id.delete_net -> {
+                circuitView.changeEditEvent(CircuitView.EditEvent.DELETE_NET)
+                true
+            }
+            R.id.delete_connection -> {
+                circuitView.changeEditEvent(CircuitView.EditEvent.DELETE_CONNECTION)
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
