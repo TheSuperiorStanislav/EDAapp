@@ -20,10 +20,11 @@ class RenderHelper(private val rect: Rect) {
     private val netPaint = Paint()
     private val elementPartPaint = Paint()
     private val pinPaint = Paint()
+    private val pinConnectedPaint = Paint()
     private val connectorPaint = Paint()
     private val selectedPaint = Paint()
 
-    private var sizeX = 30
+    private var sizeX = 50
     private var sizeY:Int
     var step = 0f
 
@@ -238,10 +239,15 @@ class RenderHelper(private val rect: Rect) {
         }
     }
 
-    private fun drawPinCircle(pin: Pin, canvas: Canvas){
+    private fun drawPinCircle(pin: Pin, canvas: Canvas) {
         val point = pin.getPoint()
         val drawPoint = drawMatrix[point.y][point.x]!!.drawPoint
-        canvas.drawCircle(drawPoint.x + step/2,drawPoint.y + step/2,step/6,pinPaint)
+        if (pin.IsConnected())
+            canvas.drawCircle(drawPoint.x + step / 2, drawPoint.y + step / 2, step / 6,
+                    pinConnectedPaint)
+        else
+            canvas.drawCircle(drawPoint.x + step / 2, drawPoint.y + step / 2, step / 6,
+                    pinPaint)
     }
 
     private fun drawNet(net: Net, canvas: Canvas) {
@@ -342,6 +348,14 @@ class RenderHelper(private val rect: Rect) {
         pinPaint.strokeJoin = Paint.Join.ROUND
         pinPaint.strokeCap = Paint.Cap.ROUND
         pinPaint.strokeWidth = 3f
+
+        pinConnectedPaint.isAntiAlias = true
+        pinConnectedPaint.isDither = true
+        pinConnectedPaint.color = Color.GREEN
+        pinConnectedPaint.style = Paint.Style.FILL
+        pinConnectedPaint.strokeJoin = Paint.Join.ROUND
+        pinConnectedPaint.strokeCap = Paint.Cap.ROUND
+        pinConnectedPaint.strokeWidth = 3f
 
         connectorPaint.isAntiAlias = true
         connectorPaint.isDither = true

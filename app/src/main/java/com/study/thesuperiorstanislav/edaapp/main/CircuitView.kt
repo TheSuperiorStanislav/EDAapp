@@ -42,7 +42,7 @@ class CircuitView : View {
     private var renderHelper: RenderHelper? = null
     private var circuit: Circuit? = null
 
-    private var editEvent = EditEvent.ADD_ELEMENT
+    private var editEvent = EditEvent.MOVE_ELEMENT
     private var drawTouch = false
     private var startPoint = Point(-1, -1)
 
