@@ -12,9 +12,25 @@ import com.study.thesuperiorstanislav.edaapp.R
 import com.study.thesuperiorstanislav.edaapp.main.domain.model.Circuit
 import com.study.thesuperiorstanislav.edaapp.main.domain.model.Point
 import com.study.thesuperiorstanislav.edaapp.utils.graphics.RenderHelper
-import android.widget.LinearLayout
-import android.widget.EditText
 import com.study.thesuperiorstanislav.edaapp.main.domain.model.Net
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import android.widget.*
+import android.widget.TextView
+import androidx.annotation.LayoutRes
+import android.widget.ArrayAdapter
+import androidx.annotation.Nullable
+import com.study.thesuperiorstanislav.edaapp.main.domain.model.Element
+import android.widget.Toast
+import android.content.DialogInterface
+import androidx.core.content.ContextCompat.startActivity
+import android.content.Intent
+import android.widget.AdapterView
+import android.widget.AdapterView.OnItemClickListener
+
+
+
+
 
 
 class CircuitView : View {
@@ -23,12 +39,12 @@ class CircuitView : View {
 
 
     private val rect = Rect()
-    var renderHelper: RenderHelper? = null
+    private var renderHelper: RenderHelper? = null
     private var circuit: Circuit? = null
 
-    var editEvent = EditEvent.ADD_NET
-    var drawTouch = false
-    var startPoint = Point(-1, -1)
+    private var editEvent = EditEvent.ADD_ELEMENT
+    private var drawTouch = false
+    private var startPoint = Point(-1, -1)
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
@@ -62,7 +78,7 @@ class CircuitView : View {
             MotionEvent.ACTION_DOWN -> {
                 when (editEvent) {
                     EditEvent.VIEW -> TODO()
-                    EditEvent.ADD_ELEMENT -> TODO()
+                    EditEvent.ADD_ELEMENT -> addElement(x, y)
                     EditEvent.ADD_NET -> addNet(x, y)
                     EditEvent.ADD_CONNECTION -> TODO()
                     EditEvent.MOVE_ELEMENT -> moveElement(x, y)
@@ -92,7 +108,35 @@ class CircuitView : View {
         drawTouch = false
     }
 
-    private fun addNet(x: Float, y: Float){
+    private fun addElement(x: Float, y: Float) {
+        startPoint = Point((x / renderHelper?.step!!).toInt(),
+                (y / renderHelper?.step!!).toInt())
+
+        val adapter = ElementAdapter(context,resources.getStringArray(R.array.elements_array))
+
+        val addDialog: AlertDialog = this.let {
+            val builder = AlertDialog.Builder(context)
+            builder.apply {
+                setTitle(R.string.add_element)
+                builder.setAdapter(adapter) { _, _ -> }
+                setNegativeButton(R.string.cancel) { dialog, _ ->
+                    dialog.dismiss()
+                }
+            }
+            builder.create()
+        }
+
+        addDialog.setOnShowListener { dialogInterface ->
+            val listView = (dialogInterface as AlertDialog).listView
+            listView.onItemClickListener = OnItemClickListener { _, _, position, _ ->
+
+            }
+        }
+
+        addDialog.show()
+    }
+
+    private fun addNet(x: Float, y: Float) {
         startPoint = Point((x / renderHelper?.step!!).toInt(),
                 (y / renderHelper?.step!!).toInt())
         val pairForDialog = createViewForAddNetDialogAndId()
@@ -262,7 +306,8 @@ class CircuitView : View {
                 val pin = circuit?.listPins?.find { pin -> pin.getPoint() == endPoint }
                 if (pin != null) {
                     val net = circuit?.listNets?.find {
-                        it.getPoint() == startPoint }!!
+                        it.getPoint() == startPoint
+                    }!!
                     if (pin.getNet() == net) {
                         pin.removeFromNet()
                         circuit?.listPins?.remove(pin)
@@ -308,7 +353,7 @@ class CircuitView : View {
         }
     }
 
-    private fun createViewForAddNetDialogAndId():Pair<View, Int>{
+    private fun createViewForAddNetDialogAndId(): Pair<View, Int> {
         val linearLayout = LinearLayout(context)
         val lp = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -316,7 +361,7 @@ class CircuitView : View {
         val scale = resources.displayMetrics.density
         val dpAsPixels16 = (16 * scale + 0.5f).toInt()
         val dpAsPixels8 = (8 * scale + 0.5f).toInt()
-        lp.setMargins(dpAsPixels16,dpAsPixels8,dpAsPixels16,dpAsPixels8)
+        lp.setMargins(dpAsPixels16, dpAsPixels8, dpAsPixels16, dpAsPixels8)
         val input = EditText(context)
         input.id = View.generateViewId()
         input.layoutParams = lp
@@ -355,5 +400,36 @@ class CircuitView : View {
         DELETE_ELEMENT,
         DELETE_NET,
         DELETE_CONNECTION
+    }
+
+    inner class ElementAdapter(private val mContext: Context,
+                               @LayoutRes list: Array<String>) : ArrayAdapter<String>(mContext, 0, list) {
+        private var elementList = arrayOf("")
+
+        init {
+            elementList = list
+        }
+
+        override fun getView(position: Int, @Nullable convertView: View?, parent: ViewGroup): View {
+            var listItem = convertView
+            if (listItem == null)
+                listItem = LayoutInflater.from(mContext).inflate(R.layout.layout_element, parent, false)
+
+            val str = elementList[position]
+
+            val element = Element(str)
+
+            val elementView = listItem!!.findViewById(R.id.elementView) as ElementView
+            val elementFullName = listItem.findViewById(R.id.element_full_name) as TextView
+            val elementType = listItem.findViewById(R.id.element_type) as TextView
+            val maxPins = listItem.findViewById(R.id.max_pins) as TextView
+
+            elementView.setElement(element)
+            elementFullName.text = formatResStr(R.string.element_name, "¯\\(°_o)/¯")
+            elementType.text = formatResStr(R.string.element_name, str)
+            maxPins.text = formatResStr(R.string.element_max_pins, element.getPinArraySize())
+
+            return listItem
+        }
     }
 }

@@ -5,9 +5,25 @@
     <string name="please_wait">Please wait....</string>
 
     <string name="element">element</string>
+    <string name="element_name">Element name: %1$s</string>
+    <string name="element_type">Element: %1$s</string>
+    <string name="element_max_pins">Max pins: %1$d</string>
+    <string-array name="elements_array">
+        <item>SB</item>
+        <item>HL</item>
+        <item>C</item>
+        <item>VD</item>
+        <item>R</item>
+        <item>RX</item>
+        <item>DD</item>
+        <item>X</item>
+    </string-array>
     <string name="net">net</string>
     <string name="connection">connection</string>
 
+
+    <string name="add_element">Add Element</string>
+    <string name="message_add_element">To add element, enter it\'s name and press add</string>
     <string name="add_net">Add Net</string>
     <string name="message_add_net">To add net, enter it\'s name and press add</string>
     <string name="hint_add_net">Enter net\'s name</string>
