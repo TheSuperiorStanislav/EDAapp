@@ -8,8 +8,12 @@ enum class DrawType {
     PIN_CORNER_DOWN_RIGHT,
     PIN_SIDE_LEFT,
     PIN_SIDE_RIGHT,
+    PIN_SIDE_UP,
+    PIN_SIDE_DOWN,
     PIN_LINE_UP,
     PIN_LINE_MIDDLE,
     PIN_LINE_DOWN,
+    PIN_LINE_RIGHT,
+    PIN_LINE_LEFT,
     LINE
 }
