@@ -56,6 +56,10 @@ class RenderHelper(private val rect: Rect) {
             false
     }
 
+    fun addElement(element: Element,point: Point): Boolean{
+        return placer.addElement(element,point)
+    }
+
     fun addNet(point: Point): Boolean{
         return placer.addNet(point)
     }

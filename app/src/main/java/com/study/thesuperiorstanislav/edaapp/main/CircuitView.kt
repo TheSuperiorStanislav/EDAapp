@@ -129,6 +129,16 @@ class CircuitView : View {
         addDialog.setOnShowListener { dialogInterface ->
             val listView = (dialogInterface as AlertDialog).listView
             listView.onItemClickListener = OnItemClickListener { _, _, position, _ ->
+                val elementName = circuit?.generateElementName(adapter.getItem(position)!!)
+                val element = Element(elementName!!)
+                if (renderHelper?.addElement(element,startPoint)!!){
+                    circuit?.listElements?.add(element)
+                    invalidate()
+                    dialogInterface.dismiss()
+
+                }else{
+                    onErrorToast(formatResStr(R.string.error_place, resources.getString(R.string.element)))
+                }
 
             }
         }
@@ -166,7 +176,7 @@ class CircuitView : View {
                         invalidate()
                         dialogInterface.dismiss()
                     } else {
-                        onError(formatResStr(R.string.error_place, resources.getString(R.string.net)))
+                        onErrorToast(formatResStr(R.string.error_place, resources.getString(R.string.net)))
                     }
                 }
             }
@@ -388,6 +398,10 @@ class CircuitView : View {
         val snackBar = Snackbar.make(this, idStr, Snackbar.LENGTH_SHORT)
         snackBar.setAction("¯\\(°_o)/¯") { }
         snackBar.show()
+    }
+
+    private fun onErrorToast(message: String) {
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
 
     enum class EditEvent {

@@ -36,6 +36,20 @@ class Placer(private val drawMatrix: Array<Array<DrawObject?>>,
         return drawMatrix
     }
 
+    fun addElement(element: Element, point: Point): Boolean {
+        return when {
+            checkElementPositionHorizontal(element, point.x, point.y) -> {
+                placeElementHorizontal(element, point.x, point.y)
+                true
+            }
+            checkElementPositionVertical(element, point.x, point.y) -> {
+                placeElementVertical(element, point.x, point.y)
+                true
+            }
+            else -> false
+        }
+    }
+
     fun addNet(point: Point): Boolean{
         return if (!checkNetPosition(point.x,point.y)) {
             false
@@ -49,7 +63,14 @@ class Placer(private val drawMatrix: Array<Array<DrawObject?>>,
         when (element.typeElement) {
             "DD", "X" -> {
                 return if (drawMatrix[startPoint.y][startPoint.x + 2] != null){
-                    false
+                    removeElement(element)
+                    if (checkElementPositionHorizontal(element,endPoint.x,endPoint.y)) {
+                        place16PartHorizontal(element, endPoint.x, endPoint.y)
+                        true
+                    }else{
+                        place16PartHorizontal(element, startPoint.x, startPoint.y)
+                        false
+                    }
                 }else{
                     removeElement(element)
                     if (checkElementPositionVertical(element,endPoint.x,endPoint.y)) {
@@ -63,7 +84,14 @@ class Placer(private val drawMatrix: Array<Array<DrawObject?>>,
             }
             "SB", "HL", "C", "VD", "RX", "R" -> {
                 return if (drawMatrix[startPoint.y][startPoint.x + 1] != null){
-                    false
+                    removeElement(element)
+                    if (checkElementPositionHorizontal(element,endPoint.x,endPoint.y)) {
+                        place2PartHorizontal(element, endPoint.x, endPoint.y)
+                        true
+                    }else{
+                        place2PartHorizontal(element, startPoint.x, startPoint.y)
+                        false
+                    }
                 }else{
                     removeElement(element)
                     if (checkElementPositionVertical(element,endPoint.x,endPoint.y)) {
