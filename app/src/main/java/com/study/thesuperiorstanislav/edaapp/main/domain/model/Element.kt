@@ -62,6 +62,29 @@ class Element(private val name: String){
         point.y = y
     }
 
+    fun getDrawType():DrawType{
+        return when (typeElement) {
+            "DD", "X" -> {
+                DrawType.SIXTEEN_PART
+            }
+            "SNP"-> {
+                DrawType.TEN_PART
+            }
+            "DA"-> {
+                DrawType.EIGHT_PART
+            }
+            "VT","SA" -> {
+                DrawType.THREE_PART
+            }
+            "SB", "HL", "C", "VD", "RX" , "R" -> {
+                DrawType.TWO_PART
+            }
+            else -> {
+                DrawType.SIXTEEN_PART
+            }
+        }
+    }
+
     private fun makeType(name: String): String{
         var type = ""
         name.forEach {
@@ -73,17 +96,31 @@ class Element(private val name: String){
     }
 
     private fun initPinArraySize(): Int{
-        return when (typeElement) {
-            "DD", "X" -> {
+        return when (getDrawType()) {
+            DrawType.SIXTEEN_PART -> {
                 16
             }
-            "SB", "HL", "C", "VD", "RX" , "R" -> {
+            DrawType.TEN_PART -> {
+                10
+            }
+            DrawType.EIGHT_PART -> {
+                8
+            }
+            DrawType.THREE_PART -> {
+                3
+            }
+            DrawType.TWO_PART -> {
                 2
             }
-            else -> {
-                0
-            }
         }
+    }
+
+    enum class DrawType{
+        TWO_PART,
+        THREE_PART,
+        EIGHT_PART,
+        TEN_PART,
+        SIXTEEN_PART
     }
 
 }

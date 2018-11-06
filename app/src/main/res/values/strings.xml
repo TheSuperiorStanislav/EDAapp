@@ -10,6 +10,7 @@
     <string name="element_type">Element: %1$s</string>
     <string name="element_max_pins">Max pins: %1$d</string>
     <string-array name="elements_array">
+        <item>DA</item>
         <item>SB</item>
         <item>HL</item>
         <item>C</item>

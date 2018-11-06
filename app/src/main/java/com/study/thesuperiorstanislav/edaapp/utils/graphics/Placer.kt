@@ -25,13 +25,10 @@ class Placer(private val drawMatrix: Array<Array<DrawObject?>>,
     }
 
     fun initDrawMatrix(element: Element): Array<Array<DrawObject?>>{
-        when (element.typeElement) {
-            "DD", "X" -> {
-                placeElementHorizontal(element,0,1)
-            }
-            "SB", "HL", "C", "VD", "RX", "R" -> {
-                placeElementHorizontal(element,3, 1)
-            }
+        when (element.getDrawType()) {
+            Element.DrawType.SIXTEEN_PART -> placeElementHorizontal(element,0,1)
+            Element.DrawType.EIGHT_PART -> placeElementHorizontal(element,2, 1)
+            Element.DrawType.TWO_PART -> placeElementHorizontal(element,3, 1)
         }
         return drawMatrix
     }
@@ -60,8 +57,8 @@ class Placer(private val drawMatrix: Array<Array<DrawObject?>>,
     }
 
     fun moveElement(element: Element,startPoint: Point, endPoint: Point):Boolean{
-        when (element.typeElement) {
-            "DD", "X" -> {
+        when (element.getDrawType()) {
+            Element.DrawType.SIXTEEN_PART -> {
                 return if (drawMatrix[startPoint.y][startPoint.x + 2] != null){
                     removeElement(element)
                     if (checkElementPositionHorizontal(element,endPoint.x,endPoint.y)) {
@@ -82,7 +79,7 @@ class Placer(private val drawMatrix: Array<Array<DrawObject?>>,
                     }
                 }
             }
-            "SB", "HL", "C", "VD", "RX", "R" -> {
+            Element.DrawType.TWO_PART -> {
                 return if (drawMatrix[startPoint.y][startPoint.x + 1] != null){
                     removeElement(element)
                     if (checkElementPositionHorizontal(element,endPoint.x,endPoint.y)) {
@@ -140,8 +137,8 @@ class Placer(private val drawMatrix: Array<Array<DrawObject?>>,
     }
 
     private fun checkElementPositionVertical(element: Element, x: Int, y: Int): Boolean {
-        when (element.typeElement) {
-            "DD", "X" -> {
+        when (element.getDrawType()) {
+            Element.DrawType.SIXTEEN_PART -> {
                 return if (y + 1 > sizeY - 1 || y + 2 > sizeY - 1 || y + 3 > sizeY - 1
                         || y + 4 > sizeY - 1 || y + 5 > sizeY - 1 || y + 6 > sizeY - 1
                         || y + 7 > sizeY - 1
@@ -164,7 +161,7 @@ class Placer(private val drawMatrix: Array<Array<DrawObject?>>,
                         && drawMatrix[y + 6][x - 1] == null && drawMatrix[y + 6][x + 2] == null
                         && drawMatrix[y + 7][x - 1] == null && drawMatrix[y + 7][x + 2] == null)
             }
-            "SB", "HL", "C", "VD", "RX", "R" -> {
+            Element.DrawType.TWO_PART -> {
                 return if (y + 1 > sizeY - 1
                         || x - 1 < 0 || x + 1 > sizeX - 1)
                     false
@@ -179,8 +176,8 @@ class Placer(private val drawMatrix: Array<Array<DrawObject?>>,
     }
 
     private fun checkElementPositionHorizontal(element: Element, x: Int, y: Int): Boolean {
-        when (element.typeElement) {
-            "DD", "X" -> {
+        when (element.getDrawType()) {
+            Element.DrawType.SIXTEEN_PART -> {
                 return if (x + 1 > sizeX - 1 || x + 2 > sizeX - 1 || x + 3 > sizeX - 1
                         || x + 4 > sizeX - 1 || x + 5 > sizeX - 1 || x + 6 > sizeX - 1
                         || x + 7 > sizeX - 1
@@ -203,7 +200,7 @@ class Placer(private val drawMatrix: Array<Array<DrawObject?>>,
                         && drawMatrix[y + 1][x + 6] == null && drawMatrix[y - 2][x + 6] == null
                         && drawMatrix[y + 1][x + 7] == null && drawMatrix[y - 2][x + 7] == null)
             }
-            "SB", "HL", "C", "VD", "RX", "R" -> {
+            Element.DrawType.TWO_PART -> {
                 return if (x + 1 > sizeX - 1
                         || y - 1 < 0 || y + 1 > sizeY - 1)
                     false
@@ -218,25 +215,24 @@ class Placer(private val drawMatrix: Array<Array<DrawObject?>>,
     }
 
     private fun placeElementVertical(element: Element, x: Int, y: Int) {
-        when (element.typeElement) {
-            "DD", "X" -> {
-                place16PartVertical(element, x, y)
-            }
-            "SB", "HL", "C", "VD", "RX", "R" -> {
-                place2PartVertical(element, x, y)
-            }
+        when (element.getDrawType()) {
+            Element.DrawType.TWO_PART -> place2PartVertical(element, x, y)
+            Element.DrawType.THREE_PART -> TODO()
+            Element.DrawType.EIGHT_PART -> place8PartVertical(element, x, y)
+            Element.DrawType.TEN_PART -> TODO()
+            Element.DrawType.SIXTEEN_PART -> place16PartVertical(element, x, y)
+
         }
 
     }
 
     private fun placeElementHorizontal(element: Element, x: Int, y: Int) {
-        when (element.typeElement) {
-            "DD", "X" -> {
-                place16PartHorizontal(element, x, y)
-            }
-            "SB", "HL", "C", "VD", "RX", "R" -> {
-                place2PartHorizontal(element, x, y)
-            }
+        when (element.getDrawType()) {
+            Element.DrawType.TWO_PART -> place2PartHorizontal(element, x, y)
+            Element.DrawType.THREE_PART -> TODO()
+            Element.DrawType.EIGHT_PART -> place8PartHorizontal(element, x, y)
+            Element.DrawType.TEN_PART -> TODO()
+            Element.DrawType.SIXTEEN_PART -> place16PartHorizontal(element, x, y)
         }
 
     }
@@ -545,7 +541,7 @@ class Placer(private val drawMatrix: Array<Array<DrawObject?>>,
                     pin.move(x + 2, y - 1)
                 }
                 7 -> {
-                    val drawObject = DrawObject(DrawPoint(step * (x + 3), step * (y + 7)),
+                    val drawObject = DrawObject(DrawPoint(step * (x + 3), step * y),
                             ObjectType.Pin, DrawType.PIN_CORNER_DOWN_RIGHT)
                     drawMatrix[y][x + 3] = drawObject
                     pin.move(x + 3, y)
