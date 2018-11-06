@@ -9,10 +9,7 @@ import android.view.View
 import androidx.appcompat.app.AlertDialog
 import com.google.android.material.snackbar.Snackbar
 import com.study.thesuperiorstanislav.edaapp.R
-import com.study.thesuperiorstanislav.edaapp.main.domain.model.Circuit
-import com.study.thesuperiorstanislav.edaapp.main.domain.model.Point
 import com.study.thesuperiorstanislav.edaapp.utils.graphics.RenderHelper
-import com.study.thesuperiorstanislav.edaapp.main.domain.model.Net
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.*
@@ -20,13 +17,9 @@ import android.widget.TextView
 import androidx.annotation.LayoutRes
 import android.widget.ArrayAdapter
 import androidx.annotation.Nullable
-import com.study.thesuperiorstanislav.edaapp.main.domain.model.Element
 import android.widget.Toast
 import android.widget.AdapterView.OnItemClickListener
-
-
-
-
+import com.study.thesuperiorstanislav.edaapp.main.domain.model.*
 
 
 class CircuitView : View {
@@ -76,7 +69,7 @@ class CircuitView : View {
                     EditEvent.VIEW -> TODO()
                     EditEvent.ADD_ELEMENT -> addElement(x, y)
                     EditEvent.ADD_NET -> addNet(x, y)
-                    EditEvent.ADD_CONNECTION -> TODO()
+                    EditEvent.EDIT_CONNECTION -> editConnection(x,y)
                     EditEvent.MOVE_ELEMENT -> moveElement(x, y)
                     EditEvent.MOVE_NET -> moveNet(x, y)
                     EditEvent.DELETE_ELEMENT -> deleteElement(x, y)
@@ -105,9 +98,7 @@ class CircuitView : View {
     }
 
     private fun addElement(x: Float, y: Float) {
-        startPoint = Point((x / renderHelper?.step!!).toInt(),
-                (y / renderHelper?.step!!).toInt())
-
+        startPoint = makePoint(x,y)
         val adapter = ElementAdapter(context,resources.getStringArray(R.array.elements_array))
 
         val addDialog: AlertDialog = this.let {
@@ -143,8 +134,7 @@ class CircuitView : View {
     }
 
     private fun addNet(x: Float, y: Float) {
-        startPoint = Point((x / renderHelper?.step!!).toInt(),
-                (y / renderHelper?.step!!).toInt())
+        startPoint = makePoint(x,y)
         val pairForDialog = createViewForAddNetDialogAndId()
 
         val addDialog: AlertDialog = this.let {
@@ -182,13 +172,51 @@ class CircuitView : View {
         addDialog.show()
     }
 
+    private fun editConnection(x: Float, y: Float) {
+        if (drawTouch) {
+            val endPoint = makePoint(x,y)
+            if (renderHelper?.isThereNet(endPoint)!! && renderHelper?.isTherePin(startPoint)!!) {
+                val pin = circuit?.findPinByPoint(startPoint)!!
+                val net = circuit?.findNetByPoint(endPoint)!!
+                pin.setNet(net)
+                if (!net.getPins().contains(pin))
+                    net.addPin(pin)
+                if (!circuit?.listPins?.contains(pin)!!)
+                    circuit?.listPins?.add(pin)
+                drawTouch = false
+                invalidate()
+            } else if (renderHelper?.isThereNet(startPoint)!! && renderHelper?.isTherePin(endPoint)!!) {
+                val pin = circuit?.findPinByPoint(endPoint)!!
+                val net = circuit?.findNetByPoint(startPoint)!!
+                if (!pin.isConnected()){
+                    if (!net.getPins().contains(pin))
+                        net.addPin(pin)
+                    pin.setNet(net)
+                    if (!circuit?.listPins?.contains(pin)!!)
+                        circuit?.listPins?.add(pin)
+                    drawTouch = false
+                    invalidate()
+                }else{
+                    onError(formatResStr(R.string.error_edit_connection,pin.getName()))
+                }
+            }
+
+        } else {
+            startPoint = makePoint(x,y)
+            if (renderHelper?.isThereNet(startPoint)!!) {
+                drawTouch = true
+                invalidate()
+            } else if (renderHelper?.isTherePin(startPoint)!!) {
+                drawTouch = true
+                invalidate()
+            }
+        }
+    }
+
     private fun moveElement(x: Float, y: Float) {
         if (drawTouch) {
-            val endPoint = Point((x / renderHelper?.step!!).toInt(),
-                    (y / renderHelper?.step!!).toInt())
-            val obj = circuit?.listPins?.find {
-                it.getPoint() == startPoint
-            }!!.getElement()
+            val endPoint = makePoint(x,y)
+            val obj = circuit?.findElementByPoint(startPoint)!!
             if (renderHelper?.moveObject(obj, startPoint, endPoint)!!) {
                 obj.move(endPoint.x, endPoint.y)
                 drawTouch = false
@@ -197,17 +225,13 @@ class CircuitView : View {
                 onError(formatResStr(R.string.error_place, obj))
             }
         } else {
-            startPoint = Point((x / renderHelper?.step!!).toInt(),
-                    (y / renderHelper?.step!!).toInt())
+            startPoint = makePoint(x,y)
             if (renderHelper?.isTherePin(startPoint)!!) {
-                circuit?.listElements?.forEach { element ->
-                    val point = element.getPins().find { it.getPoint() == startPoint }?.getElement()?.getPoint()
-                    if (point != null) {
-                        startPoint = point
-                        drawTouch = true
-                        invalidate()
-                        return
-                    }
+                val point = circuit?.findPinByPoint(startPoint)?.getElement()?.getPoint()
+                if (point != null) {
+                    startPoint = point
+                    drawTouch = true
+                    invalidate()
                 }
             }
         }
@@ -215,11 +239,8 @@ class CircuitView : View {
 
     private fun moveNet(x: Float, y: Float) {
         if (drawTouch) {
-            val endPoint = Point((x / renderHelper?.step!!).toInt(),
-                    (y / renderHelper?.step!!).toInt())
-            val obj = circuit?.listNets?.find {
-                it.getPoint() == startPoint
-            }!!
+            val endPoint = makePoint(x,y)
+            val obj = circuit?.findNetByPoint(startPoint)!!
             if (renderHelper?.moveObject(obj, startPoint, endPoint)!!) {
                 obj.move(endPoint.x, endPoint.y)
                 drawTouch = false
@@ -238,48 +259,40 @@ class CircuitView : View {
     }
 
     private fun deleteElement(x: Float, y: Float) {
-        startPoint = Point((x / renderHelper?.step!!).toInt(),
-                (y / renderHelper?.step!!).toInt())
+        startPoint = makePoint(x,y)
         if (renderHelper?.isTherePin(startPoint)!!) {
-            circuit?.listElements?.forEach { element ->
-                val obj = element.getPins().find { it.getPoint() == startPoint }?.getElement()
-                if (obj != null) {
-                    val deleteDialog: AlertDialog = this.let {
-                        val builder = AlertDialog.Builder(context)
-                        builder.apply {
-                            setTitle(formatResStr(R.string.delete_element, obj))
-                            setMessage(R.string.sure_delete_net)
-                            setPositiveButton(R.string.yes) { dialog, _ ->
-                                renderHelper?.removeObject(obj)
-                                obj.getPins().forEach { pin ->
-                                    pin.removeFromNet()
-                                    circuit?.listPins?.remove(pin)
-                                }
-                                circuit?.listElements?.remove(obj)
-                                invalidate()
-                                dialog.dismiss()
+            val obj = circuit?.findElementByPinPoint(startPoint)
+            if (obj != null) {
+                val deleteDialog: AlertDialog = this.let {
+                    val builder = AlertDialog.Builder(context)
+                    builder.apply {
+                        setTitle(formatResStr(R.string.delete_element, obj))
+                        setMessage(R.string.sure_delete_net)
+                        setPositiveButton(R.string.yes) { dialog, _ ->
+                            renderHelper?.removeObject(obj)
+                            obj.getPins().forEach { pin ->
+                                pin.removeFromNet()
+                                circuit?.listPins?.remove(pin)
                             }
-                            setNegativeButton(R.string.no) { dialog, _ ->
-                                dialog.dismiss()
-                            }
+                            circuit?.listElements?.remove(obj)
+                            invalidate()
+                            dialog.dismiss()
                         }
-                        builder.create()
+                        setNegativeButton(R.string.no) { dialog, _ ->
+                            dialog.dismiss()
+                        }
                     }
-                    deleteDialog.show()
-                    return
+                    builder.create()
                 }
+                deleteDialog.show()
             }
         }
     }
 
     private fun deleteNet(x: Float, y: Float) {
-        startPoint = Point((x / renderHelper?.step!!).toInt(),
-                (y / renderHelper?.step!!).toInt())
+        startPoint = makePoint(x,y)
         if (renderHelper?.isThereNet(startPoint)!!) {
-            val obj = circuit?.listNets?.find {
-                it.getPoint() == startPoint
-            }!!
-
+            val obj = circuit?.findNetByPoint(startPoint)!!
             val deleteDialog: AlertDialog = this.let {
                 val builder = AlertDialog.Builder(context)
                 builder.apply {
@@ -306,14 +319,11 @@ class CircuitView : View {
 
     private fun deleteConnection(x: Float, y: Float) {
         if (drawTouch) {
-            val endPoint = Point((x / renderHelper?.step!!).toInt(),
-                    (y / renderHelper?.step!!).toInt())
+            val endPoint = makePoint(x,y)
             if (renderHelper?.isTherePin(endPoint)!!) {
-                val pin = circuit?.listPins?.find { pin -> pin.getPoint() == endPoint }
+                val pin = circuit?.findConnectedPinByPoint(endPoint)
                 if (pin != null) {
-                    val net = circuit?.listNets?.find {
-                        it.getPoint() == startPoint
-                    }!!
+                    val net = circuit?.findNetByPoint(startPoint)!!
                     if (pin.getNet() == net) {
                         pin.removeFromNet()
                         circuit?.listPins?.remove(pin)
@@ -325,15 +335,12 @@ class CircuitView : View {
             }
 
         } else {
-            startPoint = Point((x / renderHelper?.step!!).toInt(),
-                    (y / renderHelper?.step!!).toInt())
+            startPoint = makePoint(x,y)
             if (renderHelper?.isThereNet(startPoint)!!) {
                 drawTouch = true
                 invalidate()
             } else if (renderHelper?.isTherePin(startPoint)!!) {
-                val obj = circuit?.listPins?.find {
-                    it.getPoint() == startPoint
-                }
+                val obj = circuit?.findConnectedPinByPoint(startPoint)
                 if (obj != null) {
                     val net = obj.getNet()!!
                     val deleteDialog: AlertDialog = this.let {
@@ -358,6 +365,11 @@ class CircuitView : View {
                     onError(R.string.error_delete_connection)
             }
         }
+    }
+
+    private fun makePoint(x:Float,y:Float): Point {
+        return Point((x / renderHelper?.step!!).toInt(),
+                (y / renderHelper?.step!!).toInt())
     }
 
     private fun createViewForAddNetDialogAndId(): Pair<View, Int> {
@@ -405,7 +417,7 @@ class CircuitView : View {
         VIEW,
         ADD_ELEMENT,
         ADD_NET,
-        ADD_CONNECTION,
+        EDIT_CONNECTION,
         MOVE_ELEMENT,
         MOVE_NET,
         DELETE_ELEMENT,
@@ -413,8 +425,7 @@ class CircuitView : View {
         DELETE_CONNECTION
     }
 
-    inner class ElementAdapter(private val mContext: Context,
-                               @LayoutRes list: Array<String>) : ArrayAdapter<String>(mContext, 0, list) {
+    inner class ElementAdapter(private val mContext: Context, @LayoutRes list: Array<String>) : ArrayAdapter<String>(mContext, 0, list) {
         private var elementList = arrayOf("")
 
         init {

@@ -12,6 +12,17 @@ class Circuit(val listElements: MutableList<Element>,
         return null
     }
 
+    fun findElementByPinPoint(point: Point): Element?{
+        listElements.forEach {
+            val element = it.getPins().find {
+                pin -> pin.getPoint() == point }?.getElement()
+            if (element != null) {
+                return element
+            }
+        }
+        return null
+    }
+
     fun findNetByPoint(point: Point): Net? {
         listNets.forEach {
             if (it.getPoint() == point)
@@ -25,6 +36,14 @@ class Circuit(val listElements: MutableList<Element>,
             val pin: Pin? = it.getPinByPoint(point)
             if (pin != null)
                 return pin
+        }
+        return null
+    }
+
+    fun findConnectedPinByPoint(point: Point): Pin? {
+        listPins.forEach {
+            if (it.getPoint() == point)
+                return it
         }
         return null
     }

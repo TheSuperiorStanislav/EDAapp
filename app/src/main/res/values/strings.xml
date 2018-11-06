@@ -28,7 +28,7 @@
     <string name="add_net">Add Net</string>
     <string name="message_add_net">To add net, enter it\'s name and press add</string>
     <string name="hint_add_net">Enter net\'s name</string>
-    <string name="add_connection">Add Connection</string>
+    <string name="edit_connection">Edit Connection</string>
     <string name="move_element">Move Element</string>
     <string name="move_net">Move Net</string>
     <string name="delete_element_menu">Delete Element</string>
@@ -43,6 +43,7 @@
 
     <string name="error_place">Can\'t place %1$s here!</string>
     <string name="error_delete_connection">No connection to delete!</string>
+    <string name="error_edit_connection">Pin-%1$s is already connected!</string>
 
     <string name="yes">Yes</string>
     <string name="no">No</string>

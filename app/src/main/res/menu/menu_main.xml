@@ -13,8 +13,8 @@
         android:title="@string/add_element" />
     <item android:id="@+id/add_net"
         android:title="@string/add_net" />
-    <item android:id="@+id/add_connection"
-        android:title="@string/add_connection" />
+    <item android:id="@+id/edit_connection"
+        android:title="@string/edit_connection" />
     <item android:id="@+id/move_element"
         android:title="@string/move_element" />
     <item android:id="@+id/move_net"

@@ -34,6 +34,10 @@ class Pin(private val name: String,private var element: Element) {
         return result
     }
 
+    fun getName():String{
+        return name
+    }
+
     fun getPoint(): Point{
         return point
     }
@@ -43,6 +47,8 @@ class Pin(private val name: String,private var element: Element) {
     }
 
     fun setNet(net: Net){
+        isConnected = true
+        this.net?.deletePin(this)
         this.net = net
     }
 
@@ -52,7 +58,7 @@ class Pin(private val name: String,private var element: Element) {
 
     fun setIsConnected(boolean: Boolean){
         isConnected = boolean
-        if (!IsConnected())
+        if (!isConnected())
             removeFromNet()
 
     }
@@ -62,7 +68,7 @@ class Pin(private val name: String,private var element: Element) {
         net = null
     }
 
-    fun IsConnected():Boolean{
+    fun isConnected():Boolean{
         return isConnected
     }
 

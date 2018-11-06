@@ -242,7 +242,7 @@ class RenderHelper(private val rect: Rect) {
     private fun drawPinCircle(pin: Pin, canvas: Canvas) {
         val point = pin.getPoint()
         val drawPoint = drawMatrix[point.y][point.x]!!.drawPoint
-        if (pin.IsConnected())
+        if (pin.isConnected())
             canvas.drawCircle(drawPoint.x + step / 2, drawPoint.y + step / 2, step / 6,
                     pinConnectedPaint)
         else

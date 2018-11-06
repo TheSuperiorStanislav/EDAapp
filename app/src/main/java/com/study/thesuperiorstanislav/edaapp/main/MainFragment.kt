@@ -3,25 +3,18 @@ package com.study.thesuperiorstanislav.edaapp.main
 
 import android.app.Activity
 import android.app.ProgressDialog
-import android.content.Context
 import android.content.Intent
-import android.graphics.Canvas
-import android.graphics.Rect
 import android.net.Uri
 import android.os.Bundle
-import android.util.AttributeSet
 import android.view.*
-import androidx.appcompat.app.AlertDialog
 import com.google.android.material.snackbar.Snackbar
 import androidx.fragment.app.Fragment
 
 import com.study.thesuperiorstanislav.edaapp.R
 import com.study.thesuperiorstanislav.edaapp.UseCase
 import com.study.thesuperiorstanislav.edaapp.main.domain.model.Circuit
-import com.study.thesuperiorstanislav.edaapp.main.domain.model.Point
 import com.study.thesuperiorstanislav.edaapp.utils.file.AllegroFile
 import com.study.thesuperiorstanislav.edaapp.utils.file.Calay90File
-import com.study.thesuperiorstanislav.edaapp.utils.graphics.RenderHelper
 import kotlinx.android.synthetic.main.fragment_main.*
 import java.io.BufferedReader
 import java.io.IOException
@@ -67,8 +60,8 @@ class MainFragment : Fragment(), MainContract.View {
                 circuitView.changeEditEvent(CircuitView.EditEvent.ADD_NET)
                 true
             }
-            R.id.add_connection -> {
-                circuitView.changeEditEvent(CircuitView.EditEvent.ADD_CONNECTION)
+            R.id.edit_connection -> {
+                circuitView.changeEditEvent(CircuitView.EditEvent.EDIT_CONNECTION)
                 true
             }
             R.id.move_element -> {
