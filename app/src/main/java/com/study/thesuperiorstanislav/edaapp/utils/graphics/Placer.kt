@@ -27,7 +27,9 @@ class Placer(private val drawMatrix: Array<Array<DrawObject?>>,
     fun initDrawMatrix(element: Element): Array<Array<DrawObject?>>{
         when (element.getDrawType()) {
             Element.DrawType.SIXTEEN_PART -> placeElementHorizontal(element,0,1)
+            Element.DrawType.TEN_PART -> TODO()
             Element.DrawType.EIGHT_PART -> placeElementHorizontal(element,2, 1)
+            Element.DrawType.THREE_PART -> TODO()
             Element.DrawType.TWO_PART -> placeElementHorizontal(element,3, 1)
         }
         return drawMatrix
@@ -66,6 +68,27 @@ class Placer(private val drawMatrix: Array<Array<DrawObject?>>,
                         true
                     }else{
                         place16PartHorizontal(element, startPoint.x, startPoint.y)
+                        false
+                    }
+                }else{
+                    removeElement(element)
+                    if (checkElementPositionVertical(element,endPoint.x,endPoint.y)) {
+                        place8PartVertical(element, endPoint.x, endPoint.y)
+                        true
+                    }else{
+                        place8PartVertical(element, startPoint.x, startPoint.y)
+                        false
+                    }
+                }
+            }
+            Element.DrawType.EIGHT_PART -> {
+                return if (drawMatrix[startPoint.y][startPoint.x + 2] != null){
+                    removeElement(element)
+                    if (checkElementPositionHorizontal(element,endPoint.x,endPoint.y)) {
+                        place8PartHorizontal(element, endPoint.x, endPoint.y)
+                        true
+                    }else{
+                        place8PartHorizontal(element, startPoint.x, startPoint.y)
                         false
                     }
                 }else{
@@ -161,6 +184,19 @@ class Placer(private val drawMatrix: Array<Array<DrawObject?>>,
                         && drawMatrix[y + 6][x - 1] == null && drawMatrix[y + 6][x + 2] == null
                         && drawMatrix[y + 7][x - 1] == null && drawMatrix[y + 7][x + 2] == null)
             }
+            Element.DrawType.EIGHT_PART -> {
+                return if (y + 1 > sizeY - 1 || y + 2 > sizeY - 1 || y + 3 > sizeY - 1
+                        || x - 1 < 0 || x + 1 > sizeX - 1 || x + 2 > sizeX - 1)
+                    false
+                else (drawMatrix[y][x] == null && drawMatrix[y][x + 1] == null
+                        && drawMatrix[y + 1][x] == null && drawMatrix[y + 1][x + 1] == null
+                        && drawMatrix[y + 2][x] == null && drawMatrix[y + 2][x + 1] == null
+                        && drawMatrix[y + 3][x] == null && drawMatrix[y + 3][x + 1] == null
+                        && drawMatrix[y][x - 1] == null && drawMatrix[y][x + 2] == null
+                        && drawMatrix[y + 1][x - 1] == null && drawMatrix[y + 1][x + 2] == null
+                        && drawMatrix[y + 2][x - 1] == null && drawMatrix[y + 2][x + 2] == null
+                        && drawMatrix[y + 3][x - 1] == null && drawMatrix[y + 3][x + 2] == null)
+            }
             Element.DrawType.TWO_PART -> {
                 return if (y + 1 > sizeY - 1
                         || x - 1 < 0 || x + 1 > sizeX - 1)
@@ -199,6 +235,19 @@ class Placer(private val drawMatrix: Array<Array<DrawObject?>>,
                         && drawMatrix[y + 1][x + 5] == null && drawMatrix[y - 2][x + 5] == null
                         && drawMatrix[y + 1][x + 6] == null && drawMatrix[y - 2][x + 6] == null
                         && drawMatrix[y + 1][x + 7] == null && drawMatrix[y - 2][x + 7] == null)
+            }
+            Element.DrawType.EIGHT_PART -> {
+                return if (x + 1 > sizeX - 1 || x + 2 > sizeX - 1 || x + 3 > sizeX - 1
+                        || y - 1 < 0 || y + 1 > sizeY - 1 || y - 2 < 0)
+                    false
+                else (drawMatrix[y][x] == null && drawMatrix[y - 1][x] == null
+                        && drawMatrix[y][x] == null && drawMatrix[y - 1][x] == null
+                        && drawMatrix[y][x + 2] == null && drawMatrix[y - 1][x + 2] == null
+                        && drawMatrix[y][x + 3] == null && drawMatrix[y - 1][x + 3] == null
+                        && drawMatrix[y + 1][x] == null && drawMatrix[y - 2][x] == null
+                        && drawMatrix[y + 1][x + 1] == null && drawMatrix[y - 2][x + 1] == null
+                        && drawMatrix[y + 1][x + 2] == null && drawMatrix[y - 2][x + 2] == null
+                        && drawMatrix[y + 1][x + 3] == null && drawMatrix[y - 2][x + 3] == null)
             }
             Element.DrawType.TWO_PART -> {
                 return if (x + 1 > sizeX - 1
