@@ -53,6 +53,10 @@ class Element(private val name: String){
         pins[num].setNet(net)
     }
 
+    fun getPinByPoint(point: Point): Pin? {
+        return pins.find { it.getPoint() == point }
+    }
+
     fun move(x:Int, y:Int){
         point.x = x
         point.y = y
