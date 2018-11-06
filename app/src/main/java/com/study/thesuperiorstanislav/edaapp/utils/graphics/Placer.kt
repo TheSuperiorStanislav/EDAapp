@@ -73,10 +73,10 @@ class Placer(private val drawMatrix: Array<Array<DrawObject?>>,
                 }else{
                     removeElement(element)
                     if (checkElementPositionVertical(element,endPoint.x,endPoint.y)) {
-                        place8PartVertical(element, endPoint.x, endPoint.y)
+                        place16PartVertical(element, endPoint.x, endPoint.y)
                         true
                     }else{
-                        place8PartVertical(element, startPoint.x, startPoint.y)
+                        place16PartVertical(element, startPoint.x, startPoint.y)
                         false
                     }
                 }
@@ -94,10 +94,10 @@ class Placer(private val drawMatrix: Array<Array<DrawObject?>>,
                 }else{
                     removeElement(element)
                     if (checkElementPositionVertical(element,endPoint.x,endPoint.y)) {
-                        place16PartVertical(element, endPoint.x, endPoint.y)
+                        place8PartVertical(element, endPoint.x, endPoint.y)
                         true
                     }else{
-                        place16PartVertical(element, startPoint.x, startPoint.y)
+                        place8PartVertical(element, startPoint.x, startPoint.y)
                         false
                     }
                 }
