@@ -1,9 +1,12 @@
 package com.study.thesuperiorstanislav.edaapp.main
 
 
+import android.Manifest
 import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
 import android.view.*
@@ -16,10 +19,17 @@ import com.study.thesuperiorstanislav.edaapp.main.domain.model.Circuit
 import com.study.thesuperiorstanislav.edaapp.utils.file.AllegroFile
 import com.study.thesuperiorstanislav.edaapp.utils.file.Calay90File
 import kotlinx.android.synthetic.main.fragment_main.*
-import java.io.BufferedReader
-import java.io.IOException
-import java.io.InputStreamReader
-
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
+import android.os.Environment
+import android.provider.OpenableColumns
+import android.util.Log
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import java.io.*
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 @Suppress("PLUGIN_WARNING")
@@ -30,8 +40,10 @@ class MainFragment : Fragment(), MainContract.View {
     private var presenter: MainContract.Presenter? = null
 
     private val READ_REQUEST_CODE = 42
+    private val PERMISSION_GRANTED = 43
 
     private var dialog: ProgressDialog? = null
+    private var circuitName = ""
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -50,6 +62,10 @@ class MainFragment : Fragment(), MainContract.View {
                 true
             }
             R.id.menu_save -> {
+                true
+            }
+            R.id.menu_screenshot -> {
+                takeScreenShot()
                 true
             }
             R.id.add_element -> {
@@ -99,8 +115,9 @@ class MainFragment : Fragment(), MainContract.View {
         this.presenter = presenter
     }
 
-    override fun showData(circuit: Circuit) {
+    override fun showData(circuit: Circuit, circuitName: String) {
         circuitView.setCircuit(circuit)
+        this.circuitName = circuitName
         dialog?.dismiss()
     }
 
@@ -121,8 +138,35 @@ class MainFragment : Fragment(), MainContract.View {
             val uri: Uri?
             if (resultData != null) {
                 uri = resultData.data
+                setFileName(uri)
                 readTextFromUri(uri)
                 dialog?.dismiss()
+            }
+        }
+    }
+
+
+    override fun onRequestPermissionsResult(requestCode: Int,
+                                             permissions: Array<String>, grantResults: IntArray) {
+        when (requestCode) {
+            PERMISSION_GRANTED -> {
+                if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                    Log.i("", "Permission has been denied by user")
+                } else {
+                    saveScreenShot(getScreenShot(circuitView), "test")
+                    Log.i("", "Permission has been granted by user")
+                }
+            }
+        }
+    }
+
+    private fun setFileName(uri: Uri) {
+        val cursor: Cursor? = activity?.contentResolver?.query( uri, null, null, null, null, null)
+
+        cursor?.use {
+            if (it.moveToFirst()) {
+                circuitName = it.getString(it.getColumnIndex(OpenableColumns.DISPLAY_NAME))
+                Log.i("File", "Display Name: $circuitName")
             }
         }
     }
@@ -133,9 +177,9 @@ class MainFragment : Fragment(), MainContract.View {
         val reader = BufferedReader(InputStreamReader(inputStream))
         val line = reader.readLine()
         if (line == "\$PACKAGES") {
-            presenter?.cacheCircuit(AllegroFile.read(reader))
+            presenter?.cacheCircuit(AllegroFile.read(reader),circuitName)
         } else {
-            presenter?.cacheCircuit(Calay90File.read(line, reader))
+            presenter?.cacheCircuit(Calay90File.read(line, reader),circuitName)
         }
     }
 
@@ -144,6 +188,54 @@ class MainFragment : Fragment(), MainContract.View {
         intent.addCategory(Intent.CATEGORY_OPENABLE)
         intent.type = "*/*"
         startActivityForResult(intent, READ_REQUEST_CODE)
+    }
+
+    private fun takeScreenShot() {
+        val millis = Date().time
+        val timeStamp = SimpleDateFormat
+                .getDateTimeInstance()
+                .format(millis)
+        if (verifyStoragePermissions())
+            saveScreenShot(getScreenShot(circuitView), "$circuitName-$timeStamp.png")
+    }
+
+    private fun verifyStoragePermissions(): Boolean {
+        return if (ContextCompat.checkSelfPermission(context!!, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(activity as Activity, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),PERMISSION_GRANTED)
+            false
+        } else {
+            true
+        }
+    }
+
+    private fun getScreenShot(view: View): Bitmap {
+        val bitmap = Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        val bgDrawable = view.background
+        if (bgDrawable != null) {
+            bgDrawable.draw(canvas)
+        } else {
+            canvas.drawColor(Color.WHITE)
+        }
+        view.draw(canvas)
+        return bitmap
+    }
+
+    private fun saveScreenShot(bm: Bitmap, fileName: String) {
+        val dirPath = Environment.getExternalStorageDirectory().absolutePath + "/EDA/ScreenShots"
+        val dir = File(dirPath)
+        if (!dir.exists())
+            dir.mkdirs()
+        val file = File(dirPath, fileName)
+        try {
+            val fOut = FileOutputStream(file)
+            bm.compress(Bitmap.CompressFormat.PNG, 85, fOut)
+            fOut.flush()
+            fOut.close()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
     }
 
 }

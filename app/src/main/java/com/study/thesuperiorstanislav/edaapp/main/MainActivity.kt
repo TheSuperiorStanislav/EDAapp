@@ -1,5 +1,6 @@
 package com.study.thesuperiorstanislav.edaapp.main
 
+import android.Manifest
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -9,6 +10,14 @@ import com.study.thesuperiorstanislav.edaapp.data.source.CircuitRepository
 import com.study.thesuperiorstanislav.edaapp.main.domain.usecase.CacheDataFromFile
 import com.study.thesuperiorstanislav.edaapp.main.domain.usecase.CreateMatrix
 import com.study.thesuperiorstanislav.edaapp.main.domain.usecase.GetData
+import androidx.core.app.ActivityCompat
+import android.content.pm.PackageManager
+import android.Manifest.permission
+import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+import android.app.Activity
+import androidx.core.content.ContextCompat
+import java.security.Permissions
+
 
 class MainActivity : AppCompatActivity() {
 

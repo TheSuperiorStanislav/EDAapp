@@ -1,21 +1,23 @@
 package com.study.thesuperiorstanislav.edaapp.data.source
 
-import com.study.thesuperiorstanislav.edaapp.UseCase
 import com.study.thesuperiorstanislav.edaapp.main.domain.model.Circuit
 
 object CircuitRepository: CircuitDataSource {
 
-    var cacheCircuit: Circuit? = null
+    private var cacheCircuit: Circuit? = null
+    private var circuitName = "Untitled"
 
     override fun getCircuit(callback: CircuitDataSource.LoadCircuitCallback) {
-        if (cacheCircuit != null)
-            callback.onCircuitLoaded(cacheCircuit!!)
+        if (cacheCircuit == null)
+            callback.onCircuitLoaded(Circuit(mutableListOf(),
+                    mutableListOf(), mutableListOf()), circuitName)
         else
-            callback.onDataNotAvailable(UseCase.Error(UseCase.Error.UNKNOWN_ERROR,""))
+            callback.onCircuitLoaded(cacheCircuit!!, circuitName)
     }
 
-    override fun cacheCircuit(circuit: Circuit, callback: CircuitDataSource.CacheCircuitCallback) {
+    override fun cacheCircuit(circuit: Circuit, circuitName: String, callback: CircuitDataSource.CacheCircuitCallback) {
         cacheCircuit = circuit
+        this.circuitName = circuitName
         callback.onSaved()
     }
 }

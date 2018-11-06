@@ -11,7 +11,7 @@ interface MainContract {
 
         var isActive: Boolean
 
-        fun showData(circuit: Circuit)
+        fun showData(circuit: Circuit,circuitName: String)
 
         fun onError(error: UseCase.Error)
 
@@ -23,7 +23,7 @@ interface MainContract {
 
         fun getData()
 
-        fun cacheCircuit(circuit: Circuit)
+        fun cacheCircuit(circuit: Circuit,circuitName: String)
 
     }
 }

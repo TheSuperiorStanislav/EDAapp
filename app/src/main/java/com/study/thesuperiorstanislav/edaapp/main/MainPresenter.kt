@@ -26,7 +26,7 @@ class MainPresenter(private val mainView: MainContract.View,
                             return
                         }
 
-                        mainView.showData(response.circuit)
+                        mainView.showData(response.circuit,response.circuitName)
                     }
 
                     override fun onError(error: UseCase.Error) {
@@ -40,9 +40,9 @@ class MainPresenter(private val mainView: MainContract.View,
                 })
     }
 
-    override fun cacheCircuit(circuit: Circuit) {
+    override fun cacheCircuit(circuit: Circuit,circuitName: String) {
 
-        val requestValue = CacheDataFromFile.RequestValues(circuit)
+        val requestValue = CacheDataFromFile.RequestValues(circuit,circuitName)
         UseCaseHandler.execute(cacheDataFromFile, requestValue,
                 object : UseCase.UseCaseCallback<CacheDataFromFile.ResponseValue> {
                     override fun onSuccess(response: CacheDataFromFile.ResponseValue) {

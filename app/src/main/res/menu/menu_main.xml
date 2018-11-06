@@ -9,6 +9,10 @@
         android:icon="@drawable/ic_save_file_white_24dp"
         android:title="@string/save_file"
         app:showAsAction="ifRoom"/>
+    <item android:id="@+id/menu_screenshot"
+        android:icon="@drawable/ic_screenshoot_white_24dp"
+        android:title="@string/save_file"
+        app:showAsAction="ifRoom"/>
     <item android:id="@+id/add_element"
         android:title="@string/add_element" />
     <item android:id="@+id/add_net"
