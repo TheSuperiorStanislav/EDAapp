@@ -13,6 +13,8 @@ interface MainContract {
 
         fun showData(circuit: Circuit,circuitName: String)
 
+        fun saveFile(circuit: Circuit)
+
         fun onError(error: UseCase.Error)
 
         fun onLoadingError(error: UseCase.Error)
@@ -21,7 +23,7 @@ interface MainContract {
 
     interface Presenter : BasePresenter {
 
-        fun getData()
+        fun getData(isStarting:Boolean)
 
         fun cacheCircuit(circuit: Circuit,circuitName: String)
 

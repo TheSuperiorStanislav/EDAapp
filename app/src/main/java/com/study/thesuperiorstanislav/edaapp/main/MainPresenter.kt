@@ -13,10 +13,10 @@ class MainPresenter(private val mainView: MainContract.View,
 
     override fun start() {
         mainView.isActive = true
-        getData()
+        getData(true)
     }
 
-    override fun getData() {
+    override fun getData(isStarting:Boolean) {
         val requestValue = GetData.RequestValues()
         UseCaseHandler.execute(getData, requestValue,
                 object : UseCase.UseCaseCallback<GetData.ResponseValue> {
@@ -25,8 +25,10 @@ class MainPresenter(private val mainView: MainContract.View,
                         if (!mainView.isActive) {
                             return
                         }
-
-                        mainView.showData(response.circuit,response.circuitName)
+                        if (isStarting)
+                            mainView.showData(response.circuit, response.circuitName)
+                        else
+                            mainView.saveFile(response.circuit)
                     }
 
                     override fun onError(error: UseCase.Error) {
@@ -35,7 +37,10 @@ class MainPresenter(private val mainView: MainContract.View,
                             return
                         }
 
-                        mainView.onLoadingError(error)
+                        if (isStarting)
+                            mainView.onLoadingError(error)
+                        else
+                            mainView.onError(error)
                     }
                 })
     }

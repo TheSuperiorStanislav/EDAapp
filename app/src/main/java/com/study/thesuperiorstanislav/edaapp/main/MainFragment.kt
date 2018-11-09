@@ -32,7 +32,6 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-@Suppress("PLUGIN_WARNING")
 class MainFragment : Fragment(), MainContract.View {
 
     override var isActive: Boolean = false
@@ -62,6 +61,7 @@ class MainFragment : Fragment(), MainContract.View {
                 true
             }
             R.id.menu_save -> {
+                presenter?.getData(false)
                 true
             }
             R.id.menu_screenshot -> {
@@ -153,7 +153,6 @@ class MainFragment : Fragment(), MainContract.View {
                 if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                     Log.i("", "Permission has been denied by user")
                 } else {
-                    saveScreenShot(getScreenShot(circuitView), "test")
                     Log.i("", "Permission has been granted by user")
                 }
             }
@@ -188,6 +187,27 @@ class MainFragment : Fragment(), MainContract.View {
         intent.addCategory(Intent.CATEGORY_OPENABLE)
         intent.type = "*/*"
         startActivityForResult(intent, READ_REQUEST_CODE)
+    }
+
+    override fun saveFile(circuit: Circuit) {
+        if (verifyStoragePermissions()) {
+            val dirPath = Environment.getExternalStorageDirectory().absolutePath + "/EDA/Circuits"
+            val dir = File(dirPath)
+            if (!dir.exists())
+                dir.mkdirs()
+            val file = File(dirPath, circuitName)
+            if (!file.exists())
+                file.createNewFile()
+            val stream = FileOutputStream(file)
+            try {
+                stream.write(Calay90File.write(circuit).toByteArray())
+            } catch (e: Exception) {
+                e.printStackTrace()
+                onError(UseCase.Error(UseCase.Error.UNKNOWN_ERROR, e.localizedMessage))
+            } finally {
+                stream.close()
+            }
+        }
     }
 
     private fun takeScreenShot() {
@@ -229,11 +249,12 @@ class MainFragment : Fragment(), MainContract.View {
         val file = File(dirPath, fileName)
         try {
             val fOut = FileOutputStream(file)
-            bm.compress(Bitmap.CompressFormat.PNG, 85, fOut)
+            bm.compress(Bitmap.CompressFormat.PNG, 100, fOut)
             fOut.flush()
             fOut.close()
         } catch (e: Exception) {
             e.printStackTrace()
+            onError(UseCase.Error(UseCase.Error.UNKNOWN_ERROR,e.localizedMessage))
         }
 
     }
