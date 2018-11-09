@@ -43,6 +43,10 @@ class RenderHelper(private val rect: Rect) {
         isMatrixInit = true
     }
 
+    fun checkTouch(x:Float,y:Float):Boolean{
+        return !(x>sizeX*step || y>sizeY*step)
+    }
+
     fun isTherePin(startPoint: Point):Boolean {
         return if (drawMatrix[startPoint.y][startPoint.x] != null)
             drawMatrix[startPoint.y][startPoint.x]?.objectType == ObjectType.Pin
