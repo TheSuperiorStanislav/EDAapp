@@ -191,7 +191,7 @@ class MainFragment : Fragment(), MainContract.View {
 
     override fun saveFile(circuit: Circuit) {
         if (verifyStoragePermissions()) {
-            val dirPath = Environment.getExternalStorageDirectory().absolutePath + "/EDA/Circuits"
+            val dirPath = "${Environment.getExternalStorageDirectory().absolutePath}/EDA/Circuits"
             val dir = File(dirPath)
             if (!dir.exists())
                 dir.mkdirs()
@@ -242,7 +242,7 @@ class MainFragment : Fragment(), MainContract.View {
     }
 
     private fun saveScreenShot(bm: Bitmap, fileName: String) {
-        val dirPath = Environment.getExternalStorageDirectory().absolutePath + "/EDA/ScreenShots"
+        val dirPath = "${Environment.getExternalStorageDirectory().absolutePath}/EDA/ScreenShots"
         val dir = File(dirPath)
         if (!dir.exists())
             dir.mkdirs()

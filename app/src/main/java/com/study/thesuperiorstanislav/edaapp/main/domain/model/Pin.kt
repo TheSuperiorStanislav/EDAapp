@@ -64,6 +64,7 @@ class Pin(private val name: String,private var element: Element) {
     }
 
     fun removeFromNet(){
+        isConnected = false
         net?.deletePin(this)
         net = null
     }

@@ -301,6 +301,7 @@ class CircuitView : View {
                     setPositiveButton(R.string.yes) { dialog, _ ->
                         renderHelper?.removeObject(obj)
                         obj.getPins().forEach { pin ->
+                            pin.removeFromNet()
                             circuit?.listPins?.remove(pin)
                         }
                         circuit?.listNets?.remove(obj)
