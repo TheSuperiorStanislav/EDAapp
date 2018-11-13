@@ -83,6 +83,7 @@ class CircuitView : View {
 
     fun setCircuit(circuit: Circuit) {
         this.circuit = circuit
+        renderHelper.isMatrixInit = false
         invalidate()
     }
 

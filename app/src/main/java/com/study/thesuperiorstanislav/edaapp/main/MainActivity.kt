@@ -1,8 +1,10 @@
 package com.study.thesuperiorstanislav.edaapp.main
 
+import android.app.Activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import com.study.thesuperiorstanislav.edaapp.R
 import com.study.thesuperiorstanislav.edaapp.data.source.CircuitRepository
 import com.study.thesuperiorstanislav.edaapp.main.domain.usecase.CacheDataFromFile
@@ -19,12 +21,15 @@ class MainActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         val ft = supportFragmentManager.beginTransaction()
-
         val fragment = MainFragment()
         fragment.setPresenter(MainPresenter(fragment, GetData(CircuitRepository), CacheDataFromFile(CircuitRepository)))
         ft.replace(R.id.content_frame, fragment)
         if (!isFinishing)
             ft.commitAllowingStateLoss()
+    }
+
+    override fun onResume() {
+        super.onResume()
     }
 
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

@@ -94,6 +94,7 @@ class MainFragment : Fragment(), MainContract.View {
         presenter?.start()
     }
 
+
     override fun setPresenter(presenter: MainContract.Presenter) {
         this.presenter = presenter
     }
@@ -119,6 +120,7 @@ class MainFragment : Fragment(), MainContract.View {
                     stream.write(AllegroFile.write(circuit).toByteArray())
                 else
                     stream.write(Calay90File.write(circuit).toByteArray())
+                activity?.title = "${resources.getString(R.string.app_name)}/$circuitName"
                 ViewHelper.showSnackBar(main_layout, ViewHelper.formatResStr(resources,
                         R.string.saved_in, dirPath))
             } catch (e: Exception) {
@@ -175,17 +177,8 @@ class MainFragment : Fragment(), MainContract.View {
     }
 
     private fun setFileName(uri: Uri) {
-        val cursor: Cursor? = activity?.contentResolver?.query(uri,
-                null,
-                null,
-                null,
-                null,
-                null)
-
-        cursor?.use {
-            if (it.moveToFirst())
-                circuitName = it.getString(it.getColumnIndex(OpenableColumns.DISPLAY_NAME)).split(".").first()
-        }
+        if (uri.path != null)
+            circuitName = uri.path!!.split("/").last().split(".").first()
     }
 
     @Throws(IOException::class)

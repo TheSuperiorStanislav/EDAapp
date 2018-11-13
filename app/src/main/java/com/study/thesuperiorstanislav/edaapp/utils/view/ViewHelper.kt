@@ -65,7 +65,7 @@ object ViewHelper {
         val editText = EditText(context)
         editText.id = View.generateViewId()
         editText.layoutParams = lp
-        editText.hint = resources.getString(R.string.hint_add_net)
+        editText.hint = resources.getString(R.string.hint_save_file)
         val switch = Switch(context)
         switch.id = View.generateViewId()
         switch.layoutParams = lp
