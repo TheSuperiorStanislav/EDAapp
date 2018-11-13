@@ -5,6 +5,7 @@ import android.content.res.Resources
 import android.view.View
 import android.widget.EditText
 import android.widget.LinearLayout
+import android.widget.Switch
 import android.widget.Toast
 import com.google.android.material.snackbar.Snackbar
 import com.study.thesuperiorstanislav.edaapp.R
@@ -43,11 +44,33 @@ object ViewHelper {
         val dpAsPixels16 = (16 * scale + 0.5f).toInt()
         val dpAsPixels8 = (8 * scale + 0.5f).toInt()
         lp.setMargins(dpAsPixels16, dpAsPixels8, dpAsPixels16, dpAsPixels8)
-        val input = EditText(context)
-        input.id = View.generateViewId()
-        input.layoutParams = lp
-        input.hint = resources.getString(R.string.hint_add_net)
-        linearLayout.addView(input, lp)
-        return Pair(linearLayout, input.id)
+        val editText = EditText(context)
+        editText.id = View.generateViewId()
+        editText.layoutParams = lp
+        editText.hint = resources.getString(R.string.hint_add_net)
+        linearLayout.addView(editText, lp)
+        return Pair(linearLayout, editText.id)
+    }
+
+    fun createViewWithEditTextAndSwitch(context: Context, resources: Resources): Pair<View, Pair<Int,Int>> {
+        val linearLayout = LinearLayout(context)
+        linearLayout.orientation = LinearLayout.VERTICAL
+        val lp = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT)
+        val scale = resources.displayMetrics.density
+        val dpAsPixels16 = (16 * scale + 0.5f).toInt()
+        val dpAsPixels8 = (8 * scale + 0.5f).toInt()
+        lp.setMargins(dpAsPixels16, dpAsPixels8, dpAsPixels16, dpAsPixels8)
+        val editText = EditText(context)
+        editText.id = View.generateViewId()
+        editText.layoutParams = lp
+        editText.hint = resources.getString(R.string.hint_add_net)
+        val switch = Switch(context)
+        switch.id = View.generateViewId()
+        switch.layoutParams = lp
+        linearLayout.addView(editText, lp)
+        linearLayout.addView(switch, lp)
+        return Pair(linearLayout, Pair(editText.id,switch.id))
     }
 }

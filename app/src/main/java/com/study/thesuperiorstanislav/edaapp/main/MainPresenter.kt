@@ -13,10 +13,10 @@ class MainPresenter(private val mainView: MainContract.View,
 
     override fun start() {
         mainView.isActive = true
-        getData(true)
+        getData()
     }
 
-    override fun getData(isStarting:Boolean) {
+    override fun getData() {
         val requestValue = GetData.RequestValues()
         UseCaseHandler.execute(getData, requestValue,
                 object : UseCase.UseCaseCallback<GetData.ResponseValue> {
@@ -25,10 +25,8 @@ class MainPresenter(private val mainView: MainContract.View,
                         if (!mainView.isActive) {
                             return
                         }
-                        if (isStarting)
-                            mainView.showData(response.circuit, response.circuitName)
-                        else
-                            mainView.saveFile(response.circuit)
+
+                        mainView.showData(response.circuit, response.circuitName)
                     }
 
                     override fun onError(error: UseCase.Error) {
@@ -37,10 +35,31 @@ class MainPresenter(private val mainView: MainContract.View,
                             return
                         }
 
-                        if (isStarting)
-                            mainView.onLoadingError(error)
-                        else
-                            mainView.onError(error)
+                        mainView.onLoadingError(error)
+                    }
+                })
+    }
+
+    override fun saveFile() {
+        val requestValue = GetData.RequestValues()
+        UseCaseHandler.execute(getData, requestValue,
+                object : UseCase.UseCaseCallback<GetData.ResponseValue> {
+                    override fun onSuccess(response: GetData.ResponseValue) {
+                        // The mainView may not be able to handle UI updates anymore
+                        if (!mainView.isActive) {
+                            return
+                        }
+
+                        mainView.saveFile(response.circuit)
+                    }
+
+                    override fun onError(error: UseCase.Error) {
+                        // The mainView may not be able to handle UI updates anymore
+                        if (!mainView.isActive) {
+                            return
+                        }
+
+                        mainView.onError(error)
                     }
                 })
     }

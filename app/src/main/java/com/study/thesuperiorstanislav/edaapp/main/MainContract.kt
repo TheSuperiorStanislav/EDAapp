@@ -23,9 +23,10 @@ interface MainContract {
 
     interface Presenter : BasePresenter {
 
-        fun getData(isStarting:Boolean)
+        fun getData()
 
         fun cacheCircuit(circuit: Circuit,circuitName: String)
 
+        fun saveFile()
     }
 }

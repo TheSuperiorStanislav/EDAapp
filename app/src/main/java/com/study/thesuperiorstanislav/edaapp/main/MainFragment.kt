@@ -25,9 +25,11 @@ import android.graphics.Color
 import android.os.Environment
 import android.provider.OpenableColumns
 import android.util.Log
+import android.widget.EditText
+import android.widget.Switch
 import androidx.appcompat.app.AlertDialog
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.study.thesuperiorstanislav.edaapp.utils.view.ViewHelper
 import java.io.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -40,10 +42,12 @@ class MainFragment : Fragment(), MainContract.View {
     private var presenter: MainContract.Presenter? = null
 
     private val READ_REQUEST_CODE = 42
-    private val PERMISSION_GRANTED = 43
+    private val SAVE_SCREENSHOT_CODE = 43
+    private val SAVE_FILE_CODE = 44
 
     private var dialog: ProgressDialog? = null
     private var circuitName = ""
+    private var isAllegro = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -62,7 +66,7 @@ class MainFragment : Fragment(), MainContract.View {
                 true
             }
             R.id.menu_save -> {
-                presenter?.getData(false)
+                showSaveFileDialog()
                 true
             }
             R.id.menu_screenshot -> {
@@ -122,6 +126,30 @@ class MainFragment : Fragment(), MainContract.View {
         dialog?.dismiss()
     }
 
+    override fun saveFile(circuit: Circuit) {
+        if (verifyStoragePermissions(SAVE_FILE_CODE)) {
+            val dirPath = "${Environment.getExternalStorageDirectory().absolutePath}/EDA/Circuits"
+            val dir = File(dirPath)
+            if (!dir.exists())
+                dir.mkdirs()
+            val file = File(dirPath, "$circuitName.net")
+            if (!file.exists())
+                file.createNewFile()
+            val stream = FileOutputStream(file)
+            try {
+                if (isAllegro)
+                    stream.write(AllegroFile.write(circuit).toByteArray())
+                else
+                    stream.write(Calay90File.write(circuit).toByteArray())
+            } catch (e: Exception) {
+                e.printStackTrace()
+                onError(UseCase.Error(UseCase.Error.UNKNOWN_ERROR, e.localizedMessage))
+            } finally {
+                stream.close()
+            }
+        }
+    }
+
     override fun onError(error: UseCase.Error) {
         dialog?.dismiss()
         val snackBar = Snackbar.make(main_layout, error.message!!, Snackbar.LENGTH_SHORT)
@@ -146,28 +174,37 @@ class MainFragment : Fragment(), MainContract.View {
         }
     }
 
-
     override fun onRequestPermissionsResult(requestCode: Int,
                                              permissions: Array<String>, grantResults: IntArray) {
         when (requestCode) {
-            PERMISSION_GRANTED -> {
-                if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                    Log.i("", "Permission has been denied by user")
-                } else {
-                    Log.i("", "Permission has been granted by user")
+            SAVE_SCREENSHOT_CODE -> {
+                if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED)
+                    Log.i("Permission_Storage", "Permission has been denied by user")
+                else {
+                    takeScreenShot()
+                }
+            }
+            SAVE_FILE_CODE -> {
+                if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED)
+                    Log.i("Permission_Storage", "Permission has been denied by user")
+                else {
+                    presenter?.saveFile()
                 }
             }
         }
     }
 
     private fun setFileName(uri: Uri) {
-        val cursor: Cursor? = activity?.contentResolver?.query( uri, null, null, null, null, null)
+        val cursor: Cursor? = activity?.contentResolver?.query(uri,
+                null,
+                null,
+                null,
+                null,
+                null)
 
         cursor?.use {
-            if (it.moveToFirst()) {
-                circuitName = it.getString(it.getColumnIndex(OpenableColumns.DISPLAY_NAME))
-                Log.i("File", "Display Name: $circuitName")
-            }
+            if (it.moveToFirst())
+                circuitName = it.getString(it.getColumnIndex(OpenableColumns.DISPLAY_NAME)).split(".").first()
         }
     }
 
@@ -190,25 +227,50 @@ class MainFragment : Fragment(), MainContract.View {
         startActivityForResult(intent, READ_REQUEST_CODE)
     }
 
-    override fun saveFile(circuit: Circuit) {
-        if (verifyStoragePermissions()) {
-            val dirPath = "${Environment.getExternalStorageDirectory().absolutePath}/EDA/Circuits"
-            val dir = File(dirPath)
-            if (!dir.exists())
-                dir.mkdirs()
-            val file = File(dirPath, circuitName)
-            if (!file.exists())
-                file.createNewFile()
-            val stream = FileOutputStream(file)
-            try {
-                stream.write(Calay90File.write(circuit).toByteArray())
-            } catch (e: Exception) {
-                e.printStackTrace()
-                onError(UseCase.Error(UseCase.Error.UNKNOWN_ERROR, e.localizedMessage))
-            } finally {
-                stream.close()
+    private fun showSaveFileDialog(){
+        val pairForDialog = ViewHelper.createViewWithEditTextAndSwitch(context!!, resources)
+
+        val saveDialog: AlertDialog = this.let {
+            val builder = AlertDialog.Builder(context!!)
+            builder.apply {
+                setTitle(R.string.save_file)
+                setMessage(R.string.message_save_file)
+                setView(pairForDialog.first)
+                setPositiveButton(R.string.save) { _, _ -> }
+                setNegativeButton(R.string.cancel) { dialog, _ ->
+                    dialog.dismiss()
+                }
+            }
+            builder.create()
+        }
+
+        saveDialog.setOnShowListener { dialogInterface ->
+            val button = (dialogInterface as AlertDialog).getButton(AlertDialog.BUTTON_POSITIVE)
+            button.setOnClickListener {
+                val editText = saveDialog.findViewById<EditText>(pairForDialog.second.first)!!
+                val switch = saveDialog.findViewById<Switch>(pairForDialog.second.second)!!
+                if (!editText.text.isEmpty()) {
+                    isAllegro = switch.isChecked
+                    circuitName = editText.text.toString()
+                    presenter?.saveFile()
+                    dialogInterface.dismiss()
+                }
             }
         }
+        saveDialog.show()
+        val editText = saveDialog.findViewById<EditText>(pairForDialog.second.first)!!
+        editText.setText(circuitName)
+        val switch = saveDialog.findViewById<Switch>(pairForDialog.second.second)!!
+        switch.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked)
+                switch.text = ViewHelper.formatResStr(resources,
+                        R.string.save_type, resources.getString(R.string.allegro))
+            else
+                switch.text = ViewHelper.formatResStr(resources,
+                        R.string.save_type, resources.getString(R.string.calay90))
+        }
+        switch.text = ViewHelper.formatResStr(resources,
+                R.string.save_type, resources.getString(R.string.calay90))
     }
 
     private fun takeScreenShot() {
@@ -216,17 +278,16 @@ class MainFragment : Fragment(), MainContract.View {
         val timeStamp = SimpleDateFormat
                 .getDateTimeInstance()
                 .format(millis)
-        if (verifyStoragePermissions())
+        if (verifyStoragePermissions(SAVE_SCREENSHOT_CODE))
             saveScreenShot(getScreenShot(circuitView), "$circuitName-$timeStamp.png")
     }
 
-    private fun verifyStoragePermissions(): Boolean {
+    private fun verifyStoragePermissions(requestCode: Int): Boolean {
         return if (ContextCompat.checkSelfPermission(context!!, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(activity as Activity, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),PERMISSION_GRANTED)
+            requestPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), requestCode)
             false
-        } else {
+        } else
             true
-        }
     }
 
     private fun getScreenShot(view: View): Bitmap {
