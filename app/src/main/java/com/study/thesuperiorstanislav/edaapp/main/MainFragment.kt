@@ -3,7 +3,7 @@ package com.study.thesuperiorstanislav.edaapp.main
 
 import android.Manifest
 import android.app.Activity
-import android.app.ProgressDialog
+import android.app.Dialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.Cursor
@@ -27,9 +27,13 @@ import android.provider.OpenableColumns
 import android.util.Log
 import android.widget.EditText
 import android.widget.Switch
+import androidx.annotation.UiThread
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import com.study.thesuperiorstanislav.edaapp.utils.view.ViewHelper
+import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.onComplete
+import org.jetbrains.anko.uiThread
 import java.io.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -45,7 +49,7 @@ class MainFragment : Fragment(), MainContract.View {
     private val SAVE_SCREENSHOT_CODE = 43
     private val SAVE_FILE_CODE = 44
 
-    private var dialog: ProgressDialog? = null
+    private var dialog: Dialog? = null
     private var circuitName = ""
     private var isAllegro = false
 
@@ -57,6 +61,7 @@ class MainFragment : Fragment(), MainContract.View {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
+        dialog = createLoadingDialog()
     }
 
     override fun onCreateOptionsMenu(menu:Menu, inflater:MenuInflater) {
@@ -90,8 +95,6 @@ class MainFragment : Fragment(), MainContract.View {
 
     override fun onResume() {
         super.onResume()
-        dialog = ProgressDialog.show(context, getString(R.string.processing_data),
-                getString(R.string.please_wait), true)
         presenter?.start()
     }
 
@@ -102,7 +105,6 @@ class MainFragment : Fragment(), MainContract.View {
     override fun showData(circuit: Circuit, circuitName: String) {
         circuitView.setCircuit(circuit)
         this.circuitName = circuitName
-        dialog?.dismiss()
     }
 
     override fun saveFile(circuit: Circuit) {
@@ -143,10 +145,10 @@ class MainFragment : Fragment(), MainContract.View {
     override fun onActivityResult(requestCode: Int, resultCode: Int,
                                   resultData: Intent?) {
         if (requestCode == READ_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            val uri: Uri?
             if (resultData != null) {
-                uri = resultData.data
-                setFileName(uri)
+                dialog?.show()
+                val uri: Uri? = resultData.data
+                setFileName(uri!!)
                 readTextFromUri(uri)
                 dialog?.dismiss()
             }
@@ -204,6 +206,15 @@ class MainFragment : Fragment(), MainContract.View {
         intent.addCategory(Intent.CATEGORY_OPENABLE)
         intent.type = "*/*"
         startActivityForResult(intent, READ_REQUEST_CODE)
+    }
+
+    private fun createLoadingDialog():Dialog{
+        val loadingDialog = Dialog(context!!)
+        loadingDialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        loadingDialog.setContentView(R.layout.dialog_loading)
+        loadingDialog.setCancelable(false)
+        loadingDialog.setCanceledOnTouchOutside(false)
+        return loadingDialog
     }
 
     private fun showSaveFileDialog(){
