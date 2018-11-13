@@ -3,7 +3,6 @@ package com.study.thesuperiorstanislav.edaapp.main
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.Menu
 import com.study.thesuperiorstanislav.edaapp.R
 import com.study.thesuperiorstanislav.edaapp.data.source.CircuitRepository
 import com.study.thesuperiorstanislav.edaapp.main.domain.usecase.CacheDataFromFile
@@ -26,12 +25,6 @@ class MainActivity : AppCompatActivity() {
         ft.replace(R.id.content_frame, fragment)
         if (!isFinishing)
             ft.commitAllowingStateLoss()
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        val inflater = menuInflater
-        inflater.inflate(R.menu.menu_main, menu)
-        return true
     }
 
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

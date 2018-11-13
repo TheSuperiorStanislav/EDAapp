@@ -59,46 +59,33 @@ class MainFragment : Fragment(), MainContract.View {
         setHasOptionsMenu(true)
     }
 
+    override fun onCreateOptionsMenu(menu:Menu, inflater:MenuInflater) {
+        inflater.inflate(R.menu.menu_main, menu)
+        super.onCreateOptionsMenu(menu,inflater)
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.menu_load -> {
+        when (item.itemId) {
+            R.id.menu_load ->
                 performFileSearch()
-                true
-            }
-            R.id.menu_save -> {
+            R.id.menu_save ->
                 showSaveFileDialog()
-                true
-            }
-            R.id.menu_screenshot -> {
+            R.id.menu_screenshot ->
                 takeScreenShot()
-                true
-            }
-            R.id.add_element -> {
+            R.id.add_element ->
                 circuitView.changeEditEvent(CircuitView.EditEvent.ADD_ELEMENT)
-                true
-            }
-            R.id.add_net-> {
+            R.id.add_net ->
                 circuitView.changeEditEvent(CircuitView.EditEvent.ADD_NET)
-                true
-            }
-            R.id.edit_connection -> {
+            R.id.edit_connection ->
                 circuitView.changeEditEvent(CircuitView.EditEvent.EDIT_CONNECTION)
-                true
-            }
-            R.id.move_object -> {
+            R.id.move_object ->
                 circuitView.changeEditEvent(CircuitView.EditEvent.MOVE_OBJECT)
-                true
-            }
-            R.id.delete_object -> {
+            R.id.delete_object ->
                 circuitView.changeEditEvent(CircuitView.EditEvent.DELETE_OBJECT)
-                true
-            }
-            R.id.delete_connection -> {
+            R.id.delete_connection ->
                 circuitView.changeEditEvent(CircuitView.EditEvent.DELETE_CONNECTION)
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
         }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onResume() {

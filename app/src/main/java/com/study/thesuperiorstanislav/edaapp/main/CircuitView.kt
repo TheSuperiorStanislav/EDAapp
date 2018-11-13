@@ -52,7 +52,6 @@ class CircuitView : View {
             renderHelper.drawSelectedSquare(startPoint, canvas)
 
         renderHelper.drawCircuit(circuit, canvas)
-
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
