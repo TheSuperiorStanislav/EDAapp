@@ -1,8 +1,65 @@
 <resources>
-    <string name="app_name">EDA app</string>
+    <string name="app_name">EDA</string>
     <string name="load_file">Load file</string>
+    <string name="save_file">Save file</string>
+    <string name="screenshot">Take screenshot</string>
     <string name="processing_data">Processing data</string>
     <string name="please_wait">Please wait....</string>
+
+    <string name="element">element</string>
+    <string name="element_name">Element name: %1$s</string>
+    <string name="element_type">Element: %1$s</string>
+    <string name="element_max_pins">Max pins: %1$d</string>
+    <string-array name="elements_array">
+        <item>DA</item>
+        <item>SB</item>
+        <item>HL</item>
+        <item>C</item>
+        <item>VD</item>
+        <item>R</item>
+        <item>RX</item>
+        <item>DD</item>
+        <item>X</item>
+    </string-array>
+    <string name="net">net</string>
+    <string name="connection">connection</string>
+
+    <string name="save_type">Save type: %1$s</string>
+    <string name="saved_in">Saved in %1$s</string>
+    <string name="hint_save_file">Enter file\'s name</string>
+    <string name="allegro">Allegro</string>
+    <string name="calay90">Calay90</string>
+    <string name="message_save_file">Enter file name and choose save type.\nAfter that press save.</string>
+
+    <string name="add_element">Add Element</string>
+    <string name="message_add_element">To add element, enter it\'s name and press add</string>
+    <string name="add_net">Add Net</string>
+    <string name="message_add_net">To add net, enter it\'s name and press add</string>
+    <string name="hint_add_net">Enter net\'s name</string>
+    <string name="edit_connection">Edit Connection</string>
+    <string name="move_object">Move Object</string>
+    <string name="move_element">Move Element</string>
+    <string name="move_net">Move Net</string>
+    <string name="delete_object_menu">Delete Object</string>
+    <string name="delete_element_menu">Delete Element</string>
+    <string name="delete_element">Delete Element-%1$s</string>
+    <string name="sure_delete_element">Are you sure you want to delete this element?</string>
+    <string name="delete_net_menu">Delete Net</string>
+    <string name="delete_net">Delete Net-%1$s</string>
+    <string name="sure_delete_net">Are you sure you want to delete this net?</string>
+    <string name="delete_connection_menu">Delete connection</string>
+    <string name="delete_connection">Delete connection between %1$s and %2$s</string>
+    <string name="sure_delete_connection">Are you sure you want to delete this connection?</string>
+
+    <string name="error_place">Can\'t place %1$s here!</string>
+    <string name="error_delete_connection">No connection to delete!</string>
+    <string name="error_edit_connection">Pin-%1$s is already connected!</string>
+
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="add">Add</string>
+    <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

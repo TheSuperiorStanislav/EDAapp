@@ -6,7 +6,7 @@ import com.study.thesuperiorstanislav.edaapp.main.domain.model.Circuit
 interface CircuitDataSource {
     interface LoadCircuitCallback {
 
-        fun onCircuitLoaded(circuit: Circuit)
+        fun onCircuitLoaded(circuit: Circuit,circuitName: String)
 
         fun onDataNotAvailable(error: UseCase.Error)
     }
@@ -18,7 +18,7 @@ interface CircuitDataSource {
 
     fun getCircuit(callback: LoadCircuitCallback)
 
-    fun cacheCircuit(circuit: Circuit, callback: CacheCircuitCallback)
+    fun cacheCircuit(circuit: Circuit,circuitName: String, callback: CacheCircuitCallback)
 
 
 }

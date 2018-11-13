@@ -5,27 +5,14 @@ import com.study.thesuperiorstanislav.edaapp.UseCaseHandler
 import com.study.thesuperiorstanislav.edaapp.data.source.CircuitDataSource
 import com.study.thesuperiorstanislav.edaapp.main.domain.model.Circuit
 
-class GetData (private val circuitRepository: CircuitDataSource,
-               private val createMatrix: CreateMatrix): UseCase<GetData.RequestValues, GetData.ResponseValue>() {
+class GetData (private val circuitRepository: CircuitDataSource): UseCase<GetData.RequestValues, GetData.ResponseValue>() {
 
     override fun executeUseCase(requestValues: RequestValues?) {
         if (requestValues != null) {
             circuitRepository.getCircuit(object : CircuitDataSource.LoadCircuitCallback {
-                override fun onCircuitLoaded(circuit: Circuit) {
-
-                    val requestValue = CreateMatrix.RequestValues(circuit)
-                    UseCaseHandler.execute(createMatrix, requestValue,
-                            object : UseCase.UseCaseCallback<CreateMatrix.ResponseValue> {
-                                override fun onSuccess(response: CreateMatrix.ResponseValue) {
-                                    val responseValue = ResponseValue(response.matrixA,response.matrixB,
-                                            response.matrixQ, response.matrixR)
-                                    useCaseCallback?.onSuccess(responseValue)
-                                }
-
-                                override fun onError(error: UseCase.Error) {
-                                    useCaseCallback?.onError(error)
-                                }
-                            })
+                override fun onCircuitLoaded(circuit: Circuit, circuitName: String) {
+                    val responseValue = ResponseValue(circuit,circuitName)
+                    useCaseCallback?.onSuccess(responseValue)
                 }
 
 
@@ -39,6 +26,5 @@ class GetData (private val circuitRepository: CircuitDataSource,
 
     class RequestValues : UseCase.RequestValues
 
-    class ResponseValue(val matrixA: Array<Array<Int>>,val matrixB: Array<Array<Int>>,
-                        val matrixQ: Array<Array<Int>>, val matrixR: Array<Array<Int>>) : UseCase.ResponseValue
+    class ResponseValue(val circuit: Circuit,val circuitName: String) : UseCase.ResponseValue
 }

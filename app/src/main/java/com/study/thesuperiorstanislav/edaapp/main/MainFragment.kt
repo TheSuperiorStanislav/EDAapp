@@ -1,26 +1,38 @@
 package com.study.thesuperiorstanislav.edaapp.main
 
 
+import android.Manifest
 import android.app.Activity
-import android.app.ProgressDialog
+import android.app.Dialog
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
+import android.view.*
 import com.google.android.material.snackbar.Snackbar
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
 
 import com.study.thesuperiorstanislav.edaapp.R
 import com.study.thesuperiorstanislav.edaapp.UseCase
+import com.study.thesuperiorstanislav.edaapp.main.domain.model.Circuit
 import com.study.thesuperiorstanislav.edaapp.utils.file.AllegroFile
 import com.study.thesuperiorstanislav.edaapp.utils.file.Calay90File
 import kotlinx.android.synthetic.main.fragment_main.*
-import java.io.BufferedReader
-import java.io.IOException
-import java.io.InputStreamReader
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
+import android.os.Environment
+import android.provider.OpenableColumns
+import android.util.Log
+import android.widget.EditText
+import android.widget.Switch
+import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
+import com.study.thesuperiorstanislav.edaapp.utils.view.ViewHelper
+import java.io.*
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 class MainFragment : Fragment(), MainContract.View {
@@ -30,8 +42,12 @@ class MainFragment : Fragment(), MainContract.View {
     private var presenter: MainContract.Presenter? = null
 
     private val READ_REQUEST_CODE = 42
+    private val SAVE_SCREENSHOT_CODE = 43
+    private val SAVE_FILE_CODE = 44
 
-    private var dialog: ProgressDialog? = null
+    private var dialog: Dialog? = null
+    private var circuitName = ""
+    private var isAllegro = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -41,90 +57,85 @@ class MainFragment : Fragment(), MainContract.View {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
+        dialog = createLoadingDialog()
+    }
+
+    override fun onCreateOptionsMenu(menu:Menu, inflater:MenuInflater) {
+        inflater.inflate(R.menu.menu_main, menu)
+        super.onCreateOptionsMenu(menu,inflater)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.menu_load -> {
+        when (item.itemId) {
+            R.id.menu_load ->
                 performFileSearch()
-                true
-            }
-            /*R.id.menu_history -> {
-                true
-            }
-            R.id.menu_about -> {
-                true
-            }*/
-            else -> super.onOptionsItemSelected(item)
+            R.id.menu_save ->
+                showSaveFileDialog()
+            R.id.menu_screenshot ->
+                takeScreenShot()
+            R.id.add_element ->
+                circuitView.changeEditEvent(CircuitView.EditEvent.ADD_ELEMENT)
+            R.id.add_net ->
+                circuitView.changeEditEvent(CircuitView.EditEvent.ADD_NET)
+            R.id.edit_connection ->
+                circuitView.changeEditEvent(CircuitView.EditEvent.EDIT_CONNECTION)
+            R.id.move_object ->
+                circuitView.changeEditEvent(CircuitView.EditEvent.MOVE_OBJECT)
+            R.id.delete_object ->
+                circuitView.changeEditEvent(CircuitView.EditEvent.DELETE_OBJECT)
+            R.id.delete_connection ->
+                circuitView.changeEditEvent(CircuitView.EditEvent.DELETE_CONNECTION)
         }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onResume() {
         super.onResume()
-        dialog = ProgressDialog.show(context, getString(R.string.processing_data),
-                getString(R.string.please_wait), true)
         presenter?.start()
     }
+
 
     override fun setPresenter(presenter: MainContract.Presenter) {
         this.presenter = presenter
     }
 
-    override fun showData(matrixA: Array<Array<Int>>, matrixB: Array<Array<Int>>,
-                          matrixQ: Array<Array<Int>>, matrixR: Array<Array<Int>>) {
-        var textMatrix = "Matrix A\n"
+    override fun showData(circuit: Circuit, circuitName: String) {
+        circuitView.setCircuit(circuit)
+        activity?.title = "${resources.getString(R.string.app_name)}/$circuitName"
+        this.circuitName = circuitName
+    }
 
-        matrixA.forEach { mutableList ->
-            var text = ""
-            mutableList.forEach {
-                text += "$it "
+    override fun saveFile(circuit: Circuit) {
+        if (verifyStoragePermissions(SAVE_FILE_CODE)) {
+            val dirPath = "${Environment.getExternalStorageDirectory().absolutePath}/EDA/Circuits"
+            val dir = File(dirPath)
+            if (!dir.exists())
+                dir.mkdirs()
+            val file = File(dirPath, "$circuitName.net")
+            if (!file.exists())
+                file.createNewFile()
+            val stream = FileOutputStream(file)
+            try {
+                if (isAllegro)
+                    stream.write(AllegroFile.write(circuit).toByteArray())
+                else
+                    stream.write(Calay90File.write(circuit).toByteArray())
+                activity?.title = "${resources.getString(R.string.app_name)}/$circuitName"
+                ViewHelper.showSnackBar(main_layout, ViewHelper.formatResStr(resources,
+                        R.string.saved_in, dirPath))
+            } catch (e: Exception) {
+                e.printStackTrace()
+                onError(UseCase.Error(UseCase.Error.UNKNOWN_ERROR, e.localizedMessage))
+            } finally {
+                stream.close()
             }
-            textMatrix += "$text \n"
-
         }
-
-        textMatrix += "Matrix B\n"
-
-        matrixB.forEach { mutableList ->
-            var text = ""
-            mutableList.forEach {
-                text += "$it "
-            }
-            textMatrix += "$text \n"
-
-        }
-
-        textMatrix += "Matrix Q\n"
-
-        matrixQ.forEach { mutableList ->
-            var text = ""
-            mutableList.forEach {
-                text += "$it "
-            }
-            textMatrix += "$text \n"
-
-        }
-
-        textMatrix += "Matrix R\n"
-
-        matrixR.forEach { mutableList ->
-            var text = ""
-            mutableList.forEach {
-                text += "$it "
-            }
-            textMatrix += "$text \n"
-
-        }
-
-
-        test.text = textMatrix
-        dialog?.dismiss()
     }
 
     override fun onError(error: UseCase.Error) {
         dialog?.dismiss()
         val snackBar = Snackbar.make(main_layout, error.message!!, Snackbar.LENGTH_SHORT)
-        snackBar.setAction("¯\\(°_o)/¯") { _ -> }
+        snackBar.setAction("¯\\(°_o)/¯") { }
         snackBar.show()
     }
 
@@ -135,13 +146,39 @@ class MainFragment : Fragment(), MainContract.View {
     override fun onActivityResult(requestCode: Int, resultCode: Int,
                                   resultData: Intent?) {
         if (requestCode == READ_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            val uri: Uri?
             if (resultData != null) {
-                uri = resultData.data
+                dialog?.show()
+                val uri: Uri? = resultData.data
+                setFileName(uri!!)
                 readTextFromUri(uri)
                 dialog?.dismiss()
             }
         }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int,
+                                             permissions: Array<String>, grantResults: IntArray) {
+        when (requestCode) {
+            SAVE_SCREENSHOT_CODE -> {
+                if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED)
+                    Log.i("Permission_Storage", "Permission has been denied by user")
+                else {
+                    takeScreenShot()
+                }
+            }
+            SAVE_FILE_CODE -> {
+                if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED)
+                    Log.i("Permission_Storage", "Permission has been denied by user")
+                else {
+                    presenter?.saveFile()
+                }
+            }
+        }
+    }
+
+    private fun setFileName(uri: Uri) {
+        if (uri.path != null)
+            circuitName = uri.path!!.split("/").last().split(".").first()
     }
 
     @Throws(IOException::class)
@@ -150,9 +187,9 @@ class MainFragment : Fragment(), MainContract.View {
         val reader = BufferedReader(InputStreamReader(inputStream))
         val line = reader.readLine()
         if (line == "\$PACKAGES") {
-            presenter?.cacheCircuit(AllegroFile.read(reader))
+            presenter?.cacheCircuit(AllegroFile.read(reader),circuitName)
         } else {
-            presenter?.cacheCircuit(Calay90File.read(line, reader))
+            presenter?.cacheCircuit(Calay90File.read(line, reader),circuitName)
         }
     }
 
@@ -163,5 +200,109 @@ class MainFragment : Fragment(), MainContract.View {
         startActivityForResult(intent, READ_REQUEST_CODE)
     }
 
+    private fun createLoadingDialog():Dialog{
+        val loadingDialog = Dialog(context!!)
+        loadingDialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        loadingDialog.setContentView(R.layout.dialog_loading)
+        loadingDialog.setCancelable(false)
+        loadingDialog.setCanceledOnTouchOutside(false)
+        return loadingDialog
+    }
+
+    private fun showSaveFileDialog(){
+        val pairForDialog = ViewHelper.createViewWithEditTextAndSwitch(context!!, resources)
+
+        val saveDialog: AlertDialog = this.let {
+            val builder = AlertDialog.Builder(context!!)
+            builder.apply {
+                setTitle(R.string.save_file)
+                setMessage(R.string.message_save_file)
+                setView(pairForDialog.first)
+                setPositiveButton(R.string.save) { _, _ -> }
+                setNegativeButton(R.string.cancel) { dialog, _ ->
+                    dialog.dismiss()
+                }
+            }
+            builder.create()
+        }
+
+        saveDialog.setOnShowListener { dialogInterface ->
+            val button = (dialogInterface as AlertDialog).getButton(AlertDialog.BUTTON_POSITIVE)
+            button.setOnClickListener {
+                val editText = saveDialog.findViewById<EditText>(pairForDialog.second.first)!!
+                val switch = saveDialog.findViewById<Switch>(pairForDialog.second.second)!!
+                if (!editText.text.isEmpty()) {
+                    isAllegro = switch.isChecked
+                    circuitName = editText.text.toString()
+                    presenter?.saveFile()
+                    dialogInterface.dismiss()
+                }
+            }
+        }
+        saveDialog.show()
+        val editText = saveDialog.findViewById<EditText>(pairForDialog.second.first)!!
+        editText.setText(circuitName)
+        val switch = saveDialog.findViewById<Switch>(pairForDialog.second.second)!!
+        switch.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked)
+                switch.text = ViewHelper.formatResStr(resources,
+                        R.string.save_type, resources.getString(R.string.allegro))
+            else
+                switch.text = ViewHelper.formatResStr(resources,
+                        R.string.save_type, resources.getString(R.string.calay90))
+        }
+        switch.text = ViewHelper.formatResStr(resources,
+                R.string.save_type, resources.getString(R.string.calay90))
+    }
+
+    private fun takeScreenShot() {
+        val millis = Date().time
+        val timeStamp = SimpleDateFormat
+                .getDateTimeInstance()
+                .format(millis)
+        if (verifyStoragePermissions(SAVE_SCREENSHOT_CODE))
+            saveScreenShot(getScreenShot(circuitView), "$circuitName-$timeStamp.png")
+    }
+
+    private fun verifyStoragePermissions(requestCode: Int): Boolean {
+        return if (ContextCompat.checkSelfPermission(context!!, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), requestCode)
+            false
+        } else
+            true
+    }
+
+    private fun getScreenShot(view: View): Bitmap {
+        val bitmap = Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        val bgDrawable = view.background
+        if (bgDrawable != null) {
+            bgDrawable.draw(canvas)
+        } else {
+            canvas.drawColor(Color.WHITE)
+        }
+        view.draw(canvas)
+        return bitmap
+    }
+
+    private fun saveScreenShot(bm: Bitmap, fileName: String) {
+        val dirPath = "${Environment.getExternalStorageDirectory().absolutePath}/EDA/ScreenShots"
+        val dir = File(dirPath)
+        if (!dir.exists())
+            dir.mkdirs()
+        val file = File(dirPath, fileName)
+        try {
+            val fOut = FileOutputStream(file)
+            bm.compress(Bitmap.CompressFormat.PNG, 100, fOut)
+            fOut.flush()
+            fOut.close()
+            ViewHelper.showSnackBar(main_layout,ViewHelper.formatResStr(resources,
+                    R.string.saved_in, dirPath))
+        } catch (e: Exception) {
+            e.printStackTrace()
+            onError(UseCase.Error(UseCase.Error.UNKNOWN_ERROR,e.localizedMessage))
+        }
+
+    }
 
 }

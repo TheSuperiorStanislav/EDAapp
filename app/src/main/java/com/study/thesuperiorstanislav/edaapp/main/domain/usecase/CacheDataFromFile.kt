@@ -8,8 +8,9 @@ class CacheDataFromFile (private val circuitRepository: CircuitDataSource): UseC
 
     override fun executeUseCase(requestValues: RequestValues?) {
         if (requestValues != null) {
-            val pointList = requestValues.circuit
-            circuitRepository.cacheCircuit(pointList, object : CircuitDataSource.CacheCircuitCallback {
+            val circuit = requestValues.circuit
+            val circuitName = requestValues.circuitName
+            circuitRepository.cacheCircuit(circuit,circuitName, object : CircuitDataSource.CacheCircuitCallback {
                 override fun onSaved() {
                     val responseValue = ResponseValue()
                     useCaseCallback?.onSuccess(responseValue)
@@ -20,7 +21,7 @@ class CacheDataFromFile (private val circuitRepository: CircuitDataSource): UseC
     }
 
 
-    class RequestValues(val circuit: Circuit) : UseCase.RequestValues
+    class RequestValues(val circuit: Circuit,val circuitName: String) : UseCase.RequestValues
 
     class ResponseValue : UseCase.ResponseValue
 }

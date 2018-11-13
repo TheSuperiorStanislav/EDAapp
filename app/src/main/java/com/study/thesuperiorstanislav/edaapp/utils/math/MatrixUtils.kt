@@ -5,7 +5,7 @@ object MatrixUtils{
     fun createMatrixR(matrixQ: Array<Array<Int>>):Array<Array<Int>>{
         val matrixR = multiply(matrixQ, transpose(matrixQ))
         matrixR.forEachIndexed { indexColumn, ints ->
-            ints.forEachIndexed { indexRow, i ->
+            ints.forEachIndexed { indexRow, _ ->
                 if (indexColumn==indexRow)
                     ints[indexRow] = 0
             }

@@ -26,8 +26,7 @@ class MainPresenter(private val mainView: MainContract.View,
                             return
                         }
 
-                        mainView.showData(response.matrixA, response.matrixB,
-                                response.matrixQ, response.matrixR)
+                        mainView.showData(response.circuit, response.circuitName)
                     }
 
                     override fun onError(error: UseCase.Error) {
@@ -41,9 +40,33 @@ class MainPresenter(private val mainView: MainContract.View,
                 })
     }
 
-    override fun cacheCircuit(circuit: Circuit) {
+    override fun saveFile() {
+        val requestValue = GetData.RequestValues()
+        UseCaseHandler.execute(getData, requestValue,
+                object : UseCase.UseCaseCallback<GetData.ResponseValue> {
+                    override fun onSuccess(response: GetData.ResponseValue) {
+                        // The mainView may not be able to handle UI updates anymore
+                        if (!mainView.isActive) {
+                            return
+                        }
 
-        val requestValue = CacheDataFromFile.RequestValues(circuit)
+                        mainView.saveFile(response.circuit)
+                    }
+
+                    override fun onError(error: UseCase.Error) {
+                        // The mainView may not be able to handle UI updates anymore
+                        if (!mainView.isActive) {
+                            return
+                        }
+
+                        mainView.onError(error)
+                    }
+                })
+    }
+
+    override fun cacheCircuit(circuit: Circuit,circuitName: String) {
+
+        val requestValue = CacheDataFromFile.RequestValues(circuit,circuitName)
         UseCaseHandler.execute(cacheDataFromFile, requestValue,
                 object : UseCase.UseCaseCallback<CacheDataFromFile.ResponseValue> {
                     override fun onSuccess(response: CacheDataFromFile.ResponseValue) {

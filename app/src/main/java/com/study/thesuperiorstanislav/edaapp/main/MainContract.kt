@@ -11,8 +11,9 @@ interface MainContract {
 
         var isActive: Boolean
 
-        fun showData(matrixA: Array<Array<Int>>,matrixB: Array<Array<Int>>,
-                     matrixQ: Array<Array<Int>>, matrixR: Array<Array<Int>>)
+        fun showData(circuit: Circuit,circuitName: String)
+
+        fun saveFile(circuit: Circuit)
 
         fun onError(error: UseCase.Error)
 
@@ -24,7 +25,8 @@ interface MainContract {
 
         fun getData()
 
-        fun cacheCircuit(circuit: Circuit)
+        fun cacheCircuit(circuit: Circuit,circuitName: String)
 
+        fun saveFile()
     }
 }

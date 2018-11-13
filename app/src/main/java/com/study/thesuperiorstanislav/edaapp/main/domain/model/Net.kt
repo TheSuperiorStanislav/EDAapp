@@ -1,7 +1,8 @@
 package com.study.thesuperiorstanislav.edaapp.main.domain.model
 
 class Net(private val name:String) {
-    private val pins = mutableListOf<String>()
+    private val pins = mutableListOf<Pin>()
+    private val point = Point(-1,-1)
 
     override fun toString(): String {
         return name
@@ -30,15 +31,24 @@ class Net(private val name:String) {
         return hash
     }
 
-    fun getPins(): ArrayList<String> {
+    fun getPoint(): Point{
+        return point
+    }
+
+    fun getPins(): ArrayList<Pin> {
         return ArrayList(pins)
     }
 
-    fun addPin(pin: String){
+    fun addPin(pin: Pin){
         pins.add(pin)
     }
 
-    fun deletePin(pin: String){
+    fun deletePin(pin: Pin){
         pins.remove(pin)
+    }
+
+    fun move(x:Int, y:Int){
+        point.x = x
+        point.y = y
     }
 }
