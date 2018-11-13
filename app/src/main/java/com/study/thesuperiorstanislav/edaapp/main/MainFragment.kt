@@ -93,12 +93,8 @@ class MainFragment : Fragment(), MainContract.View {
                 circuitView.changeEditEvent(CircuitView.EditEvent.MOVE_NET)
                 true
             }
-            R.id.delete_element -> {
-                circuitView.changeEditEvent(CircuitView.EditEvent.DELETE_ELEMENT)
-                true
-            }
-            R.id.delete_net -> {
-                circuitView.changeEditEvent(CircuitView.EditEvent.DELETE_NET)
+            R.id.delete_object -> {
+                circuitView.changeEditEvent(CircuitView.EditEvent.DELETE_OBJECT)
                 true
             }
             R.id.delete_connection -> {

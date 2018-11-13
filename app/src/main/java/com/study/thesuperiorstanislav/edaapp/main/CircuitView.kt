@@ -69,8 +69,7 @@ class CircuitView : View {
                         EditEvent.EDIT_CONNECTION -> editConnection(x, y)
                         EditEvent.MOVE_ELEMENT -> moveElement(x, y)
                         EditEvent.MOVE_NET -> moveNet(x, y)
-                        EditEvent.DELETE_ELEMENT -> deleteElement(x, y)
-                        EditEvent.DELETE_NET -> deleteNet(x, y)
+                        EditEvent.DELETE_OBJECT -> deleteObject(x, y)
                         EditEvent.DELETE_CONNECTION -> deleteConnection(x, y)
                     }
                 }
@@ -255,45 +254,21 @@ class CircuitView : View {
         }
     }
 
-    private fun deleteElement(x: Float, y: Float) {
-        startPoint = makePoint(x,y)
-        if (renderHelper.isTherePin(startPoint)) {
-            val obj = circuit.findElementByPinPoint(startPoint)
-            if (obj != null) {
-                val deleteDialog: AlertDialog = this.let {
-                    val builder = AlertDialog.Builder(context)
-                    builder.apply {
-                        setTitle(ViewHelper.formatResStr(resources,R.string.delete_element, obj))
-                        setMessage(R.string.sure_delete_net)
-                        setPositiveButton(R.string.yes) { dialog, _ ->
-                            renderHelper.removeObject(obj)
-                            obj.getPins().forEach { pin ->
-                                pin.removeFromNet()
-                                circuit.listPins.remove(pin)
-                            }
-                            circuit.listElements.remove(obj)
-                            invalidate()
-                            dialog.dismiss()
-                        }
-                        setNegativeButton(R.string.no) { dialog, _ ->
-                            dialog.dismiss()
-                        }
-                    }
-                    builder.create()
-                }
-                deleteDialog.show()
-            }
-        }
+    private fun deleteObject(x: Float, y: Float) {
+        startPoint = makePoint(x, y)
+        if (renderHelper.isTherePin(startPoint))
+            deleteElement()
+        else if (renderHelper.isThereNet(startPoint))
+            deleteNet()
     }
 
-    private fun deleteNet(x: Float, y: Float) {
-        startPoint = makePoint(x,y)
-        if (renderHelper.isThereNet(startPoint)) {
-            val obj = circuit.findNetByPoint(startPoint)!!
+    private fun deleteElement() {
+        val obj = circuit.findElementByPinPoint(startPoint)
+        if (obj != null) {
             val deleteDialog: AlertDialog = this.let {
                 val builder = AlertDialog.Builder(context)
                 builder.apply {
-                    setTitle(ViewHelper.formatResStr(resources,R.string.delete_net, obj))
+                    setTitle(ViewHelper.formatResStr(resources, R.string.delete_element, obj))
                     setMessage(R.string.sure_delete_net)
                     setPositiveButton(R.string.yes) { dialog, _ ->
                         renderHelper.removeObject(obj)
@@ -301,7 +276,7 @@ class CircuitView : View {
                             pin.removeFromNet()
                             circuit.listPins.remove(pin)
                         }
-                        circuit.listNets.remove(obj)
+                        circuit.listElements.remove(obj)
                         invalidate()
                         dialog.dismiss()
                     }
@@ -313,6 +288,32 @@ class CircuitView : View {
             }
             deleteDialog.show()
         }
+    }
+
+    private fun deleteNet() {
+        val obj = circuit.findNetByPoint(startPoint)!!
+        val deleteDialog: AlertDialog = this.let {
+            val builder = AlertDialog.Builder(context)
+            builder.apply {
+                setTitle(ViewHelper.formatResStr(resources, R.string.delete_net, obj))
+                setMessage(R.string.sure_delete_net)
+                setPositiveButton(R.string.yes) { dialog, _ ->
+                    renderHelper.removeObject(obj)
+                    obj.getPins().forEach { pin ->
+                        pin.removeFromNet()
+                        circuit.listPins.remove(pin)
+                    }
+                    circuit.listNets.remove(obj)
+                    invalidate()
+                    dialog.dismiss()
+                }
+                setNegativeButton(R.string.no) { dialog, _ ->
+                    dialog.dismiss()
+                }
+            }
+            builder.create()
+        }
+        deleteDialog.show()
     }
 
     private fun deleteConnection(x: Float, y: Float) {
@@ -377,8 +378,7 @@ class CircuitView : View {
         EDIT_CONNECTION,
         MOVE_ELEMENT,
         MOVE_NET,
-        DELETE_ELEMENT,
-        DELETE_NET,
+        DELETE_OBJECT,
         DELETE_CONNECTION
     }
 
