@@ -100,6 +100,7 @@ class MainFragment : Fragment(), MainContract.View {
 
     override fun showData(circuit: Circuit, circuitName: String) {
         circuitView.setCircuit(circuit)
+        activity?.title = "${resources.getString(R.string.app_name)}/$circuitName"
         this.circuitName = circuitName
     }
 

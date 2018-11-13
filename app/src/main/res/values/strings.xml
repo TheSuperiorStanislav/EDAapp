@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">EDA app</string>
+    <string name="app_name">EDA</string>
     <string name="load_file">Load file</string>
     <string name="save_file">Save file</string>
     <string name="screenshot">Take screenshot</string>
