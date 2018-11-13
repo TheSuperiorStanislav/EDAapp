@@ -67,8 +67,7 @@ class CircuitView : View {
                         EditEvent.ADD_ELEMENT -> addElement(x, y)
                         EditEvent.ADD_NET -> addNet(x, y)
                         EditEvent.EDIT_CONNECTION -> editConnection(x, y)
-                        EditEvent.MOVE_ELEMENT -> moveElement(x, y)
-                        EditEvent.MOVE_NET -> moveNet(x, y)
+                        EditEvent.MOVE_OBJECT -> moveObject(x, y)
                         EditEvent.DELETE_OBJECT -> deleteObject(x, y)
                         EditEvent.DELETE_CONNECTION -> deleteConnection(x, y)
                     }
@@ -91,6 +90,7 @@ class CircuitView : View {
     fun changeEditEvent(editEvent: EditEvent) {
         this.editEvent = editEvent
         drawTouch = false
+        invalidate()
     }
 
     private fun addElement(x: Float, y: Float) {
@@ -209,26 +209,31 @@ class CircuitView : View {
         }
     }
 
+    private fun moveObject(x: Float, y: Float) {
+        if (!drawTouch)
+            startPoint = makePoint(x, y)
+        if (renderHelper.isTherePin(startPoint))
+            moveElement(x, y)
+        else if (renderHelper.isThereNet(startPoint))
+            moveNet(x, y)
+    }
+
     private fun moveElement(x: Float, y: Float) {
         if (drawTouch) {
             val endPoint = makePoint(x,y)
             val obj = circuit.findElementByPoint(startPoint)!!
             if (renderHelper.moveObject(obj, startPoint, endPoint)) {
-                obj.move(endPoint.x, endPoint.y)
                 drawTouch = false
                 invalidate()
             } else {
                 ViewHelper.onError(this,ViewHelper.formatResStr(resources,R.string.error_place, obj))
             }
         } else {
-            startPoint = makePoint(x,y)
-            if (renderHelper.isTherePin(startPoint)) {
-                val point = circuit.findPinByPoint(startPoint)?.getElement()?.getPoint()
-                if (point != null) {
-                    startPoint = point
-                    drawTouch = true
-                    invalidate()
-                }
+            val point = circuit.findPinByPoint(startPoint)?.getElement()?.getPoint()
+            if (point != null) {
+                startPoint = point
+                drawTouch = true
+                invalidate()
             }
         }
     }
@@ -238,19 +243,14 @@ class CircuitView : View {
             val endPoint = makePoint(x,y)
             val obj = circuit.findNetByPoint(startPoint)!!
             if (renderHelper.moveObject(obj, startPoint, endPoint)) {
-                obj.move(endPoint.x, endPoint.y)
                 drawTouch = false
                 invalidate()
             } else {
                 ViewHelper.onError(this,ViewHelper.formatResStr(resources,R.string.error_place, obj))
             }
         } else {
-            startPoint = Point((x / renderHelper.step).toInt(),
-                    (y / renderHelper.step).toInt())
-            if (renderHelper.isThereNet(startPoint)) {
-                drawTouch = true
-                invalidate()
-            }
+            drawTouch = true
+            invalidate()
         }
     }
 
@@ -376,8 +376,7 @@ class CircuitView : View {
         ADD_ELEMENT,
         ADD_NET,
         EDIT_CONNECTION,
-        MOVE_ELEMENT,
-        MOVE_NET,
+        MOVE_OBJECT,
         DELETE_OBJECT,
         DELETE_CONNECTION
     }

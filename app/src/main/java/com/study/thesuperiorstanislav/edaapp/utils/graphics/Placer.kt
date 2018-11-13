@@ -135,6 +135,7 @@ class Placer(private val drawMatrix: Array<Array<DrawObject?>>,
             val drawPoint = DrawPoint(endPoint.x * step,endPoint.y * step)
             val drawObject = DrawObject(drawPoint,ObjectType.Net,DrawType.NET)
             drawMatrix[endPoint.y][endPoint.x] = drawObject
+            net.move(endPoint.x, endPoint.y)
             true
         }else {
             val drawPoint = DrawPoint(startPoint.x * step,startPoint.y * step)

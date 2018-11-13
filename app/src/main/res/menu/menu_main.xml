@@ -19,10 +19,8 @@
         android:title="@string/add_net" />
     <item android:id="@+id/edit_connection"
         android:title="@string/edit_connection" />
-    <item android:id="@+id/move_element"
-        android:title="@string/move_element" />
-    <item android:id="@+id/move_net"
-        android:title="@string/move_net" />
+    <item android:id="@+id/move_object"
+        android:title="@string/move_object" />
     <item android:id="@+id/delete_object"
         android:title="@string/delete_object_menu" />
     <item android:id="@+id/delete_connection"
