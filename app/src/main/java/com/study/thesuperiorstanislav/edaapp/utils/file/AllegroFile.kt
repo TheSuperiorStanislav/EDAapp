@@ -5,6 +5,7 @@ import com.study.thesuperiorstanislav.edaapp.main.domain.model.Element
 import com.study.thesuperiorstanislav.edaapp.main.domain.model.Net
 import com.study.thesuperiorstanislav.edaapp.main.domain.model.Pin
 import java.io.BufferedReader
+import java.lang.StringBuilder
 
 object AllegroFile {
     fun read(reader: BufferedReader):Circuit {
@@ -55,5 +56,35 @@ object AllegroFile {
             line = reader.readLine()
         }
         return Circuit(listElements,listNets,listPins)
+    }
+
+    fun write(circuit: Circuit):String {
+        val stringBuilder = StringBuilder()
+        stringBuilder.append("\$PACKAGES\n")
+        circuit.listElements.forEach { element->
+            stringBuilder.append("¯\\(°_o)/¯! ¯\\(°_o)/¯; $element\n")
+        }
+        stringBuilder.append("\$NETS\n")
+        circuit.listNets.forEach { net ->
+            stringBuilder.append("$net;  ")
+            var count = 0
+            net.getPins().forEach { pin ->
+                if (count == 3){
+                    if (pin != net.getPins().last())
+                        stringBuilder.append("$pin,\n     ")
+                    else
+                        stringBuilder.append("pin\n")
+                    count = 0
+                }else {
+                    if (pin != net.getPins().last())
+                        stringBuilder.append("$pin ")
+                    else
+                        stringBuilder.append("pin\n")
+                    count++
+                }
+            }
+        }
+        stringBuilder.append("\$END\n")
+        return stringBuilder.toString()
     }
 }
