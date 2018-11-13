@@ -73,13 +73,13 @@ object AllegroFile {
                     if (pin != net.getPins().last())
                         stringBuilder.append("$pin,\n     ")
                     else
-                        stringBuilder.append("pin\n")
+                        stringBuilder.append("$pin\n")
                     count = 0
                 }else {
                     if (pin != net.getPins().last())
                         stringBuilder.append("$pin ")
                     else
-                        stringBuilder.append("pin\n")
+                        stringBuilder.append("$pin\n")
                     count++
                 }
             }

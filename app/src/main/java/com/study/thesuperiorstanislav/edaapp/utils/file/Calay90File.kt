@@ -66,8 +66,12 @@ object Calay90File {
             var count = 0
             net.getPins().forEach { pin ->
                 if (count == 7){
-                    if (pin != net.getPins().last())
+                    if (pin != net.getPins().last()) {
                         stringBuilder.append("${convertPinToFileStr(pin)},\n")
+                        repeat(10) {
+                            stringBuilder.append(" ")
+                        }
+                    }
                     else
                         stringBuilder.append("${convertPinToFileStr(pin)};\n")
                     count = 0
