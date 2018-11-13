@@ -27,13 +27,9 @@ import android.provider.OpenableColumns
 import android.util.Log
 import android.widget.EditText
 import android.widget.Switch
-import androidx.annotation.UiThread
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import com.study.thesuperiorstanislav.edaapp.utils.view.ViewHelper
-import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.onComplete
-import org.jetbrains.anko.uiThread
 import java.io.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -122,6 +118,8 @@ class MainFragment : Fragment(), MainContract.View {
                     stream.write(AllegroFile.write(circuit).toByteArray())
                 else
                     stream.write(Calay90File.write(circuit).toByteArray())
+                ViewHelper.showSnackBar(main_layout, ViewHelper.formatResStr(resources,
+                        R.string.saved_in, dirPath))
             } catch (e: Exception) {
                 e.printStackTrace()
                 onError(UseCase.Error(UseCase.Error.UNKNOWN_ERROR, e.localizedMessage))
@@ -304,6 +302,8 @@ class MainFragment : Fragment(), MainContract.View {
             bm.compress(Bitmap.CompressFormat.PNG, 100, fOut)
             fOut.flush()
             fOut.close()
+            ViewHelper.showSnackBar(main_layout,ViewHelper.formatResStr(resources,
+                    R.string.saved_in, dirPath))
         } catch (e: Exception) {
             e.printStackTrace()
             onError(UseCase.Error(UseCase.Error.UNKNOWN_ERROR,e.localizedMessage))

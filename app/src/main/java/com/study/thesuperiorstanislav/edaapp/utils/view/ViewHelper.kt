@@ -19,19 +19,19 @@ object ViewHelper {
         return String.format(resources.getString(idStr), obj1, obj2)
     }
 
-    fun onError(view:View,message: String) {
+    fun showSnackBar(view:View, message: String) {
         val snackBar = Snackbar.make(view, message, Snackbar.LENGTH_SHORT)
         snackBar.setAction("¯\\(°_o)/¯") { }
         snackBar.show()
     }
 
-    fun onError(view:View,idStr: Int) {
+    fun showSnackBar(view:View, idStr: Int) {
         val snackBar = Snackbar.make(view, idStr, Snackbar.LENGTH_SHORT)
         snackBar.setAction("¯\\(°_o)/¯") { }
         snackBar.show()
     }
 
-    fun onErrorToast(context:Context,message: String) {
+    fun showToast(context:Context, message: String) {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
 

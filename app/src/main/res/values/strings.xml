@@ -25,6 +25,7 @@
     <string name="connection">connection</string>
 
     <string name="save_type">Save type: %1$s</string>
+    <string name="saved_in">Saved in %1$s</string>
     <string name="allegro">Allegro</string>
     <string name="calay90">Calay90</string>
     <string name="message_save_file">Enter file name and choose save type.\nAfter that press save.</string>

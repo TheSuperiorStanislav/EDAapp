@@ -119,7 +119,7 @@ class CircuitView : View {
                     dialogInterface.dismiss()
 
                 }else{
-                    ViewHelper.onErrorToast(context,ViewHelper.formatResStr(resources,R.string.error_place, resources.getString(R.string.element)))
+                    ViewHelper.showToast(context,ViewHelper.formatResStr(resources,R.string.error_place, resources.getString(R.string.element)))
                 }
 
             }
@@ -157,7 +157,7 @@ class CircuitView : View {
                         invalidate()
                         dialogInterface.dismiss()
                     } else {
-                        ViewHelper.onErrorToast(context,ViewHelper.formatResStr(resources,R.string.error_place, resources.getString(R.string.net)))
+                        ViewHelper.showToast(context,ViewHelper.formatResStr(resources,R.string.error_place, resources.getString(R.string.net)))
                     }
                 }
             }
@@ -192,7 +192,7 @@ class CircuitView : View {
                     drawTouch = false
                     invalidate()
                 }else{
-                    ViewHelper.onError(this,ViewHelper.formatResStr(resources,R.string.error_edit_connection,pin.getName()))
+                    ViewHelper.showSnackBar(this,ViewHelper.formatResStr(resources,R.string.error_edit_connection,pin.getName()))
                 }
             }
 
@@ -225,7 +225,7 @@ class CircuitView : View {
                 drawTouch = false
                 invalidate()
             } else {
-                ViewHelper.onError(this,ViewHelper.formatResStr(resources,R.string.error_place, obj))
+                ViewHelper.showSnackBar(this,ViewHelper.formatResStr(resources,R.string.error_place, obj))
             }
         } else {
             val point = circuit.findPinByPoint(startPoint)?.getElement()?.getPoint()
@@ -245,7 +245,7 @@ class CircuitView : View {
                 drawTouch = false
                 invalidate()
             } else {
-                ViewHelper.onError(this,ViewHelper.formatResStr(resources,R.string.error_place, obj))
+                ViewHelper.showSnackBar(this,ViewHelper.formatResStr(resources,R.string.error_place, obj))
             }
         } else {
             drawTouch = true
@@ -329,7 +329,7 @@ class CircuitView : View {
                         invalidate()
                     }
                 } else
-                    ViewHelper.onError(this,R.string.error_delete_connection)
+                    ViewHelper.showSnackBar(this,R.string.error_delete_connection)
             }
 
         } else {
@@ -360,7 +360,7 @@ class CircuitView : View {
                     }
                     deleteDialog.show()
                 } else
-                    ViewHelper.onError(this,R.string.error_delete_connection)
+                    ViewHelper.showSnackBar(this,R.string.error_delete_connection)
             }
         }
     }
