@@ -7,7 +7,7 @@ import android.view.View
 import com.study.thesuperiorstanislav.edaapp.main.domain.model.Element
 import com.study.thesuperiorstanislav.edaapp.main.domain.model.Pin
 import com.study.thesuperiorstanislav.edaapp.main.domain.model.draw.DrawObject
-import com.study.thesuperiorstanislav.edaapp.main.domain.model.draw.DrawType
+import com.study.thesuperiorstanislav.edaapp.main.domain.model.draw.DrawType.*
 import com.study.thesuperiorstanislav.edaapp.utils.graphics.Placer
 
 class ElementView:View {
@@ -17,7 +17,7 @@ class ElementView:View {
     private var element: Element? = null
 
     private val rect = Rect()
-    private var sizeX = 8
+    private var sizeX = 12
     private var sizeY = 2
     private var step = 30f
     private val nullDrawObject: DrawObject? = null
@@ -29,7 +29,7 @@ class ElementView:View {
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
 
-        val desiredWidth = 16*30
+        val desiredWidth = 24*30
         val widthMode = View.MeasureSpec.getMode(widthMeasureSpec)
         val widthSize = View.MeasureSpec.getSize(widthMeasureSpec)
 
@@ -91,7 +91,7 @@ class ElementView:View {
         val drawPoint = drawMatrix[point.y][point.x]!!.drawPoint
         val path = Path()
         when (drawType) {
-            DrawType.PIN_CORNER_UP_LEFT -> {
+            PIN_CORNER_UP_LEFT -> {
                 path.moveTo(drawPoint.x + step / 2, drawPoint.y + step)
                 path.moveTo(drawPoint.x + step, drawPoint.y + step / 2)
                 path.lineTo(drawPoint.x + step / 2, drawPoint.y + step / 2)
@@ -99,51 +99,64 @@ class ElementView:View {
                 path.lineTo(drawPoint.x + step / 2, drawPoint.y + step)
                 path.moveTo(drawPoint.x + step / 2, drawPoint.y + step)
             }
-            DrawType.PIN_CORNER_UP_RIGHT -> {
+            PIN_CORNER_UP_RIGHT -> {
                 path.moveTo(drawPoint.x, drawPoint.y + step / 2)
                 path.lineTo(drawPoint.x + step / 2, drawPoint.y + step / 2)
                 path.moveTo(drawPoint.x + step / 2, drawPoint.y + step / 2)
                 path.lineTo(drawPoint.x + step / 2, drawPoint.y + step)
                 path.moveTo(drawPoint.x + step / 2, drawPoint.y + step)
             }
-            DrawType.PIN_CORNER_DOWN_LEFT -> {
+            PIN_CORNER_DOWN_LEFT -> {
                 path.moveTo(drawPoint.x + step / 2, drawPoint.y)
                 path.lineTo(drawPoint.x + step / 2, drawPoint.y + step / 2)
                 path.moveTo(drawPoint.x + step / 2, drawPoint.y + step / 2)
                 path.lineTo(drawPoint.x + step, drawPoint.y + step / 2)
                 path.moveTo(drawPoint.x + step, drawPoint.y + step / 2)
             }
-            DrawType.PIN_CORNER_DOWN_RIGHT -> {
+            PIN_CORNER_DOWN_RIGHT -> {
                 path.moveTo(drawPoint.x + step / 2, drawPoint.y)
                 path.lineTo(drawPoint.x + step / 2, drawPoint.y + step / 2)
                 path.moveTo(drawPoint.x + step / 2, drawPoint.y + step / 2)
                 path.lineTo(drawPoint.x, drawPoint.y + step / 2)
                 path.moveTo(drawPoint.x, drawPoint.y + step / 2)
             }
-            DrawType.PIN_SIDE_UP -> {
+            PIN_SIDE_UP -> {
                 path.moveTo(drawPoint.x, drawPoint.y + step / 2)
                 path.lineTo(drawPoint.x + step, drawPoint.y + step / 2)
                 path.moveTo(drawPoint.x + step, drawPoint.y + step / 2)
             }
-            DrawType.PIN_SIDE_DOWN -> {
+            PIN_SIDE_DOWN -> {
                 path.moveTo(drawPoint.x, drawPoint.y + step / 2)
                 path.lineTo(drawPoint.x + step, drawPoint.y + step / 2)
                 path.moveTo(drawPoint.x + step, drawPoint.y + step / 2)
             }
-            DrawType.PIN_SIDE_LEFT -> {
+            PIN_SIDE_LEFT -> {
                 path.moveTo(drawPoint.x + step / 2, drawPoint.y)
                 path.lineTo(drawPoint.x + step / 2, drawPoint.y + step)
                 path.moveTo(drawPoint.x + step / 2, drawPoint.y + step)
             }
-            DrawType.PIN_SIDE_RIGHT -> {
+            PIN_SIDE_RIGHT -> {
                 path.moveTo(drawPoint.x + step / 2, drawPoint.y)
                 path.lineTo(drawPoint.x + step / 2, drawPoint.y + step)
                 path.moveTo(drawPoint.x + step / 2, drawPoint.y + step)
             }
-            DrawType.PIN_LINE_MIDDLE -> {
-
+            PIN_LINE_MIDDLE_VERTICAL -> {
+                path.moveTo(drawPoint.x + step / 4, drawPoint.y)
+                path.lineTo(drawPoint.x + 3 * step / 4, drawPoint.y + step)
+                path.moveTo(drawPoint.x + 3 * step / 4, drawPoint.y + step)
+                path.moveTo(drawPoint.x + 3 * step / 4, drawPoint.y)
+                path.lineTo(drawPoint.x + step / 4, drawPoint.y + step)
+                path.moveTo(drawPoint.x + step / 4, drawPoint.y + step)
             }
-            DrawType.PIN_LINE_UP -> {
+            PIN_LINE_MIDDLE_HORIZONTAL -> {
+                path.moveTo(drawPoint.x, drawPoint.y + step / 4)
+                path.lineTo(drawPoint.x + step, drawPoint.y + 3 * step / 4)
+                path.moveTo(drawPoint.x + step, drawPoint.y + 3 * step / 4)
+                path.moveTo(drawPoint.x, drawPoint.y + 3 * step / 4)
+                path.lineTo(drawPoint.x + step, drawPoint.y + step / 4)
+                path.moveTo(drawPoint.x + step, drawPoint.y + step / 4)
+            }
+            PIN_LINE_UP -> {
                 path.moveTo(drawPoint.x + step / 4, drawPoint.y + step)
                 path.lineTo(drawPoint.x + step / 4, drawPoint.y + step / 2)
                 path.moveTo(drawPoint.x + step / 4, drawPoint.y + step / 2)
@@ -152,7 +165,7 @@ class ElementView:View {
                 path.lineTo(drawPoint.x + 3 * step / 4, drawPoint.y + step)
                 path.moveTo(drawPoint.x + 3 * step / 4, drawPoint.y + step)
             }
-            DrawType.PIN_LINE_DOWN -> {
+            PIN_LINE_DOWN -> {
                 path.moveTo(drawPoint.x + step / 4, drawPoint.y)
                 path.lineTo(drawPoint.x + step / 4, drawPoint.y + step / 2)
                 path.moveTo(drawPoint.x + step / 4, drawPoint.y + step / 2)
@@ -161,7 +174,7 @@ class ElementView:View {
                 path.lineTo(drawPoint.x + 3 * step / 4, drawPoint.y)
                 path.moveTo(drawPoint.x + 3 * step / 4, drawPoint.y)
             }
-            DrawType.PIN_LINE_RIGHT -> {
+            PIN_LINE_RIGHT -> {
                 path.moveTo(drawPoint.x, drawPoint.y + step / 4)
                 path.lineTo(drawPoint.x + step / 2, drawPoint.y + step / 4)
                 path.moveTo(drawPoint.x + step / 2, drawPoint.y + step / 4)
@@ -170,7 +183,7 @@ class ElementView:View {
                 path.lineTo(drawPoint.x, drawPoint.y + 3 * step / 4)
                 path.moveTo(drawPoint.x, drawPoint.y + 3 * step / 4)
             }
-            DrawType.PIN_LINE_LEFT -> {
+            PIN_LINE_LEFT -> {
                 path.moveTo(drawPoint.x + step, drawPoint.y + step / 4)
                 path.lineTo(drawPoint.x + step / 2, drawPoint.y + step / 4)
                 path.moveTo(drawPoint.x + step / 2, drawPoint.y + step / 4)
@@ -200,7 +213,7 @@ class ElementView:View {
         elementPartPaint.style = Paint.Style.STROKE
         elementPartPaint.strokeJoin = Paint.Join.ROUND
         elementPartPaint.strokeCap = Paint.Cap.ROUND
-        elementPartPaint.strokeWidth = 5f
+        elementPartPaint.strokeWidth = 7f
 
         pinPaint.isAntiAlias = true
         pinPaint.isDither = true

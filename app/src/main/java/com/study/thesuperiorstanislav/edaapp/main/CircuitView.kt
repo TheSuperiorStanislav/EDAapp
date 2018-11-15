@@ -404,7 +404,7 @@ class CircuitView : View {
 
             elementView.setElement(element)
             elementFullName.text = ViewHelper.formatResStr(resources,R.string.element_name, "¯\\(°_o)/¯")
-            elementType.text = ViewHelper.formatResStr(resources,R.string.element_name, str)
+            elementType.text = ViewHelper.formatResStr(resources,R.string.element_type, str)
             maxPins.text = ViewHelper.formatResStr(resources,R.string.element_max_pins, element.getPinArraySize())
 
             return listItem

@@ -8,17 +8,24 @@
 
     <string name="element">element</string>
     <string name="element_name">Element name: %1$s</string>
-    <string name="element_type">Element: %1$s</string>
+    <string name="element_type">Element type: %1$s</string>
     <string name="element_max_pins">Max pins: %1$d</string>
     <string-array name="elements_array">
-        <item>DA</item>
-        <item>SB</item>
-        <item>HL</item>
+        <item>B</item>
         <item>C</item>
+        <item>DA</item>
+        <item>DD</item>
+        <item>HA</item>
+        <item>HL</item>
+        <item>MLTP</item>
+        <item>SA</item>
+        <item>SB</item>
+        <item>SNP</item>
+        <item>U</item>
         <item>VD</item>
+        <item>VT</item>
         <item>R</item>
         <item>RX</item>
-        <item>DD</item>
         <item>X</item>
     </string-array>
     <string name="net">net</string>

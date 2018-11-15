@@ -1,5 +1,8 @@
 package com.study.thesuperiorstanislav.edaapp.main.domain.model
 
+import android.util.Log
+import java.lang.Exception
+
 
 class Element(private val name: String){
     private val point = Point(-1,-1)
@@ -48,9 +51,13 @@ class Element(private val name: String){
         return pins
     }
 
-    fun setPin(num: Int,boolean: Boolean, net: Net){
-        pins[num].setIsConnected(boolean)
-        pins[num].setNet(net)
+    fun setPin(num: Int,boolean: Boolean, net: Net) {
+        try {
+            pins[num].setIsConnected(boolean)
+            pins[num].setNet(net)
+        }catch (e:Exception){
+            Log.e("PIN",name)
+        }
     }
 
     fun getPinByPoint(point: Point): Pin? {
@@ -64,23 +71,29 @@ class Element(private val name: String){
 
     fun getDrawType():DrawType{
         return when (typeElement) {
-            "DD", "X" -> {
-                DrawType.SIXTEEN_PART
+            "DD" -> {
+                DrawType.TWENTY_FOUR_PART
             }
-            "SNP"-> {
+            "X" -> {
+                DrawType.TWENTY_PART
+            }
+            "DA" -> {
+                DrawType.EIGHTEEN_PART
+            }
+            "SNP", "R" -> {
                 DrawType.TEN_PART
             }
-            "DA"-> {
-                DrawType.EIGHT_PART
+            "VD" -> {
+                DrawType.FOUR_PART
             }
-            "VT","SA" -> {
+            "VT", "SA", "SB" ,"HA","MLTP"  -> {
                 DrawType.THREE_PART
             }
-            "SB", "HL", "C", "VD", "RX" , "R" -> {
+            "HL", "C", "RX", "HLB","U"-> {
                 DrawType.TWO_PART
             }
             else -> {
-                DrawType.SIXTEEN_PART
+                DrawType.TWO_PART
             }
         }
     }
@@ -95,32 +108,31 @@ class Element(private val name: String){
 
     }
 
-    private fun initPinArraySize(): Int{
+    private fun initPinArraySize(): Int {
         return when (getDrawType()) {
-            DrawType.SIXTEEN_PART -> {
-                16
-            }
-            DrawType.TEN_PART -> {
-                10
-            }
-            DrawType.EIGHT_PART -> {
-                8
-            }
-            DrawType.THREE_PART -> {
-                3
-            }
-            DrawType.TWO_PART -> {
-                2
-            }
+            DrawType.TWENTY_FOUR_PART -> 24
+            DrawType.TWENTY_PART -> 20
+            DrawType.EIGHTEEN_PART -> 18
+            DrawType.SIXTEEN_PART -> 16
+            DrawType.TEN_PART -> 10
+            DrawType.EIGHT_PART -> 8
+            DrawType.FOUR_PART -> 4
+            DrawType.THREE_PART -> 3
+            DrawType.TWO_PART -> 2
         }
     }
 
     enum class DrawType{
         TWO_PART,
         THREE_PART,
+        FOUR_PART,
         EIGHT_PART,
         TEN_PART,
-        SIXTEEN_PART
+        SIXTEEN_PART,
+        EIGHTEEN_PART,
+        TWENTY_PART,
+        TWENTY_FOUR_PART
+
     }
 
 }
