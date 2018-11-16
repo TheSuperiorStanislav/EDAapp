@@ -1,6 +1,10 @@
 package com.study.thesuperiorstanislav.edaapp.main.domain.model
 
 data class Point(var x: Int, var y: Int){
+    override fun toString(): String {
+        return "X: $x, Y: $y"
+    }
+
     override fun equals(other: Any?): Boolean {
         if (other == null) {
             return false
