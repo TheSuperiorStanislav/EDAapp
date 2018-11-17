@@ -23,7 +23,7 @@ class LeeTests {
         val leeAlgorithm = LeeAlgorithm(6,4,drawMatrix)
         val startPoint = Point(5,3)
         val endPoint = Point(0,0)
-        val pathList = leeAlgorithm.doTheThing(startPoint,endPoint)
+        val pathList = leeAlgorithm.doTheThing(startPoint,endPoint,true)
         Assert.assertNotNull(pathList)
     }
 
@@ -43,8 +43,12 @@ class LeeTests {
         val leeAlgorithm = LeeAlgorithm(12, 8, drawMatrix)
         val startPoint = Point(3, 6)
         val endPoint = Point(3, 0)
-        val pathList = leeAlgorithm.doTheThing(startPoint, endPoint)
+        var pathList = leeAlgorithm.doTheThing(startPoint, endPoint,true)
         Assert.assertNotNull(pathList)
+        Assert.assertEquals(7,pathList?.size)
+        pathList = leeAlgorithm.doTheThing(startPoint, endPoint,false)
+        Assert.assertNotNull(pathList)
+        Assert.assertEquals(11,pathList?.size)
     }
 
     @Test
@@ -59,7 +63,7 @@ class LeeTests {
         val leeAlgorithm = LeeAlgorithm(6,4,drawMatrix)
         val startPoint = Point(5,3)
         val endPoint = Point(0,0)
-        val pathList = leeAlgorithm.doTheThing(startPoint,endPoint)
+        val pathList = leeAlgorithm.doTheThing(startPoint,endPoint,false)
         Assert.assertNull(pathList)
     }
 }

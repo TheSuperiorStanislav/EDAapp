@@ -8,10 +8,11 @@ class LeeAlgorithm(private val xMax:Int,
                    private val drawMatrix:Array<Array<DrawObject?>>) {
     private val occupied = -1
     private val empty = -2
-    private val pointDirs = arrayOf(Point(1,0), Point(0,1), Point(-1,0),Point(0,-1))
+    private val pointDirsOrg = arrayOf(Point(1, 0), Point(0, 1), Point(-1, 0), Point(0, -1))
+    private val pointDirsOrgDiagonal = arrayOf(Point(1, 0), Point(1, 1), Point(0, 1), Point(-1, 1), Point(-1, 0), Point(-1, -1), Point(0, -1), Point(1, -1))
     private var step = 0
 
-    fun doTheThing(startPoint: Point, endPoint: Point):List<Point>? {
+    fun doTheThing(startPoint: Point, endPoint: Point, isDiagonal: Boolean): List<Point>? {
         val pathNet = createPathNet()
         pathNet[startPoint.y][startPoint.x] = 0
         pathNet[endPoint.y][endPoint.x] = empty
@@ -22,24 +23,37 @@ class LeeAlgorithm(private val xMax:Int,
             pathNet.forEachIndexed { y, row ->
                 row.forEachIndexed { x, point ->
                     if (point == curPoint)
-                        pointDirs.forEach { p ->
-                            val xDir = p.x + x
-                            val yDir = p.y + y
-                            if (checkDirs(xDir, yDir) && pathNet[yDir][xDir] == empty) {
-                                stillSearching = true
-                                pathNet[yDir][xDir] = 1 + curPoint
-                                step++
-                                drawPathNet(pathNet, step)
-                            }
-                        }
+                        if (isDiagonal)
+                            pointDirsOrgDiagonal.filter { checkDirs(it.x + x, it.y + y) }
+                                    .forEach { p ->
+                                        val xDir = p.x + x
+                                        val yDir = p.y + y
+                                        if (pathNet[yDir][xDir] == empty) {
+                                            stillSearching = true
+                                            pathNet[yDir][xDir] = 1 + curPoint
+                                        }
+                                    }
+                        else
+                            pointDirsOrg.filter { checkDirs(it.x + x, it.y + y) }
+                                    .forEach { p ->
+                                        val xDir = p.x + x
+                                        val yDir = p.y + y
+                                        if (pathNet[yDir][xDir] == empty) {
+                                            stillSearching = true
+                                            pathNet[yDir][xDir] = 1 + curPoint
+                                        }
+                                    }
+
                 }
             }
+            step++
+            drawPathNet(pathNet, step)
             curPoint++
         } while (stillSearching && pathNet[endPoint.y][endPoint.x] == empty)
         return if (pathNet[endPoint.y][endPoint.x] == empty)
             null
         else
-            restorePath(endPoint, pathNet)
+            restorePath(endPoint, pathNet, isDiagonal)
 
     }
 
@@ -54,41 +68,58 @@ class LeeAlgorithm(private val xMax:Int,
         }
     }
 
-    private fun checkDirs(xDir:Int, yDir:Int):Boolean{
-        return yDir>=0 && xDir>=0 && yDir<yMax && xDir<xMax
+    private fun checkDirs(xDir: Int, yDir: Int): Boolean {
+        return yDir >= 0 && xDir >= 0 && yDir < yMax && xDir < xMax
     }
 
-    private fun restorePath(endPoint: Point,pathNet:Array<Array<Int>>):List<Point>{
+    private fun restorePath(endPoint: Point, pathNet: Array<Array<Int>>, isDiagonal: Boolean): List<Point> {
         val pathList = mutableListOf<Point>()
         var len = pathNet[endPoint.y][endPoint.x]
         var x = endPoint.x
         var y = endPoint.y
-        while (len>0){
+        pathList.add(endPoint)
+        while (len > 0) {
             len--
             var isFoundDir = false
-            pointDirs.forEach { p ->
-                val xDir = p.x + x
-                val yDir = p.y + y
-                if (checkDirs(xDir, yDir) && pathNet[yDir][xDir] == len
-                && !isFoundDir) {
-                    x = xDir
-                    y = yDir
-                    isFoundDir = true
-                    pathList.add(0, Point(x,y))
+            if (isDiagonal)
+                pointDirsOrgDiagonal.forEach { p ->
+                    val xDir = p.x + x
+                    val yDir = p.y + y
+                    if (checkDirs(xDir, yDir) && pathNet[yDir][xDir] == len
+                            && !isFoundDir) {
+                        x = xDir
+                        y = yDir
+                        isFoundDir = true
+                        pathList.add(0, Point(x, y))
+                    }
                 }
-            }
+            else
+                pointDirsOrg.forEach { p ->
+                    val xDir = p.x + x
+                    val yDir = p.y + y
+                    if (checkDirs(xDir, yDir) && pathNet[yDir][xDir] == len
+                            && !isFoundDir) {
+                        x = xDir
+                        y = yDir
+                        isFoundDir = true
+                        pathList.add(0, Point(x, y))
+                    }
+                }
         }
         return pathList
     }
 
     //For Testing
-    private fun drawPathNet(pathNet:Array<Array<Int>>,step :Int){
+    private fun drawPathNet(pathNet: Array<Array<Int>>, step: Int) {
+        System.out.println("Step $step")
         pathNet.forEachIndexed { y, row ->
             var str = ""
             row.forEachIndexed { x, point ->
                 val strPoint = when {
                     point > 99 -> "$point"
-                    point > 9 || point < 0 -> " $point"
+                    point > 9 -> " $point"
+                    point == occupied -> "(|)"
+                    point == empty -> "   "
                     else -> "  $point"
                 }
                 str += if (x == 0)
@@ -98,6 +129,5 @@ class LeeAlgorithm(private val xMax:Int,
             }
             System.out.println(str)
         }
-        System.out.println("Step $step")
     }
 }
