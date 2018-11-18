@@ -11,7 +11,7 @@ object CircuitRepository: CircuitDataSource {
             mutableListOf(), mutableListOf())
     private var cacheCircuitName = "Untitled"
     private var cacheDrawMatrix: Array<Array<DrawObject?>> = emptyArray()
-    private var linesList: MutableList<List<Point>> = mutableListOf()
+    private var linesList: MutableList<MutableList<Point>> = mutableListOf()
 
     override fun getCircuit(callback: CircuitDataSource.LoadCircuitCallback) {
         callback.onCircuitLoaded(cacheCircuit, cacheCircuitName,cacheDrawMatrix, linesList)

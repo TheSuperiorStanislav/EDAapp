@@ -15,7 +15,7 @@ class DoTheRouting(private val circuitRepository: CircuitDataSource): UseCase<Do
     override fun executeUseCase(requestValues: RequestValues?) {
         if (requestValues != null) {
             circuitRepository.getCircuit(object : CircuitDataSource.LoadCircuitCallback {
-                override fun onCircuitLoaded(circuit: Circuit, circuitName: String, drawMatrix: Array<Array<DrawObject?>>, linesList: MutableList<List<Point>>) {
+                override fun onCircuitLoaded(circuit: Circuit, circuitName: String, drawMatrix: Array<Array<DrawObject?>>, linesList: MutableList<MutableList<Point>>) {
                     val leeAlgorithm = LeeAlgorithm(drawMatrix)
                     linesList.clear()
                     circuit.listPins.forEach { pin ->
@@ -23,10 +23,23 @@ class DoTheRouting(private val circuitRepository: CircuitDataSource): UseCase<Do
                         val netPoint = pin.getNet()!!.getPoint()
                         val leeReturnData = leeAlgorithm.doTheThing(pinPoint, netPoint, false)
                         if (leeReturnData != null) {
-                            linesList.add(leeReturnData.path)
-                            leeReturnData.path.forEach {
-                                if (drawMatrix[it.y][it.x] == null)
-                                    drawMatrix[it.y][it.x] = DrawObject(DrawPoint(0f, 0f), ObjectType.Connector, DrawType.LINE)
+                            linesList.add(leeReturnData.path as MutableList<Point>)
+                            var firstPoint = linesList.last().first()
+                            val toRemove = mutableListOf<Point>()
+                            linesList.last().forEach {point ->
+                                if (firstPoint != point){
+                                    if (firstPoint.x == point.x || firstPoint.y == point.y){
+                                        toRemove.add(point)
+                                    }else {
+                                        if (!toRemove.isEmpty())
+                                            toRemove.remove(toRemove.last())
+                                        firstPoint = point
+                                    }
+                                }
+                            }
+                            toRemove.remove(toRemove.last())
+                            toRemove.forEach {
+                                linesList.last().remove(it)
                             }
                         }
                     }

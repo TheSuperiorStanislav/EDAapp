@@ -8,7 +8,7 @@ import com.study.thesuperiorstanislav.edaapp.editor.domain.model.draw.DrawObject
 interface CircuitDataSource {
     interface LoadCircuitCallback {
 
-        fun onCircuitLoaded(circuit: Circuit,circuitName: String,drawMatrix: Array<Array<DrawObject?>>,linesList: MutableList<List<Point>>)
+        fun onCircuitLoaded(circuit: Circuit,circuitName: String,drawMatrix: Array<Array<DrawObject?>>,linesList: MutableList<MutableList<Point>>)
 
         fun onDataNotAvailable(error: UseCase.Error)
     }
