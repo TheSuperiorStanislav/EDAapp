@@ -4,14 +4,15 @@ import com.study.thesuperiorstanislav.edaapp.BasePresenter
 import com.study.thesuperiorstanislav.edaapp.BaseView
 import com.study.thesuperiorstanislav.edaapp.UseCase
 import com.study.thesuperiorstanislav.edaapp.main.domain.model.Circuit
+import com.study.thesuperiorstanislav.edaapp.main.domain.model.draw.DrawObject
 
-interface MainContract {
+interface EditorContract {
 
     interface View : BaseView<Presenter> {
 
         var isActive: Boolean
 
-        fun showData(circuit: Circuit,circuitName: String)
+        fun showData(circuit: Circuit,circuitName: String,drawMatrix: Array<Array<DrawObject?>>)
 
         fun saveFile(circuit: Circuit)
 
@@ -26,6 +27,8 @@ interface MainContract {
         fun getData()
 
         fun cacheCircuit(circuit: Circuit,circuitName: String)
+
+        fun cacheDrawMatrix(drawMatrix: Array<Array<DrawObject?>>)
 
         fun saveFile()
     }

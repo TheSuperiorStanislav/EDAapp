@@ -6,7 +6,6 @@ import android.app.Activity
 import android.app.Dialog
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
 import android.view.*
@@ -18,28 +17,28 @@ import com.study.thesuperiorstanislav.edaapp.UseCase
 import com.study.thesuperiorstanislav.edaapp.main.domain.model.Circuit
 import com.study.thesuperiorstanislav.edaapp.utils.file.AllegroFile
 import com.study.thesuperiorstanislav.edaapp.utils.file.Calay90File
-import kotlinx.android.synthetic.main.fragment_main.*
+import kotlinx.android.synthetic.main.fragment_editor.*
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.os.Environment
-import android.provider.OpenableColumns
 import android.util.Log
 import android.widget.EditText
 import android.widget.Switch
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
+import com.study.thesuperiorstanislav.edaapp.main.domain.model.draw.DrawObject
 import com.study.thesuperiorstanislav.edaapp.utils.view.ViewHelper
 import java.io.*
 import java.text.SimpleDateFormat
 import java.util.*
 
 
-class MainFragment : Fragment(), MainContract.View {
+class EditorFragment : Fragment(), EditorContract.View {
 
     override var isActive: Boolean = false
 
-    private var presenter: MainContract.Presenter? = null
+    private var presenter: EditorContract.Presenter? = null
 
     private val READ_REQUEST_CODE = 42
     private val SAVE_SCREENSHOT_CODE = 43
@@ -51,7 +50,7 @@ class MainFragment : Fragment(), MainContract.View {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_main, container, false)
+        return inflater.inflate(R.layout.fragment_editor, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -61,7 +60,7 @@ class MainFragment : Fragment(), MainContract.View {
     }
 
     override fun onCreateOptionsMenu(menu:Menu, inflater:MenuInflater) {
-        inflater.inflate(R.menu.menu_main, menu)
+        inflater.inflate(R.menu.menu_editor, menu)
         super.onCreateOptionsMenu(menu,inflater)
     }
 
@@ -95,12 +94,13 @@ class MainFragment : Fragment(), MainContract.View {
     }
 
 
-    override fun setPresenter(presenter: MainContract.Presenter) {
+    override fun setPresenter(presenter: EditorContract.Presenter) {
         this.presenter = presenter
     }
 
-    override fun showData(circuit: Circuit, circuitName: String) {
-        circuitView.setCircuit(circuit)
+    override fun showData(circuit: Circuit, circuitName: String, drawMatrix: Array<Array<DrawObject?>>) {
+        if (circuitView != null)
+            presenter?.cacheDrawMatrix(circuitView?.setCircuit(circuit, drawMatrix, listOf())!!)
         activity?.title = "${resources.getString(R.string.app_name)}/$circuitName"
         this.circuitName = circuitName
     }

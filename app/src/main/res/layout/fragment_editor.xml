@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".main.MainFragment"
+    tools:context=".main.EditorFragment"
     android:id="@+id/main_layout">
 
     <com.study.thesuperiorstanislav.edaapp.main.CircuitView

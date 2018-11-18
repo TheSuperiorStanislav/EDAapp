@@ -2,15 +2,14 @@ package com.study.thesuperiorstanislav.edaapp.main.domain.usecase
 
 import com.study.thesuperiorstanislav.edaapp.UseCase
 import com.study.thesuperiorstanislav.edaapp.data.source.CircuitDataSource
-import com.study.thesuperiorstanislav.edaapp.main.domain.model.Circuit
+import com.study.thesuperiorstanislav.edaapp.main.domain.model.draw.DrawObject
 
-class CacheDataFromFile (private val circuitRepository: CircuitDataSource): UseCase<CacheDataFromFile.RequestValues, CacheDataFromFile.ResponseValue>() {
+class CacheDrawMatrix (private val circuitRepository: CircuitDataSource): UseCase<CacheDrawMatrix.RequestValues, CacheDrawMatrix.ResponseValue>() {
 
     override fun executeUseCase(requestValues: RequestValues?) {
         if (requestValues != null) {
-            val circuit = requestValues.circuit
-            val circuitName = requestValues.circuitName
-            circuitRepository.cacheCircuit(circuit,circuitName, object : CircuitDataSource.CacheDataCallback {
+            val drawMatrix = requestValues.drawMatrix
+            circuitRepository.cacheDrawMatrix(drawMatrix, object : CircuitDataSource.CacheDataCallback {
                 override fun onSaved() {
                     val responseValue = ResponseValue()
                     useCaseCallback?.onSuccess(responseValue)
@@ -21,7 +20,7 @@ class CacheDataFromFile (private val circuitRepository: CircuitDataSource): UseC
     }
 
 
-    class RequestValues(val circuit: Circuit,val circuitName: String) : UseCase.RequestValues
+    class RequestValues(val drawMatrix: Array<Array<DrawObject?>>) : UseCase.RequestValues
 
     class ResponseValue : UseCase.ResponseValue
 }

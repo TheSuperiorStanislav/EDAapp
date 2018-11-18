@@ -2,6 +2,7 @@ package com.study.thesuperiorstanislav.edaapp.main
 
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.ColorMatrix
 import android.graphics.Rect
 import android.util.AttributeSet
 import android.view.MotionEvent
@@ -18,6 +19,7 @@ import android.widget.ArrayAdapter
 import androidx.annotation.Nullable
 import android.widget.AdapterView.OnItemClickListener
 import com.study.thesuperiorstanislav.edaapp.main.domain.model.*
+import com.study.thesuperiorstanislav.edaapp.main.domain.model.draw.DrawObject
 import com.study.thesuperiorstanislav.edaapp.utils.view.ViewHelper
 
 
@@ -29,6 +31,7 @@ class CircuitView : View {
     private val rect = Rect()
     private var renderHelper: RenderHelper = RenderHelper(rect)
     private var circuit: Circuit = Circuit(mutableListOf(), mutableListOf(), mutableListOf())
+    private var routingLines:List<List<Point>> = listOf()
 
     private var editEvent = EditEvent.VIEW
     private var drawTouch = false
@@ -51,7 +54,7 @@ class CircuitView : View {
         if (drawTouch)
             renderHelper.drawSelectedSquare(startPoint, canvas)
 
-        renderHelper.drawCircuit(circuit, canvas)
+        renderHelper.drawCircuit(circuit, routingLines, canvas)
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -80,10 +83,15 @@ class CircuitView : View {
         return true
     }
 
-    fun setCircuit(circuit: Circuit) {
+    fun setCircuit(circuit: Circuit,drawMatrix: Array<Array<DrawObject?>> ,routingLines:List<List<Point>>): Array<Array<DrawObject?>> {
         this.circuit = circuit
-        renderHelper.isMatrixInit = false
+        this.routingLines = routingLines
+        renderHelper.drawMatrix = drawMatrix
+        renderHelper.isMatrixInit = !drawMatrix.isEmpty()
+        if (!renderHelper.isMatrixInit)
+            renderHelper.initDrawMatrix(circuit)
         invalidate()
+        return renderHelper.drawMatrix
     }
 
     fun changeEditEvent(editEvent: EditEvent) {
