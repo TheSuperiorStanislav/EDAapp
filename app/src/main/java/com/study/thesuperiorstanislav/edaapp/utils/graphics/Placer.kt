@@ -33,6 +33,7 @@ class Placer(private val drawMatrix: Array<Array<DrawObject?>>,
             SIXTEEN_PART -> placeElementHorizontal(element,2,1)
             TEN_PART -> placeElementHorizontal(element,3,1)
             EIGHT_PART -> placeElementHorizontal(element,3, 1)
+            SIX_PART -> placeElementHorizontal(element,3,1)
             FOUR_PART -> placeElementHorizontal(element,3,1)
             THREE_PART -> placeElementHorizontal(element,3, 1)
             TWO_PART -> placeElementHorizontal(element,3, 1)

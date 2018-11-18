@@ -61,8 +61,7 @@ class CircuitView : View {
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
                     when (editEvent) {
-                        EditEvent.VIEW -> {
-                        }
+                        EditEvent.VIEW -> {}
                         EditEvent.ADD_ELEMENT -> addElement(x, y)
                         EditEvent.ADD_NET -> addNet(x, y)
                         EditEvent.EDIT_CONNECTION -> editConnection(x, y)

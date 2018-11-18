@@ -69,32 +69,17 @@ class Element(private val name: String){
         point.y = y
     }
 
-    fun getDrawType():DrawType{
+    fun getDrawType():DrawType {
         return when (typeElement) {
-            "DD" -> {
-                DrawType.TWENTY_FOUR_PART
-            }
-            "X" -> {
-                DrawType.TWENTY_PART
-            }
-            "DA" -> {
-                DrawType.EIGHTEEN_PART
-            }
-            "SNP", "R" -> {
-                DrawType.TEN_PART
-            }
-            "VD" -> {
-                DrawType.FOUR_PART
-            }
-            "VT", "SA", "SB" ,"HA","MLTP"  -> {
-                DrawType.THREE_PART
-            }
-            "HL", "C", "RX", "HLB","U"-> {
-                DrawType.TWO_PART
-            }
-            else -> {
-                DrawType.TWO_PART
-            }
+            "DD" -> DrawType.TWENTY_FOUR_PART
+            "X" -> DrawType.TWENTY_PART
+            "DA" -> DrawType.EIGHTEEN_PART
+            "SNP", "R" -> DrawType.TEN_PART
+            "U" -> DrawType.SIX_PART
+            "VD" -> DrawType.FOUR_PART
+            "VT", "SA", "VS", "SB", "HA", "MLTP" -> DrawType.THREE_PART
+            "HL", "C", "RX", "HLB" -> DrawType.TWO_PART
+            else -> DrawType.TWO_PART
         }
     }
 
@@ -116,6 +101,7 @@ class Element(private val name: String){
             DrawType.SIXTEEN_PART -> 16
             DrawType.TEN_PART -> 10
             DrawType.EIGHT_PART -> 8
+            DrawType.SIX_PART -> 6
             DrawType.FOUR_PART -> 4
             DrawType.THREE_PART -> 3
             DrawType.TWO_PART -> 2
@@ -126,6 +112,7 @@ class Element(private val name: String){
         TWO_PART,
         THREE_PART,
         FOUR_PART,
+        SIX_PART,
         EIGHT_PART,
         TEN_PART,
         SIXTEEN_PART,
