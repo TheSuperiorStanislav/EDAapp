@@ -40,9 +40,9 @@ class EditorFragment : Fragment(), EditorContract.View {
 
     private var presenter: EditorContract.Presenter? = null
 
-    private val READ_REQUEST_CODE = 42
-    private val SAVE_SCREENSHOT_CODE = 43
-    private val SAVE_FILE_CODE = 44
+    private val readRequestCode = 42
+    private val saveScreenShotCode = 43
+    private val saveFileCode = 44
 
     private var dialog: Dialog? = null
     private var circuitName = ""
@@ -106,7 +106,7 @@ class EditorFragment : Fragment(), EditorContract.View {
     }
 
     override fun saveFile(circuit: Circuit) {
-        if (verifyStoragePermissions(SAVE_FILE_CODE)) {
+        if (verifyStoragePermissions(saveFileCode)) {
             val dirPath = "${Environment.getExternalStorageDirectory().absolutePath}/EDA/Circuits"
             val dir = File(dirPath)
             if (!dir.exists())
@@ -145,7 +145,7 @@ class EditorFragment : Fragment(), EditorContract.View {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int,
                                   resultData: Intent?) {
-        if (requestCode == READ_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+        if (requestCode == readRequestCode && resultCode == Activity.RESULT_OK) {
             if (resultData != null) {
                 dialog?.show()
                 val uri: Uri? = resultData.data
@@ -159,14 +159,14 @@ class EditorFragment : Fragment(), EditorContract.View {
     override fun onRequestPermissionsResult(requestCode: Int,
                                              permissions: Array<String>, grantResults: IntArray) {
         when (requestCode) {
-            SAVE_SCREENSHOT_CODE -> {
+            saveScreenShotCode -> {
                 if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED)
                     Log.i("Permission_Storage", "Permission has been denied by user")
                 else {
                     takeScreenShot()
                 }
             }
-            SAVE_FILE_CODE -> {
+            saveFileCode -> {
                 if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED)
                     Log.i("Permission_Storage", "Permission has been denied by user")
                 else {
@@ -197,7 +197,7 @@ class EditorFragment : Fragment(), EditorContract.View {
         val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
         intent.addCategory(Intent.CATEGORY_OPENABLE)
         intent.type = "*/*"
-        startActivityForResult(intent, READ_REQUEST_CODE)
+        startActivityForResult(intent, readRequestCode)
     }
 
     private fun createLoadingDialog():Dialog{
@@ -260,7 +260,7 @@ class EditorFragment : Fragment(), EditorContract.View {
         val timeStamp = SimpleDateFormat
                 .getDateTimeInstance()
                 .format(millis)
-        if (verifyStoragePermissions(SAVE_SCREENSHOT_CODE))
+        if (verifyStoragePermissions(saveScreenShotCode))
             saveScreenShot(getScreenShot(circuitView), "$circuitName-$timeStamp.png")
     }
 
