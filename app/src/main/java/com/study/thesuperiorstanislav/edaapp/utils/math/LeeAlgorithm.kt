@@ -1,7 +1,7 @@
 package com.study.thesuperiorstanislav.edaapp.utils.math
 
-import com.study.thesuperiorstanislav.edaapp.main.domain.model.Point
-import com.study.thesuperiorstanislav.edaapp.main.domain.model.draw.DrawObject
+import com.study.thesuperiorstanislav.edaapp.editor.domain.model.Point
+import com.study.thesuperiorstanislav.edaapp.editor.domain.model.draw.DrawObject
 
 class LeeAlgorithm(private val xMax:Int,
                    private val yMax:Int,

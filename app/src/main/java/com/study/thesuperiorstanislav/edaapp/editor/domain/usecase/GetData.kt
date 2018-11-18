@@ -1,9 +1,9 @@
-package com.study.thesuperiorstanislav.edaapp.main.domain.usecase
+package com.study.thesuperiorstanislav.edaapp.editor.domain.usecase
 
 import com.study.thesuperiorstanislav.edaapp.UseCase
 import com.study.thesuperiorstanislav.edaapp.data.source.CircuitDataSource
-import com.study.thesuperiorstanislav.edaapp.main.domain.model.Circuit
-import com.study.thesuperiorstanislav.edaapp.main.domain.model.draw.DrawObject
+import com.study.thesuperiorstanislav.edaapp.editor.domain.model.Circuit
+import com.study.thesuperiorstanislav.edaapp.editor.domain.model.draw.DrawObject
 
 class GetData (private val circuitRepository: CircuitDataSource): UseCase<GetData.RequestValues, GetData.ResponseValue>() {
 

@@ -1,14 +1,14 @@
-package com.study.thesuperiorstanislav.edaapp.main
+package com.study.thesuperiorstanislav.edaapp.editor
 
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
-import com.study.thesuperiorstanislav.edaapp.main.domain.model.Element
-import com.study.thesuperiorstanislav.edaapp.main.domain.model.Pin
-import com.study.thesuperiorstanislav.edaapp.main.domain.model.draw.DrawObject
-import com.study.thesuperiorstanislav.edaapp.main.domain.model.draw.DrawType
-import com.study.thesuperiorstanislav.edaapp.main.domain.model.draw.DrawType.*
+import com.study.thesuperiorstanislav.edaapp.editor.domain.model.Element
+import com.study.thesuperiorstanislav.edaapp.editor.domain.model.Pin
+import com.study.thesuperiorstanislav.edaapp.editor.domain.model.draw.DrawObject
+import com.study.thesuperiorstanislav.edaapp.editor.domain.model.draw.DrawType
+import com.study.thesuperiorstanislav.edaapp.editor.domain.model.draw.DrawType.*
 import com.study.thesuperiorstanislav.edaapp.utils.graphics.Placer
 
 class ElementView:View {
@@ -193,7 +193,7 @@ class ElementView:View {
         canvas.drawCircle(drawPoint.x + step / 2, drawPoint.y + step / 2, step / 6,
                 pinPaint)
     }
-    
+
     private fun initPaint(){
         elementPartPaint.isAntiAlias = true
         elementPartPaint.isDither = true

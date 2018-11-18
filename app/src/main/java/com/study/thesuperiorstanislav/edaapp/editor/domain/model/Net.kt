@@ -1,4 +1,4 @@
-package com.study.thesuperiorstanislav.edaapp.main.domain.model
+package com.study.thesuperiorstanislav.edaapp.editor.domain.model
 
 class Net(private val name:String) {
     private val pins = mutableListOf<Pin>()

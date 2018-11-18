@@ -1,8 +1,8 @@
-package com.study.thesuperiorstanislav.edaapp.main.domain.usecase
+package com.study.thesuperiorstanislav.edaapp.editor.domain.usecase
 
 import com.study.thesuperiorstanislav.edaapp.UseCase
 import com.study.thesuperiorstanislav.edaapp.data.source.CircuitDataSource
-import com.study.thesuperiorstanislav.edaapp.main.domain.model.draw.DrawObject
+import com.study.thesuperiorstanislav.edaapp.editor.domain.model.draw.DrawObject
 
 class CacheDrawMatrix (private val circuitRepository: CircuitDataSource): UseCase<CacheDrawMatrix.RequestValues, CacheDrawMatrix.ResponseValue>() {
 

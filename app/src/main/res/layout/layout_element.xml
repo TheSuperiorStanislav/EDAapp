@@ -16,7 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <com.study.thesuperiorstanislav.edaapp.main.ElementView
+            <com.study.thesuperiorstanislav.edaapp.editor.ElementView
                 android:id="@+id/elementView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

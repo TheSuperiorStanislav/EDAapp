@@ -1,8 +1,8 @@
 package com.study.thesuperiorstanislav.edaapp.data.source
 
 import com.study.thesuperiorstanislav.edaapp.UseCase
-import com.study.thesuperiorstanislav.edaapp.main.domain.model.Circuit
-import com.study.thesuperiorstanislav.edaapp.main.domain.model.draw.DrawObject
+import com.study.thesuperiorstanislav.edaapp.editor.domain.model.Circuit
+import com.study.thesuperiorstanislav.edaapp.editor.domain.model.draw.DrawObject
 
 interface CircuitDataSource {
     interface LoadCircuitCallback {

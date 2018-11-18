@@ -1,4 +1,4 @@
-package com.study.thesuperiorstanislav.edaapp.main.domain.model
+package com.study.thesuperiorstanislav.edaapp.editor.domain.model
 
 
 class Pin(private val name: String,private var element: Element) {

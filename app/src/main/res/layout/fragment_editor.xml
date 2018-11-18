@@ -3,10 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".main.EditorFragment"
+    tools:context=".editor.EditorFragment"
     android:id="@+id/main_layout">
 
-    <com.study.thesuperiorstanislav.edaapp.main.CircuitView
+    <com.study.thesuperiorstanislav.edaapp.editor.CircuitView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/circuitView"/>

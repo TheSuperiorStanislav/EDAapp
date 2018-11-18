@@ -1,12 +1,12 @@
-package com.study.thesuperiorstanislav.edaapp.main
+package com.study.thesuperiorstanislav.edaapp.editor
 
 import com.study.thesuperiorstanislav.edaapp.UseCase
 import com.study.thesuperiorstanislav.edaapp.UseCaseHandler
-import com.study.thesuperiorstanislav.edaapp.main.domain.model.Circuit
-import com.study.thesuperiorstanislav.edaapp.main.domain.model.draw.DrawObject
-import com.study.thesuperiorstanislav.edaapp.main.domain.usecase.CacheDataFromFile
-import com.study.thesuperiorstanislav.edaapp.main.domain.usecase.CacheDrawMatrix
-import com.study.thesuperiorstanislav.edaapp.main.domain.usecase.GetData
+import com.study.thesuperiorstanislav.edaapp.editor.domain.model.Circuit
+import com.study.thesuperiorstanislav.edaapp.editor.domain.model.draw.DrawObject
+import com.study.thesuperiorstanislav.edaapp.editor.domain.usecase.CacheDataFromFile
+import com.study.thesuperiorstanislav.edaapp.editor.domain.usecase.CacheDrawMatrix
+import com.study.thesuperiorstanislav.edaapp.editor.domain.usecase.GetData
 
 class EditorPresenter(private val editorView: EditorContract.View,
                       private val getData: GetData,

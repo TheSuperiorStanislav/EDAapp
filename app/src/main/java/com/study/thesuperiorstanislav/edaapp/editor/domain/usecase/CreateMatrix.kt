@@ -1,7 +1,7 @@
-package com.study.thesuperiorstanislav.edaapp.main.domain.usecase
+package com.study.thesuperiorstanislav.edaapp.editor.domain.usecase
 
 import com.study.thesuperiorstanislav.edaapp.UseCase
-import com.study.thesuperiorstanislav.edaapp.main.domain.model.Circuit
+import com.study.thesuperiorstanislav.edaapp.editor.domain.model.Circuit
 import com.study.thesuperiorstanislav.edaapp.utils.math.MatrixUtils
 
 class CreateMatrix: UseCase<CreateMatrix.RequestValues, CreateMatrix.ResponseValue>() {

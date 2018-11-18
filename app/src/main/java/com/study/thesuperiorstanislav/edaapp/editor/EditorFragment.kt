@@ -1,4 +1,4 @@
-package com.study.thesuperiorstanislav.edaapp.main
+package com.study.thesuperiorstanislav.edaapp.editor
 
 
 import android.Manifest
@@ -14,7 +14,7 @@ import androidx.fragment.app.Fragment
 
 import com.study.thesuperiorstanislav.edaapp.R
 import com.study.thesuperiorstanislav.edaapp.UseCase
-import com.study.thesuperiorstanislav.edaapp.main.domain.model.Circuit
+import com.study.thesuperiorstanislav.edaapp.editor.domain.model.Circuit
 import com.study.thesuperiorstanislav.edaapp.utils.file.AllegroFile
 import com.study.thesuperiorstanislav.edaapp.utils.file.Calay90File
 import kotlinx.android.synthetic.main.fragment_editor.*
@@ -27,7 +27,7 @@ import android.widget.EditText
 import android.widget.Switch
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
-import com.study.thesuperiorstanislav.edaapp.main.domain.model.draw.DrawObject
+import com.study.thesuperiorstanislav.edaapp.editor.domain.model.draw.DrawObject
 import com.study.thesuperiorstanislav.edaapp.utils.view.ViewHelper
 import java.io.*
 import java.text.SimpleDateFormat

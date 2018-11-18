@@ -1,11 +1,11 @@
 package com.study.thesuperiorstanislav.edaapp.math
 
 
-import com.study.thesuperiorstanislav.edaapp.main.domain.model.Point
-import com.study.thesuperiorstanislav.edaapp.main.domain.model.draw.DrawObject
-import com.study.thesuperiorstanislav.edaapp.main.domain.model.draw.DrawPoint
-import com.study.thesuperiorstanislav.edaapp.main.domain.model.draw.DrawType
-import com.study.thesuperiorstanislav.edaapp.main.domain.model.draw.ObjectType
+import com.study.thesuperiorstanislav.edaapp.editor.domain.model.Point
+import com.study.thesuperiorstanislav.edaapp.editor.domain.model.draw.DrawObject
+import com.study.thesuperiorstanislav.edaapp.editor.domain.model.draw.DrawPoint
+import com.study.thesuperiorstanislav.edaapp.editor.domain.model.draw.DrawType
+import com.study.thesuperiorstanislav.edaapp.editor.domain.model.draw.ObjectType
 import com.study.thesuperiorstanislav.edaapp.utils.math.LeeAlgorithm
 import org.junit.Assert
 import org.junit.Test

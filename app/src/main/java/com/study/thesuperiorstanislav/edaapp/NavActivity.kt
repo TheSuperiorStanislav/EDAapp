@@ -8,11 +8,11 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import android.view.MenuItem
 import com.study.thesuperiorstanislav.edaapp.data.source.CircuitRepository
-import com.study.thesuperiorstanislav.edaapp.main.EditorFragment
-import com.study.thesuperiorstanislav.edaapp.main.EditorPresenter
-import com.study.thesuperiorstanislav.edaapp.main.domain.usecase.CacheDataFromFile
-import com.study.thesuperiorstanislav.edaapp.main.domain.usecase.CacheDrawMatrix
-import com.study.thesuperiorstanislav.edaapp.main.domain.usecase.GetData
+import com.study.thesuperiorstanislav.edaapp.editor.EditorFragment
+import com.study.thesuperiorstanislav.edaapp.editor.EditorPresenter
+import com.study.thesuperiorstanislav.edaapp.editor.domain.usecase.CacheDataFromFile
+import com.study.thesuperiorstanislav.edaapp.editor.domain.usecase.CacheDrawMatrix
+import com.study.thesuperiorstanislav.edaapp.editor.domain.usecase.GetData
 import kotlinx.android.synthetic.main.activity_nav.*
 import kotlinx.android.synthetic.main.app_bar_nav.*
 

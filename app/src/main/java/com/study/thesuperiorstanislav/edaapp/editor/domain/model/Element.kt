@@ -1,4 +1,4 @@
-package com.study.thesuperiorstanislav.edaapp.main.domain.model
+package com.study.thesuperiorstanislav.edaapp.editor.domain.model
 
 import android.util.Log
 import java.lang.Exception

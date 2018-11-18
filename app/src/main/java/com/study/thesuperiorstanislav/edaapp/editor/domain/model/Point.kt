@@ -1,4 +1,4 @@
-package com.study.thesuperiorstanislav.edaapp.main.domain.model
+package com.study.thesuperiorstanislav.edaapp.editor.domain.model
 
 data class Point(var x: Int, var y: Int){
     override fun toString(): String {

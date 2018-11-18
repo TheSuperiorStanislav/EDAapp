@@ -1,4 +1,4 @@
-package com.study.thesuperiorstanislav.edaapp.main.domain.model
+package com.study.thesuperiorstanislav.edaapp.editor.domain.model
 
 class Circuit(val listElements: MutableList<Element>,
               val listNets: MutableList<Net>,

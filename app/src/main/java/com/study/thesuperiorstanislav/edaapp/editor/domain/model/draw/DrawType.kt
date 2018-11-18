@@ -1,4 +1,4 @@
-package com.study.thesuperiorstanislav.edaapp.main.domain.model.draw
+package com.study.thesuperiorstanislav.edaapp.editor.domain.model.draw
 
 enum class DrawType {
     NET,

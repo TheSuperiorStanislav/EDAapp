@@ -4,11 +4,11 @@ import android.graphics.Canvas
 import android.graphics.Rect
 import android.graphics.Paint
 import android.graphics.Color
-import com.study.thesuperiorstanislav.edaapp.main.domain.model.*
-import com.study.thesuperiorstanislav.edaapp.main.domain.model.draw.DrawObject
-import com.study.thesuperiorstanislav.edaapp.main.domain.model.draw.DrawType
-import com.study.thesuperiorstanislav.edaapp.main.domain.model.draw.DrawType.*
-import com.study.thesuperiorstanislav.edaapp.main.domain.model.draw.ObjectType
+import com.study.thesuperiorstanislav.edaapp.editor.domain.model.*
+import com.study.thesuperiorstanislav.edaapp.editor.domain.model.draw.DrawObject
+import com.study.thesuperiorstanislav.edaapp.editor.domain.model.draw.DrawType
+import com.study.thesuperiorstanislav.edaapp.editor.domain.model.draw.DrawType.*
+import com.study.thesuperiorstanislav.edaapp.editor.domain.model.draw.ObjectType
 
 class RenderHelper(private val rect: Rect) {
     var drawMatrix: Array<Array<DrawObject?>>

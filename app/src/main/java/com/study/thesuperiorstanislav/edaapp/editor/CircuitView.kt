@@ -1,8 +1,7 @@
-package com.study.thesuperiorstanislav.edaapp.main
+package com.study.thesuperiorstanislav.edaapp.editor
 
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.ColorMatrix
 import android.graphics.Rect
 import android.util.AttributeSet
 import android.view.MotionEvent
@@ -18,8 +17,8 @@ import androidx.annotation.LayoutRes
 import android.widget.ArrayAdapter
 import androidx.annotation.Nullable
 import android.widget.AdapterView.OnItemClickListener
-import com.study.thesuperiorstanislav.edaapp.main.domain.model.*
-import com.study.thesuperiorstanislav.edaapp.main.domain.model.draw.DrawObject
+import com.study.thesuperiorstanislav.edaapp.editor.domain.model.*
+import com.study.thesuperiorstanislav.edaapp.editor.domain.model.draw.DrawObject
 import com.study.thesuperiorstanislav.edaapp.utils.view.ViewHelper
 
 

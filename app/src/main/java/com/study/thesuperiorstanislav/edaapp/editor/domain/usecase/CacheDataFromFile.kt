@@ -1,8 +1,8 @@
-package com.study.thesuperiorstanislav.edaapp.main.domain.usecase
+package com.study.thesuperiorstanislav.edaapp.editor.domain.usecase
 
 import com.study.thesuperiorstanislav.edaapp.UseCase
 import com.study.thesuperiorstanislav.edaapp.data.source.CircuitDataSource
-import com.study.thesuperiorstanislav.edaapp.main.domain.model.Circuit
+import com.study.thesuperiorstanislav.edaapp.editor.domain.model.Circuit
 
 class CacheDataFromFile (private val circuitRepository: CircuitDataSource): UseCase<CacheDataFromFile.RequestValues, CacheDataFromFile.ResponseValue>() {
 
