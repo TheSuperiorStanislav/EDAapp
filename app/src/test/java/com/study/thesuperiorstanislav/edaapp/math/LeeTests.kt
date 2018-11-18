@@ -15,55 +15,58 @@ class LeeTests {
     fun testLeeSimple() {
         val drawPoint = DrawPoint(0f,0f)
         val obj = DrawObject(drawPoint,ObjectType.Net, DrawType.NET)
+        val emp:DrawObject? = null
         val drawMatrix = arrayOf(
-                arrayOf(obj, null, null, null, null, null),
-                arrayOf(null, obj, null, obj, null, null),
-                arrayOf(null, obj, null, obj, null, obj),
-                arrayOf(null, null, null, null, null, obj))
+                arrayOf(obj, emp, emp, emp, emp, emp),
+                arrayOf(emp, obj, emp, obj, emp, emp),
+                arrayOf(emp, obj, emp, obj, emp, obj),
+                arrayOf(emp, emp, emp, emp, emp, obj))
         val leeAlgorithm = LeeAlgorithm(6,4,drawMatrix)
         val startPoint = Point(5,3)
         val endPoint = Point(0,0)
-        val pathList = leeAlgorithm.doTheThing(startPoint,endPoint,true)
-        Assert.assertNotNull(pathList)
+        val leeReturnData = leeAlgorithm.doTheThing(startPoint,endPoint,true)
+        Assert.assertNotNull(leeReturnData)
     }
 
     @Test
     fun testLeeFromWiki() {
         val drawPoint = DrawPoint(0f, 0f)
         val obj = DrawObject(drawPoint, ObjectType.Net, DrawType.NET)
+        val emp:DrawObject? = null
         val drawMatrix: Array<Array<DrawObject?>> = arrayOf(
-                arrayOf<DrawObject?>(null, null, obj, null, null, null, null, null, null, null, null, null),
-                arrayOf<DrawObject?>(null, null, obj, null, null, null, null, null, null, null, null, null),
-                arrayOf<DrawObject?>(null, null, null, null, null, null, null, null, null, null, null, null),
-                arrayOf<DrawObject?>(null, null, null, null, null, null, null, null, obj, obj, null, null),
-                arrayOf<DrawObject?>(null, obj, obj, obj, obj, null, null, null, null, null, null, null),
-                arrayOf<DrawObject?>(null, null, null, null, null, null, null, null, null, obj, obj, null),
-                arrayOf<DrawObject?>(null, null, null, null, null, null, null, null, null, obj, obj, null),
-                arrayOf<DrawObject?>(null, null, null, null, null, null, null, null, null, null, null, null))
+                arrayOf(emp, emp, obj, emp, emp, emp, emp, emp, emp, emp, emp, emp),
+                arrayOf(emp, emp, obj, emp, emp, emp, emp, emp, emp, emp, emp, emp),
+                arrayOf(emp, emp, emp, emp, emp, emp, emp, emp, emp, emp, emp, emp),
+                arrayOf(emp, emp, emp, emp, emp, emp, emp, emp, obj, obj, emp, emp),
+                arrayOf(emp, obj, obj, obj, obj, emp, emp, emp, emp, emp, emp, emp),
+                arrayOf(emp, emp, emp, emp, emp, emp, emp, emp, emp, obj, obj, emp),
+                arrayOf(emp, emp, emp, emp, emp, emp, emp, emp, emp, obj, obj, emp),
+                arrayOf(emp, emp, emp, emp, emp, emp, emp, emp, emp, emp, emp, emp))
         val leeAlgorithm = LeeAlgorithm(12, 8, drawMatrix)
         val startPoint = Point(3, 6)
         val endPoint = Point(3, 0)
-        var pathList = leeAlgorithm.doTheThing(startPoint, endPoint,true)
-        Assert.assertNotNull(pathList)
-        Assert.assertEquals(7,pathList?.size)
-        pathList = leeAlgorithm.doTheThing(startPoint, endPoint,false)
-        Assert.assertNotNull(pathList)
-        Assert.assertEquals(11,pathList?.size)
+        var leeReturnData = leeAlgorithm.doTheThing(startPoint, endPoint,true)
+        Assert.assertNotNull(leeReturnData?.path)
+        Assert.assertEquals(7,leeReturnData?.path?.size)
+        leeReturnData = leeAlgorithm.doTheThing(startPoint, endPoint,false)
+        Assert.assertNotNull(leeReturnData?.path)
+        Assert.assertEquals(11,leeReturnData?.path?.size)
     }
 
     @Test
     fun testLeeNoPath() {
         val drawPoint = DrawPoint(0f,0f)
         val obj = DrawObject(drawPoint,ObjectType.Net, DrawType.NET)
+        val emp:DrawObject? = null
         val drawMatrix = arrayOf(
-                arrayOf(obj, obj, null, null, null, null),
-                arrayOf(obj, obj, null, obj, null, null),
-                arrayOf(null, obj, null, obj, null, obj),
-                arrayOf(null, null, null, null, null, obj))
+                arrayOf(obj, obj, emp, emp, emp, emp),
+                arrayOf(obj, obj, emp, obj, emp, emp),
+                arrayOf(emp, obj, emp, obj, emp, obj),
+                arrayOf(emp, emp, emp, emp, emp, obj))
         val leeAlgorithm = LeeAlgorithm(6,4,drawMatrix)
         val startPoint = Point(5,3)
         val endPoint = Point(0,0)
-        val pathList = leeAlgorithm.doTheThing(startPoint,endPoint,false)
-        Assert.assertNull(pathList)
+        val leeReturnData = leeAlgorithm.doTheThing(startPoint,endPoint,false)
+        Assert.assertNull(leeReturnData)
     }
 }
