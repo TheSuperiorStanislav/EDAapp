@@ -2,12 +2,13 @@ package com.study.thesuperiorstanislav.edaapp.data.source
 
 import com.study.thesuperiorstanislav.edaapp.UseCase
 import com.study.thesuperiorstanislav.edaapp.editor.domain.model.Circuit
+import com.study.thesuperiorstanislav.edaapp.editor.domain.model.Point
 import com.study.thesuperiorstanislav.edaapp.editor.domain.model.draw.DrawObject
 
 interface CircuitDataSource {
     interface LoadCircuitCallback {
 
-        fun onCircuitLoaded(circuit: Circuit,circuitName: String,drawMatrix: Array<Array<DrawObject?>>)
+        fun onCircuitLoaded(circuit: Circuit,circuitName: String,drawMatrix: Array<Array<DrawObject?>>,linesList: MutableList<List<Point>>)
 
         fun onDataNotAvailable(error: UseCase.Error)
     }

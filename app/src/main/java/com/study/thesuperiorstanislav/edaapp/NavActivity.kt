@@ -13,6 +13,9 @@ import com.study.thesuperiorstanislav.edaapp.editor.EditorPresenter
 import com.study.thesuperiorstanislav.edaapp.editor.domain.usecase.CacheDataFromFile
 import com.study.thesuperiorstanislav.edaapp.editor.domain.usecase.CacheDrawMatrix
 import com.study.thesuperiorstanislav.edaapp.editor.domain.usecase.GetData
+import com.study.thesuperiorstanislav.edaapp.routing.RoutingFragment
+import com.study.thesuperiorstanislav.edaapp.routing.RoutingPresenter
+import com.study.thesuperiorstanislav.edaapp.routing.domain.usecase.DoTheRouting
 import kotlinx.android.synthetic.main.activity_nav.*
 import kotlinx.android.synthetic.main.app_bar_nav.*
 
@@ -83,6 +86,12 @@ class NavActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelected
                     ft.commitAllowingStateLoss()
             }
             R.id.nav_routing -> {
+                val ft = supportFragmentManager.beginTransaction()
+                val fragment = RoutingFragment()
+                fragment.setPresenter(RoutingPresenter(fragment, GetData(CircuitRepository), DoTheRouting(CircuitRepository)))
+                ft.replace(R.id.content_frame, fragment)
+                if (!isFinishing)
+                    ft.commitAllowingStateLoss()
             }
         }
     }

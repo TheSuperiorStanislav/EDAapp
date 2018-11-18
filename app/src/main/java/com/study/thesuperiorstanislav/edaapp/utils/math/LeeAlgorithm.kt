@@ -3,9 +3,9 @@ package com.study.thesuperiorstanislav.edaapp.utils.math
 import com.study.thesuperiorstanislav.edaapp.editor.domain.model.Point
 import com.study.thesuperiorstanislav.edaapp.editor.domain.model.draw.DrawObject
 
-class LeeAlgorithm(private val xMax:Int,
-                   private val yMax:Int,
-                   private val drawMatrix:Array<Array<DrawObject?>>) {
+class LeeAlgorithm(private val drawMatrix:Array<Array<DrawObject?>>) {
+    private val xMax:Int = drawMatrix.first().size
+    private val yMax:Int = drawMatrix.size
     private val occupied = -1
     private val empty = -2
     private val pointDirsOrg = arrayOf(Point(1, 0), Point(0, 1),

@@ -1,6 +1,7 @@
 package com.study.thesuperiorstanislav.edaapp.data.source
 
 import com.study.thesuperiorstanislav.edaapp.editor.domain.model.Circuit
+import com.study.thesuperiorstanislav.edaapp.editor.domain.model.Point
 import com.study.thesuperiorstanislav.edaapp.editor.domain.model.draw.DrawObject
 
 object CircuitRepository: CircuitDataSource {
@@ -10,9 +11,10 @@ object CircuitRepository: CircuitDataSource {
             mutableListOf(), mutableListOf())
     private var cacheCircuitName = "Untitled"
     private var cacheDrawMatrix: Array<Array<DrawObject?>> = emptyArray()
+    private var linesList: MutableList<List<Point>> = mutableListOf()
 
     override fun getCircuit(callback: CircuitDataSource.LoadCircuitCallback) {
-        callback.onCircuitLoaded(cacheCircuit, cacheCircuitName,cacheDrawMatrix)
+        callback.onCircuitLoaded(cacheCircuit, cacheCircuitName,cacheDrawMatrix, linesList)
     }
 
     override fun cacheCircuit(circuit: Circuit, circuitName: String, callback: CircuitDataSource.CacheDataCallback) {
