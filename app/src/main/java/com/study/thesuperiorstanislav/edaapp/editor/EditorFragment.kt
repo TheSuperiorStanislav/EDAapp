@@ -13,7 +13,7 @@ import com.google.android.material.snackbar.Snackbar
 import androidx.fragment.app.Fragment
 
 import com.study.thesuperiorstanislav.edaapp.R
-import com.study.thesuperiorstanislav.edaapp.UseCase
+import com.study.thesuperiorstanislav.edaapp.usecase.UseCase
 import com.study.thesuperiorstanislav.edaapp.editor.domain.model.Circuit
 import com.study.thesuperiorstanislav.edaapp.utils.file.AllegroFile
 import com.study.thesuperiorstanislav.edaapp.utils.file.Calay90File

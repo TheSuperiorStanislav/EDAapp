@@ -1,7 +1,7 @@
 package com.study.thesuperiorstanislav.edaapp.editor
 
-import com.study.thesuperiorstanislav.edaapp.UseCase
-import com.study.thesuperiorstanislav.edaapp.UseCaseHandler
+import com.study.thesuperiorstanislav.edaapp.usecase.UseCase
+import com.study.thesuperiorstanislav.edaapp.usecase.UseCaseHandler
 import com.study.thesuperiorstanislav.edaapp.editor.domain.model.Circuit
 import com.study.thesuperiorstanislav.edaapp.editor.domain.model.draw.DrawObject
 import com.study.thesuperiorstanislav.edaapp.editor.domain.usecase.CacheDataFromFile

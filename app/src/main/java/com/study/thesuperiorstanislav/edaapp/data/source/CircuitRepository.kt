@@ -21,11 +21,13 @@ object CircuitRepository: CircuitDataSource {
         cacheCircuit = circuit
         cacheCircuitName = circuitName
         cacheDrawMatrix = emptyArray()
+        linesList = mutableListOf()
         callback.onSaved()
     }
 
     override fun cacheDrawMatrix(drawMatrix: Array<Array<DrawObject?>>, callback: CircuitDataSource.CacheDataCallback) {
         cacheDrawMatrix = drawMatrix
+        linesList = mutableListOf()
         callback.onSaved()
     }
 }
