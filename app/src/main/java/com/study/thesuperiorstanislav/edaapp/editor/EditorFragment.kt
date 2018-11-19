@@ -18,9 +18,6 @@ import com.study.thesuperiorstanislav.edaapp.editor.domain.model.Circuit
 import com.study.thesuperiorstanislav.edaapp.utils.file.AllegroFile
 import com.study.thesuperiorstanislav.edaapp.utils.file.Calay90File
 import kotlinx.android.synthetic.main.fragment_editor.*
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Color
 import android.os.Environment
 import android.util.Log
 import android.widget.EditText
@@ -28,10 +25,9 @@ import android.widget.Switch
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import com.study.thesuperiorstanislav.edaapp.editor.domain.model.draw.DrawObject
+import com.study.thesuperiorstanislav.edaapp.utils.file.ScreenShotTaker
 import com.study.thesuperiorstanislav.edaapp.utils.view.ViewHelper
 import java.io.*
-import java.text.SimpleDateFormat
-import java.util.*
 
 
 class EditorFragment : Fragment(), EditorContract.View {
@@ -256,12 +252,14 @@ class EditorFragment : Fragment(), EditorContract.View {
     }
 
     private fun takeScreenShot() {
-        val millis = Date().time
-        val timeStamp = SimpleDateFormat
-                .getDateTimeInstance()
-                .format(millis)
-        if (verifyStoragePermissions(saveScreenShotCode))
-            saveScreenShot(getScreenShot(circuitView), "$circuitName-$timeStamp.png")
+        try {
+            val dirPath = ScreenShotTaker.takeScreenShot(this, circuitView, circuitName)
+            if (dirPath != "")
+                ViewHelper.showSnackBar(main_layout, ViewHelper.formatResStr(resources,
+                        R.string.saved_in, dirPath))
+        } catch (e: Exception) {
+            onError(UseCase.Error(UseCase.Error.UNKNOWN_ERROR, e.localizedMessage))
+        }
     }
 
     private fun verifyStoragePermissions(requestCode: Int): Boolean {
@@ -270,39 +268,6 @@ class EditorFragment : Fragment(), EditorContract.View {
             false
         } else
             true
-    }
-
-    private fun getScreenShot(view: View): Bitmap {
-        val bitmap = Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(bitmap)
-        val bgDrawable = view.background
-        if (bgDrawable != null) {
-            bgDrawable.draw(canvas)
-        } else {
-            canvas.drawColor(Color.WHITE)
-        }
-        view.draw(canvas)
-        return bitmap
-    }
-
-    private fun saveScreenShot(bm: Bitmap, fileName: String) {
-        val dirPath = "${Environment.getExternalStorageDirectory().absolutePath}/EDA/ScreenShots"
-        val dir = File(dirPath)
-        if (!dir.exists())
-            dir.mkdirs()
-        val file = File(dirPath, fileName)
-        try {
-            val fOut = FileOutputStream(file)
-            bm.compress(Bitmap.CompressFormat.PNG, 100, fOut)
-            fOut.flush()
-            fOut.close()
-            ViewHelper.showSnackBar(main_layout,ViewHelper.formatResStr(resources,
-                    R.string.saved_in, dirPath))
-        } catch (e: Exception) {
-            e.printStackTrace()
-            onError(UseCase.Error(UseCase.Error.UNKNOWN_ERROR,e.localizedMessage))
-        }
-
     }
 
 }
