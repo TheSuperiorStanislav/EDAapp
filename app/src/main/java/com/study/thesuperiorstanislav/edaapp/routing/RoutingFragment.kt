@@ -2,7 +2,9 @@ package com.study.thesuperiorstanislav.edaapp.routing
 
 
 import android.app.Dialog
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.Snackbar
@@ -12,6 +14,8 @@ import com.study.thesuperiorstanislav.edaapp.usecase.UseCase
 import com.study.thesuperiorstanislav.edaapp.editor.domain.model.Circuit
 import com.study.thesuperiorstanislav.edaapp.editor.domain.model.Point
 import com.study.thesuperiorstanislav.edaapp.editor.domain.model.draw.DrawObject
+import com.study.thesuperiorstanislav.edaapp.utils.file.ScreenShotTaker
+import com.study.thesuperiorstanislav.edaapp.utils.view.ViewHelper
 import kotlinx.android.synthetic.main.dialog_routing_progress.*
 import kotlinx.android.synthetic.main.fragment_routing.*
 
@@ -20,7 +24,6 @@ class RoutingFragment : Fragment(), RoutingContract.View {
     override var isActive: Boolean = false
     private var presenter: RoutingContract.Presenter? = null
 
-    private val readRequestCode = 42
     private val saveScreenShotCode = 43
 
     private var dialogProgress: Dialog? = null
@@ -46,8 +49,23 @@ class RoutingFragment : Fragment(), RoutingContract.View {
         when (item.itemId) {
             R.id.menu_routing ->
                 presenter?.doRouting()
+            R.id.menu_screenshot ->
+                takeScreenShot()
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int,
+                                            permissions: Array<String>, grantResults: IntArray) {
+        when (requestCode) {
+            saveScreenShotCode -> {
+                if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED)
+                    Log.i("Permission_Storage", "Permission has been denied by user")
+                else {
+                    takeScreenShot()
+                }
+            }
+        }
     }
 
     override fun onResume() {
@@ -96,6 +114,17 @@ class RoutingFragment : Fragment(), RoutingContract.View {
         progressDialog.setCancelable(false)
         progressDialog.setCanceledOnTouchOutside(false)
         return progressDialog
+    }
+
+    private fun takeScreenShot() {
+        try {
+            val dirPath = ScreenShotTaker.takeScreenShot(this, circuitView, circuitName)
+            if (dirPath != "")
+                ViewHelper.showSnackBar(main_layout, ViewHelper.formatResStr(resources,
+                        R.string.saved_in, dirPath))
+        } catch (e: Exception) {
+            onError(UseCase.Error(UseCase.Error.UNKNOWN_ERROR, e.localizedMessage))
+        }
     }
 
 }

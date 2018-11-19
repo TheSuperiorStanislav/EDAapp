@@ -79,4 +79,5 @@
     <!--Navigation drawer text(auto gen)-->
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="do_routing">Do routing</string>
 </resources>
