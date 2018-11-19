@@ -1,4 +1,4 @@
-package com.study.thesuperiorstanislav.edaapp
+package com.study.thesuperiorstanislav.edaapp.usecase
 
 /**
  * Use cases are the entry points to the domain layer.

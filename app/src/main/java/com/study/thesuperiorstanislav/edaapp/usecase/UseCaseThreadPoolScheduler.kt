@@ -1,7 +1,6 @@
-package com.study.thesuperiorstanislav.edaapp
+package com.study.thesuperiorstanislav.edaapp.usecase
 
 import android.os.Handler
-import com.study.thesuperiorstanislav.edaapp.UseCase
 
 import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.ThreadPoolExecutor
@@ -28,6 +27,11 @@ class UseCaseThreadPoolScheduler : UseCaseScheduler {
     override fun <V : UseCase.ResponseValue> notifyResponse(response: V,
                                                             useCaseCallback: UseCase.UseCaseCallback<V>) {
         mHandler.post { useCaseCallback.onSuccess(response) }
+    }
+
+    override fun <V : UseCase.ResponseValue, PV : UseCaseWithProgress.ProgressValue> notifyProgress(progress: PV,
+                                                            useCaseCallback: UseCaseWithProgress.UseCaseCallback<PV,V>) {
+        mHandler.post { useCaseCallback.onProgress(progress) }
     }
 
     override fun <V : UseCase.ResponseValue> onError(error: UseCase.Error,

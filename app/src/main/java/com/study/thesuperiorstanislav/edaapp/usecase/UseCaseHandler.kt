@@ -1,4 +1,4 @@
-package com.study.thesuperiorstanislav.edaapp
+package com.study.thesuperiorstanislav.edaapp.usecase
 
 /**
  * Runs [UseCase]s using a [UseCaseScheduler].
@@ -13,8 +13,8 @@ object UseCaseHandler {
 
         try {
             mUseCaseScheduler?.execute(Runnable { useCase.run() })
-        }catch (e:Exception){
-            callback.onError(UseCase.Error(UseCase.Error.UNKNOWN_ERROR,"Сложнаа("))
+        } catch (e: Exception) {
+            callback.onError(UseCase.Error(UseCase.Error.UNKNOWN_ERROR, "Сложнаа("))
         }
     }
 
@@ -24,17 +24,17 @@ object UseCaseHandler {
 
     private fun <V : UseCase.ResponseValue> notifyError(error: UseCase.Error,
                                                         useCaseCallback: UseCase.UseCaseCallback<V>) {
-        mUseCaseScheduler?.onError(error,useCaseCallback)
+        mUseCaseScheduler?.onError(error, useCaseCallback)
     }
 
     private class UiCallbackWrapper<V : UseCase.ResponseValue>(private val mCallback: UseCase.UseCaseCallback<V>,
                                                                private val mUseCaseHandler: UseCaseHandler) : UseCase.UseCaseCallback<V> {
         override fun onSuccess(response: V) {
-            mUseCaseHandler.notifyResponse(response, mCallback)
+            notifyResponse(response, mCallback)
         }
 
         override fun onError(error: UseCase.Error) {
-            mUseCaseHandler.notifyError(error,mCallback)
+            notifyError(error, mCallback)
         }
     }
 
