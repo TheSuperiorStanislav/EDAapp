@@ -21,7 +21,7 @@ class LeeTests {
                 arrayOf(emp, obj, emp, obj, emp, emp),
                 arrayOf(emp, obj, emp, obj, emp, obj),
                 arrayOf(emp, emp, emp, emp, emp, obj))
-        val leeAlgorithm = LeeAlgorithm(6,4,drawMatrix)
+        val leeAlgorithm = LeeAlgorithm(drawMatrix)
         val startPoint = Point(5,3)
         val endPoint = Point(0,0)
         val leeReturnData = leeAlgorithm.doTheThing(startPoint,endPoint,true)
@@ -42,7 +42,7 @@ class LeeTests {
                 arrayOf(emp, emp, emp, emp, emp, emp, emp, emp, emp, obj, obj, emp),
                 arrayOf(emp, emp, emp, emp, emp, emp, emp, emp, emp, obj, obj, emp),
                 arrayOf(emp, emp, emp, emp, emp, emp, emp, emp, emp, emp, emp, emp))
-        val leeAlgorithm = LeeAlgorithm(12, 8, drawMatrix)
+        val leeAlgorithm = LeeAlgorithm(drawMatrix)
         val startPoint = Point(3, 6)
         val endPoint = Point(3, 0)
         var leeReturnData = leeAlgorithm.doTheThing(startPoint, endPoint,true)
@@ -63,7 +63,7 @@ class LeeTests {
                 arrayOf(obj, obj, emp, obj, emp, emp),
                 arrayOf(emp, obj, emp, obj, emp, obj),
                 arrayOf(emp, emp, emp, emp, emp, obj))
-        val leeAlgorithm = LeeAlgorithm(6,4,drawMatrix)
+        val leeAlgorithm = LeeAlgorithm(drawMatrix)
         val startPoint = Point(5,3)
         val endPoint = Point(0,0)
         val leeReturnData = leeAlgorithm.doTheThing(startPoint,endPoint,false)
