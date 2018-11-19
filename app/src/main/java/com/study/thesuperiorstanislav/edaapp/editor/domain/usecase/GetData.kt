@@ -11,7 +11,7 @@ class GetData (private val circuitRepository: CircuitDataSource): UseCase<GetDat
     override fun executeUseCase(requestValues: RequestValues?) {
         if (requestValues != null) {
             circuitRepository.getCircuit(object : CircuitDataSource.LoadCircuitCallback {
-                override fun onCircuitLoaded(circuit: Circuit, circuitName: String, drawMatrix: Array<Array<DrawObject?>>, linesList: MutableList<List<Point>>) {
+                override fun onCircuitLoaded(circuit: Circuit, circuitName: String, drawMatrix: Array<Array<DrawObject?>>, linesList: MutableList<MutableList<Point>>) {
                     val responseValue = ResponseValue(circuit, circuitName, drawMatrix, linesList)
                     useCaseCallback?.onSuccess(responseValue)
                 }
@@ -27,5 +27,5 @@ class GetData (private val circuitRepository: CircuitDataSource): UseCase<GetDat
 
     class RequestValues : UseCase.RequestValues
 
-    class ResponseValue(val circuit: Circuit, val circuitName: String, val drawMatrix: Array<Array<DrawObject?>>, val linesList: MutableList<List<Point>>) : UseCase.ResponseValue
+    class ResponseValue(val circuit: Circuit, val circuitName: String, val drawMatrix: Array<Array<DrawObject?>>, val linesList: MutableList<MutableList<Point>>) : UseCase.ResponseValue
 }

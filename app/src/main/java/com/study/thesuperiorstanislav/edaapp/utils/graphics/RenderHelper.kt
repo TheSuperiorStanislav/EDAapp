@@ -11,7 +11,19 @@ import com.study.thesuperiorstanislav.edaapp.editor.domain.model.draw.DrawType.*
 import com.study.thesuperiorstanislav.edaapp.editor.domain.model.draw.ObjectType
 
 class RenderHelper(private val rect: Rect) {
-    var drawMatrix: Array<Array<DrawObject?>>
+    var drawMatrix: Array<Array<DrawObject?>> = emptyArray()
+        set(value) {
+            if (value.isEmpty()) {
+                val nullDrawObject: DrawObject? = null
+                val fixedVal = Array(sizeY) { Array(sizeX) { nullDrawObject } }
+                field = fixedVal
+                placer = Placer(fixedVal, sizeX, sizeY, step)
+
+            } else {
+                field = value
+                placer = Placer(field, sizeX, sizeY, step)
+            }
+        }
     var isMatrixInit = false
     var step = 0f
 
@@ -32,12 +44,13 @@ class RenderHelper(private val rect: Rect) {
         sizeY = (rect.bottom / step).toInt()
         val nullDrawObject: DrawObject? = null
         drawMatrix = Array(sizeY) { Array(sizeX) { nullDrawObject } }
+        placer = Placer(drawMatrix , sizeX, sizeY, step)
         initPaint()
-        placer = Placer(drawMatrix, sizeX, sizeY, step)
+
     }
 
     fun initDrawMatrix(circuit: Circuit){
-        drawMatrix = placer.initDrawMatrix(circuit)
+        placer.initDrawMatrix(circuit)
         isMatrixInit = true
     }
 
