@@ -3,6 +3,7 @@ package com.study.thesuperiorstanislav.edaapp.routing
 
 import android.app.Dialog
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -20,6 +21,9 @@ import com.study.thesuperiorstanislav.edaapp.utils.file.ScreenShotTaker
 import com.study.thesuperiorstanislav.edaapp.utils.view.ViewHelper
 import kotlinx.android.synthetic.main.dialog_routing_progress.*
 import kotlinx.android.synthetic.main.fragment_routing.*
+import android.view.Display
+
+
 
 class RoutingFragment : Fragment(), RoutingContract.View {
 

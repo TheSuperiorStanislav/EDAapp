@@ -47,13 +47,14 @@ class CircuitView : View {
 
         renderHelper.drawLines(canvas)
 
-        if (!renderHelper.isMatrixInit)
+        if (!renderHelper.isMatrixInit && rect.bottom < rect.right)
             renderHelper.initDrawMatrix(circuit)
 
         if (drawTouch)
             renderHelper.drawSelectedSquare(startPoint, canvas)
 
-        renderHelper.drawCircuit(circuit, routingLines, canvas)
+        if (renderHelper.isMatrixInit)
+            renderHelper.drawCircuit(circuit, routingLines, canvas)
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -87,6 +88,8 @@ class CircuitView : View {
         this.routingLines = routingLines
         renderHelper.drawMatrix = drawMatrix
         renderHelper.isMatrixInit = !drawMatrix.isEmpty()
+        if (rect.bottom > rect.right)
+            return emptyArray()
         if (!renderHelper.isMatrixInit)
             renderHelper.initDrawMatrix(circuit)
         invalidate()

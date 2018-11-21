@@ -4,7 +4,6 @@ import android.graphics.Canvas
 import android.graphics.Rect
 import android.graphics.Paint
 import android.graphics.Color
-import android.util.Log
 import com.study.thesuperiorstanislav.edaapp.editor.domain.model.*
 import com.study.thesuperiorstanislav.edaapp.editor.domain.model.draw.DrawObject
 import com.study.thesuperiorstanislav.edaapp.editor.domain.model.draw.DrawType
@@ -132,23 +131,19 @@ class RenderHelper(private val rect: Rect) {
     }
 
     fun drawCircuit(circuit: Circuit,routingLines:List<List<Point>>,canvas: Canvas) {
-        try {
-            if (routingLines.isEmpty())
-                circuit.listPins.forEach { pin ->
-                    drawConnectorRubber(pin.getNet()!!, pin, canvas)
-                }
-            else
-                routingLines.forEach { line ->
-                    drawConnectorRout(line, canvas)
-                }
-            circuit.listElements.forEach {
-                drawElement(it, canvas)
+        if (routingLines.isEmpty())
+            circuit.listPins.forEach { pin ->
+                drawConnectorRubber(pin.getNet()!!, pin, canvas)
             }
-            circuit.listNets.forEach {
-                drawNet(it, canvas)
+        else
+            routingLines.forEach { line ->
+                drawConnectorRout(line, canvas)
             }
-        }catch (e:ArrayIndexOutOfBoundsException){
-            Log.i("CircuitView","rotation bug")
+        circuit.listElements.forEach {
+            drawElement(it, canvas)
+        }
+        circuit.listNets.forEach {
+            drawNet(it, canvas)
         }
     }
 

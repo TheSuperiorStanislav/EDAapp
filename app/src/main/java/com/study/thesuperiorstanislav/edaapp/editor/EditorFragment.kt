@@ -95,8 +95,11 @@ class EditorFragment : Fragment(), EditorContract.View {
     }
 
     override fun showData(circuit: Circuit, circuitName: String, drawMatrix: Array<Array<DrawObject?>>) {
-        if (circuitView != null)
-            presenter?.cacheDrawMatrix(circuitView?.setCircuit(circuit, drawMatrix, listOf())!!)
+        if (circuitView != null) {
+            val drawMatrixToCache = circuitView?.setCircuit(circuit, drawMatrix, listOf())!!
+            if (!drawMatrixToCache.isEmpty())
+                presenter?.cacheDrawMatrix(circuitView?.setCircuit(circuit, drawMatrix, listOf())!!)
+        }
         activity?.title = "${resources.getString(R.string.app_name)}/$circuitName"
         this.circuitName = circuitName
     }
