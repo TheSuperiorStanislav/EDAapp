@@ -28,6 +28,6 @@ interface RoutingContract {
 
         fun getData()
 
-        fun doRouting()
+        fun doRouting(isAStarAlgorithm:Boolean,isDiagonal:Boolean,isIntersectionAllowed:Boolean)
     }
 }

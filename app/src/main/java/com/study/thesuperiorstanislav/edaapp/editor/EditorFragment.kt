@@ -206,7 +206,7 @@ class EditorFragment : Fragment(), EditorContract.View {
     }
 
     private fun showSaveFileDialog(){
-        val pairForDialog = ViewHelper.createViewWithEditTextAndSwitch(context!!, resources)
+        val pairForDialog = ViewHelper.createViewSaveFile(context!!, resources)
 
         val saveDialog: AlertDialog = this.let {
             val builder = AlertDialog.Builder(context!!)

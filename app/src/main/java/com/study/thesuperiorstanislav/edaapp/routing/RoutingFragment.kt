@@ -6,6 +6,8 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.widget.Switch
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.Snackbar
 
@@ -48,7 +50,7 @@ class RoutingFragment : Fragment(), RoutingContract.View {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.menu_routing ->
-                presenter?.doRouting()
+                showRoutingSettings()
             R.id.menu_screenshot ->
                 takeScreenShot()
         }
@@ -125,6 +127,32 @@ class RoutingFragment : Fragment(), RoutingContract.View {
         } catch (e: Exception) {
             onError(UseCase.Error(UseCase.Error.UNKNOWN_ERROR, e.localizedMessage))
         }
+    }
+
+    private fun showRoutingSettings(){
+        val pairForDialog = ViewHelper.createViewRoutingSettings(context!!, resources)
+        val view = pairForDialog.first
+
+        val routingDialog: AlertDialog = this.let {
+            val builder = AlertDialog.Builder(context!!)
+            builder.apply {
+                setTitle(R.string.start_routing)
+                setMessage(R.string.routing_settings)
+                setView(view)
+                setPositiveButton(R.string.start) { _, _ ->
+                    val switchAlgorithm = view.findViewById<Switch>(pairForDialog.second[0])!!.isChecked
+                    val switchDirection = view.findViewById<Switch>(pairForDialog.second[1])!!.isChecked
+                    val switchIntersection = view.findViewById<Switch>(pairForDialog.second[2])!!.isChecked
+                    presenter?.doRouting(switchAlgorithm,switchDirection,switchIntersection)
+                }
+                setNegativeButton(R.string.cancel) { dialog, _ ->
+                    dialog.dismiss()
+                }
+            }
+            builder.create()
+        }
+
+        routingDialog.show()
     }
 
 }

@@ -137,7 +137,7 @@ class CircuitView : View {
 
     private fun addNet(x: Float, y: Float) {
         startPoint = makePoint(x,y)
-        val pairForDialog = ViewHelper.createViewWithEditText(context,resources)
+        val pairForDialog = ViewHelper.createViewAddNet(context,resources)
 
         val addDialog: AlertDialog = this.let {
             val builder = AlertDialog.Builder(context)

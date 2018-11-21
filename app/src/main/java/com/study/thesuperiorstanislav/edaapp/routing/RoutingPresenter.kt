@@ -40,8 +40,8 @@ class RoutingPresenter(private val routingView: RoutingContract.View,
                 })
     }
 
-    override fun doRouting() {
-        val requestValue = DoTheRouting.RequestValue()
+    override fun doRouting(isAStarAlgorithm: Boolean, isDiagonal: Boolean, isIntersectionAllowed: Boolean) {
+        val requestValue = DoTheRouting.RequestValue(isAStarAlgorithm,isDiagonal,isIntersectionAllowed)
         UseCaseHandlerWithPostProgress.execute(doTheRouting, requestValue,
                 object : UseCaseWithProgress.UseCaseCallback<DoTheRouting.ProgressValue,DoTheRouting.ResponseValue> {
                     override fun onSuccess(response: DoTheRouting.ResponseValue) {
