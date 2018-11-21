@@ -1,9 +1,9 @@
 package com.study.thesuperiorstanislav.edaapp.utils.file
 
-import com.study.thesuperiorstanislav.edaapp.main.domain.model.Circuit
-import com.study.thesuperiorstanislav.edaapp.main.domain.model.Element
-import com.study.thesuperiorstanislav.edaapp.main.domain.model.Net
-import com.study.thesuperiorstanislav.edaapp.main.domain.model.Pin
+import com.study.thesuperiorstanislav.edaapp.editor.domain.model.Circuit
+import com.study.thesuperiorstanislav.edaapp.editor.domain.model.Element
+import com.study.thesuperiorstanislav.edaapp.editor.domain.model.Net
+import com.study.thesuperiorstanislav.edaapp.editor.domain.model.Pin
 import java.io.BufferedReader
 import java.lang.StringBuilder
 

@@ -1,14 +1,14 @@
 package com.study.thesuperiorstanislav.edaapp.utils.graphics
 
-import com.study.thesuperiorstanislav.edaapp.main.domain.model.Circuit
-import com.study.thesuperiorstanislav.edaapp.main.domain.model.Element
-import com.study.thesuperiorstanislav.edaapp.main.domain.model.Element.DrawType.*
-import com.study.thesuperiorstanislav.edaapp.main.domain.model.Net
-import com.study.thesuperiorstanislav.edaapp.main.domain.model.Point
-import com.study.thesuperiorstanislav.edaapp.main.domain.model.draw.DrawObject
-import com.study.thesuperiorstanislav.edaapp.main.domain.model.draw.DrawPoint
-import com.study.thesuperiorstanislav.edaapp.main.domain.model.draw.DrawType
-import com.study.thesuperiorstanislav.edaapp.main.domain.model.draw.ObjectType
+import com.study.thesuperiorstanislav.edaapp.editor.domain.model.Circuit
+import com.study.thesuperiorstanislav.edaapp.editor.domain.model.Element
+import com.study.thesuperiorstanislav.edaapp.editor.domain.model.Element.DrawType.*
+import com.study.thesuperiorstanislav.edaapp.editor.domain.model.Net
+import com.study.thesuperiorstanislav.edaapp.editor.domain.model.Point
+import com.study.thesuperiorstanislav.edaapp.editor.domain.model.draw.DrawObject
+import com.study.thesuperiorstanislav.edaapp.editor.domain.model.draw.DrawPoint
+import com.study.thesuperiorstanislav.edaapp.editor.domain.model.draw.DrawType
+import com.study.thesuperiorstanislav.edaapp.editor.domain.model.draw.ObjectType
 import org.jetbrains.anko.collections.forEachReversedWithIndex
 
 class Placer(private val drawMatrix: Array<Array<DrawObject?>>,
@@ -19,8 +19,8 @@ class Placer(private val drawMatrix: Array<Array<DrawObject?>>,
         circuit.listElements.forEach {
             placeElement(it)
         }
-        circuit.listNets.forEach {
-            placeNet(it)
+        circuit.listNets.forEachReversedWithIndex { _, net ->
+            placeNet(net)
         }
         return drawMatrix
     }
@@ -33,6 +33,7 @@ class Placer(private val drawMatrix: Array<Array<DrawObject?>>,
             SIXTEEN_PART -> placeElementHorizontal(element,2,1)
             TEN_PART -> placeElementHorizontal(element,3,1)
             EIGHT_PART -> placeElementHorizontal(element,3, 1)
+            SIX_PART -> placeElementHorizontal(element,3,1)
             FOUR_PART -> placeElementHorizontal(element,3,1)
             THREE_PART -> placeElementHorizontal(element,3, 1)
             TWO_PART -> placeElementHorizontal(element,3, 1)
@@ -120,7 +121,7 @@ class Placer(private val drawMatrix: Array<Array<DrawObject?>>,
 
     private fun isElementPlacedHorizontal(element: Element, point: Point):Boolean{
         return when (element.getDrawType()) {
-            TWO_PART,THREE_PART -> drawMatrix[point.y][point.x + 1] != null
+            TWO_PART, THREE_PART, FOUR_PART -> drawMatrix[point.y][point.x + 1] != null
             else -> drawMatrix[point.y][point.x + 2] != null
         }
     }

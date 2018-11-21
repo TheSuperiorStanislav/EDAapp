@@ -1,20 +1,33 @@
 package com.study.thesuperiorstanislav.edaapp.utils.graphics
 
 import android.graphics.Canvas
-import android.graphics.Path
 import android.graphics.Rect
 import android.graphics.Paint
 import android.graphics.Color
-import com.study.thesuperiorstanislav.edaapp.main.domain.model.*
-import com.study.thesuperiorstanislav.edaapp.main.domain.model.draw.DrawObject
-import com.study.thesuperiorstanislav.edaapp.main.domain.model.draw.DrawType.*
-import com.study.thesuperiorstanislav.edaapp.main.domain.model.draw.ObjectType
+import com.study.thesuperiorstanislav.edaapp.editor.domain.model.*
+import com.study.thesuperiorstanislav.edaapp.editor.domain.model.draw.DrawObject
+import com.study.thesuperiorstanislav.edaapp.editor.domain.model.draw.DrawType
+import com.study.thesuperiorstanislav.edaapp.editor.domain.model.draw.DrawType.*
+import com.study.thesuperiorstanislav.edaapp.editor.domain.model.draw.ObjectType
 
 class RenderHelper(private val rect: Rect) {
-    private var placer: Placer
-    private var drawMatrix: Array<Array<DrawObject?>>
-    var isMatrixInit = false
+    var drawMatrix: Array<Array<DrawObject?>> = emptyArray()
+        set(value) {
+            if (value.isEmpty()) {
+                val nullDrawObject: DrawObject? = null
+                val fixedVal = Array(sizeY) { Array(sizeX) { nullDrawObject } }
+                field = fixedVal
+                placer = Placer(fixedVal, sizeX, sizeY, step)
 
+            } else {
+                field = value
+                placer = Placer(field, sizeX, sizeY, step)
+            }
+        }
+    var isMatrixInit = false
+    var step = 0f
+
+    private var placer: Placer
     private val linesPaint = Paint()
     private val netPaint = Paint()
     private val elementPartPaint = Paint()
@@ -22,10 +35,8 @@ class RenderHelper(private val rect: Rect) {
     private val pinConnectedPaint = Paint()
     private val connectorPaint = Paint()
     private val selectedPaint = Paint()
-
     private var sizeX = 60
     private var sizeY:Int
-    var step = 0f
 
     init {
         val maxX = rect.right.toFloat()
@@ -33,12 +44,13 @@ class RenderHelper(private val rect: Rect) {
         sizeY = (rect.bottom / step).toInt()
         val nullDrawObject: DrawObject? = null
         drawMatrix = Array(sizeY) { Array(sizeX) { nullDrawObject } }
+        placer = Placer(drawMatrix , sizeX, sizeY, step)
         initPaint()
-        placer = Placer(drawMatrix, sizeX, sizeY, step)
+
     }
 
     fun initDrawMatrix(circuit: Circuit){
-        drawMatrix = placer.initDrawMatrix(circuit)
+        placer.initDrawMatrix(circuit)
         isMatrixInit = true
     }
 
@@ -118,10 +130,15 @@ class RenderHelper(private val rect: Rect) {
         }
     }
 
-    fun drawCircuit(circuit: Circuit,canvas: Canvas) {
-        circuit.listPins.forEach { pin ->
-            drawConnectorRubber(pin.getNet()!!, pin, canvas)
-        }
+    fun drawCircuit(circuit: Circuit,routingLines:List<List<Point>>,canvas: Canvas) {
+        if (routingLines.isEmpty())
+            circuit.listPins.forEach { pin ->
+                drawConnectorRubber(pin.getNet()!!, pin, canvas)
+            }
+        else
+            routingLines.forEach { line ->
+                drawConnectorRout(line, canvas)
+            }
         circuit.listElements.forEach {
             drawElement(it, canvas)
         }
@@ -131,123 +148,106 @@ class RenderHelper(private val rect: Rect) {
     }
 
     private fun drawElement(element: Element, canvas: Canvas) {
-        element.getPins().forEach {
-            drawPin(it, canvas)
+        val elementSize = element.getPins().size-1
+        val pinFirst = element.getPins().first().getPoint()
+        val pinLast = element.getPins().last().getPoint()
+        val pinSecond = element.getPins()[1].getPoint()
+        val pinPenultimate = element.getPins()[elementSize-1].getPoint()
+        val drawFirst = drawMatrix[pinFirst.y][pinFirst.x]!!.drawPoint
+        val drawLast = drawMatrix[pinLast.y][pinLast.x]!!.drawPoint
+        val drawSecond = drawMatrix[pinSecond.y][pinSecond.x]!!.drawPoint
+        val drawPenultimate = drawMatrix[pinPenultimate.y][pinPenultimate.x]!!.drawPoint
+        when (element.getDrawType()) {
+            Element.DrawType.TWO_PART -> {
+                if (drawMatrix[pinFirst.y][pinFirst.x]!!.drawType == DrawType.PIN_LINE_UP) {
+                    canvas.drawLine(drawFirst.x + step / 4, drawFirst.y + step / 2,
+                            drawLast.x + step / 4, drawLast.y + step / 2, elementPartPaint)
+                    canvas.drawLine(drawFirst.x + 3 * step / 4, drawFirst.y + step / 2,
+                            drawLast.x + 3 * step / 4, drawLast.y + step / 2, elementPartPaint)
+                } else {
+                    canvas.drawLine(drawFirst.x + step / 2, drawFirst.y + step / 4,
+                            drawLast.x + step / 2, drawLast.y + step / 4, elementPartPaint)
+                    canvas.drawLine(drawFirst.x + step / 2, drawFirst.y + 3 * step / 4,
+                            drawLast.x + step / 2, drawLast.y + 3 * step / 4, elementPartPaint)
+                }
+                element.getPins().forEach {
+                    drawPinCircle(it, canvas)
+                }
+            }
+            Element.DrawType.THREE_PART -> {
+                element.getPins().forEach {
+                    drawPin(it, canvas)
+                }
+            }
+            else -> {
+                canvas.drawLine(drawFirst.x + step / 2, drawFirst.y + step / 2,
+                        drawPenultimate.x + step / 2, drawPenultimate.y + step / 2,elementPartPaint)
+                canvas.drawLine(drawSecond.x + step / 2, drawSecond.y + step / 2,
+                        drawLast.x + step / 2, drawLast.y + step / 2,elementPartPaint)
+                canvas.drawLine(drawFirst.x + step / 2, drawFirst.y + step / 2,
+                        drawSecond.x + step / 2, drawSecond.y + step / 2,elementPartPaint)
+                canvas.drawLine(drawPenultimate.x + step / 2, drawPenultimate.y + step / 2,
+                        drawLast.x + step / 2, drawLast.y + step / 2,elementPartPaint)
+                element.getPins().forEach {
+                    drawPinCircle(it, canvas)
+                }
+            }
         }
+
     }
 
     private fun drawPin(pin: Pin, canvas: Canvas) {
         val point = pin.getPoint()
         val drawType = drawMatrix[point.y][point.x]!!.drawType
         val drawPoint = drawMatrix[point.y][point.x]!!.drawPoint
-        val path = Path()
         when (drawType) {
-            PIN_CORNER_UP_LEFT -> {
-                path.moveTo(drawPoint.x + step / 2, drawPoint.y + step)
-                path.moveTo(drawPoint.x + step, drawPoint.y + step / 2)
-                path.lineTo(drawPoint.x + step / 2, drawPoint.y + step / 2)
-                path.moveTo(drawPoint.x + step / 2, drawPoint.y + step / 2)
-                path.lineTo(drawPoint.x + step / 2, drawPoint.y + step)
-                path.moveTo(drawPoint.x + step / 2, drawPoint.y + step)
-            }
-            PIN_CORNER_UP_RIGHT -> {
-                path.moveTo(drawPoint.x, drawPoint.y + step / 2)
-                path.lineTo(drawPoint.x + step / 2, drawPoint.y + step / 2)
-                path.moveTo(drawPoint.x + step / 2, drawPoint.y + step / 2)
-                path.lineTo(drawPoint.x + step / 2, drawPoint.y + step)
-                path.moveTo(drawPoint.x + step / 2, drawPoint.y + step)
-            }
-            PIN_CORNER_DOWN_LEFT -> {
-                path.moveTo(drawPoint.x + step / 2, drawPoint.y)
-                path.lineTo(drawPoint.x + step / 2, drawPoint.y + step / 2)
-                path.moveTo(drawPoint.x + step / 2, drawPoint.y + step / 2)
-                path.lineTo(drawPoint.x + step, drawPoint.y + step / 2)
-                path.moveTo(drawPoint.x + step, drawPoint.y + step / 2)
-            }
-            PIN_CORNER_DOWN_RIGHT -> {
-                path.moveTo(drawPoint.x + step / 2, drawPoint.y)
-                path.lineTo(drawPoint.x + step / 2, drawPoint.y + step / 2)
-                path.moveTo(drawPoint.x + step / 2, drawPoint.y + step / 2)
-                path.lineTo(drawPoint.x, drawPoint.y + step / 2)
-                path.moveTo(drawPoint.x, drawPoint.y + step / 2)
-            }
-            PIN_SIDE_UP -> {
-                path.moveTo(drawPoint.x, drawPoint.y + step / 2)
-                path.lineTo(drawPoint.x + step, drawPoint.y + step / 2)
-                path.moveTo(drawPoint.x + step, drawPoint.y + step / 2)
-            }
-            PIN_SIDE_DOWN -> {
-                path.moveTo(drawPoint.x, drawPoint.y + step / 2)
-                path.lineTo(drawPoint.x + step, drawPoint.y + step / 2)
-                path.moveTo(drawPoint.x + step, drawPoint.y + step / 2)
-            }
-            PIN_SIDE_LEFT -> {
-                path.moveTo(drawPoint.x + step / 2, drawPoint.y)
-                path.lineTo(drawPoint.x + step / 2, drawPoint.y + step)
-                path.moveTo(drawPoint.x + step / 2, drawPoint.y + step)
-            }
-            PIN_SIDE_RIGHT -> {
-                path.moveTo(drawPoint.x + step / 2, drawPoint.y)
-                path.lineTo(drawPoint.x + step / 2, drawPoint.y + step)
-                path.moveTo(drawPoint.x + step / 2, drawPoint.y + step)
-            }
             PIN_LINE_MIDDLE_VERTICAL -> {
-                path.moveTo(drawPoint.x + step / 4, drawPoint.y)
-                path.lineTo(drawPoint.x + 3 * step / 4, drawPoint.y + step)
-                path.moveTo(drawPoint.x + 3 * step / 4, drawPoint.y + step)
-                path.moveTo(drawPoint.x + 3 * step / 4, drawPoint.y)
-                path.lineTo(drawPoint.x + step / 4, drawPoint.y + step)
-                path.moveTo(drawPoint.x + step / 4, drawPoint.y + step)
+                canvas.drawLine(drawPoint.x + step / 4, drawPoint.y,
+                        drawPoint.x + 3 * step / 4, drawPoint.y + step,elementPartPaint)
+                canvas.drawLine(drawPoint.x + 3 * step / 4, drawPoint.y,
+                        drawPoint.x + step / 4, drawPoint.y + step,elementPartPaint)
             }
             PIN_LINE_MIDDLE_HORIZONTAL -> {
-                path.moveTo(drawPoint.x, drawPoint.y + step / 4)
-                path.lineTo(drawPoint.x + step, drawPoint.y + 3 * step / 4)
-                path.moveTo(drawPoint.x + step, drawPoint.y + 3 * step / 4)
-                path.moveTo(drawPoint.x, drawPoint.y + 3 * step / 4)
-                path.lineTo(drawPoint.x + step, drawPoint.y + step / 4)
-                path.moveTo(drawPoint.x + step, drawPoint.y + step / 4)
+                canvas.drawLine(drawPoint.x, drawPoint.y + step / 4,
+                        drawPoint.x + step, drawPoint.y + 3 * step / 4,elementPartPaint)
+                canvas.drawLine(drawPoint.x, drawPoint.y + 3 * step / 4,
+                        drawPoint.x + step, drawPoint.y + step / 4,elementPartPaint)
             }
             PIN_LINE_UP -> {
-                path.moveTo(drawPoint.x + step / 4, drawPoint.y + step)
-                path.lineTo(drawPoint.x + step / 4, drawPoint.y + step / 2)
-                path.moveTo(drawPoint.x + step / 4, drawPoint.y + step / 2)
-                path.lineTo(drawPoint.x + 3 * step / 4, drawPoint.y + step / 2)
-                path.moveTo(drawPoint.x + 3 * step / 4, drawPoint.y + step / 2)
-                path.lineTo(drawPoint.x + 3 * step / 4, drawPoint.y + step)
-                path.moveTo(drawPoint.x + 3 * step / 4, drawPoint.y + step)
+                canvas.drawLine(drawPoint.x + step / 4, drawPoint.y + step,
+                        drawPoint.x + step / 4, drawPoint.y + step / 2,elementPartPaint)
+                canvas.drawLine(drawPoint.x + step / 4, drawPoint.y + step / 2,
+                        drawPoint.x + 3 * step / 4, drawPoint.y + step / 2,elementPartPaint)
+                canvas.drawLine(drawPoint.x + 3 * step / 4, drawPoint.y + step / 2,
+                        drawPoint.x + 3 * step / 4, drawPoint.y + step,elementPartPaint)
             }
             PIN_LINE_DOWN -> {
-                path.moveTo(drawPoint.x + step / 4, drawPoint.y)
-                path.lineTo(drawPoint.x + step / 4, drawPoint.y + step / 2)
-                path.moveTo(drawPoint.x + step / 4, drawPoint.y + step / 2)
-                path.lineTo(drawPoint.x + 3 * step / 4, drawPoint.y + step / 2)
-                path.moveTo(drawPoint.x + 3 * step / 4, drawPoint.y + step / 2)
-                path.lineTo(drawPoint.x + 3 * step / 4, drawPoint.y)
-                path.moveTo(drawPoint.x + 3 * step / 4, drawPoint.y)
+                canvas.drawLine(drawPoint.x + step / 4, drawPoint.y,
+                        drawPoint.x + step / 4, drawPoint.y + step / 2,elementPartPaint)
+                canvas.drawLine(drawPoint.x + step / 4, drawPoint.y + step / 2,
+                        drawPoint.x + 3 * step / 4, drawPoint.y + step / 2,elementPartPaint)
+                canvas.drawLine(drawPoint.x + 3 * step / 4, drawPoint.y + step / 2,
+                        drawPoint.x + 3 * step / 4, drawPoint.y,elementPartPaint)
             }
             PIN_LINE_RIGHT -> {
-                path.moveTo(drawPoint.x, drawPoint.y + step / 4)
-                path.lineTo(drawPoint.x + step / 2, drawPoint.y + step / 4)
-                path.moveTo(drawPoint.x + step / 2, drawPoint.y + step / 4)
-                path.lineTo(drawPoint.x + step / 2, drawPoint.y + 3 * step / 4)
-                path.moveTo(drawPoint.x + step / 2, drawPoint.y + 3 * step / 4)
-                path.lineTo(drawPoint.x, drawPoint.y + 3 * step / 4)
-                path.moveTo(drawPoint.x, drawPoint.y + 3 * step / 4)
+                canvas.drawLine(drawPoint.x, drawPoint.y + step / 4,
+                        drawPoint.x + step / 2, drawPoint.y + step / 4,elementPartPaint)
+                canvas.drawLine(drawPoint.x + step / 2, drawPoint.y + step / 4,
+                        drawPoint.x + step / 2, drawPoint.y + 3 * step / 4,elementPartPaint)
+                canvas.drawLine(drawPoint.x + step / 2, drawPoint.y + 3 * step / 4,
+                        drawPoint.x, drawPoint.y + 3 * step / 4,elementPartPaint)
             }
             PIN_LINE_LEFT -> {
-                path.moveTo(drawPoint.x + step, drawPoint.y + step / 4)
-                path.lineTo(drawPoint.x + step / 2, drawPoint.y + step / 4)
-                path.moveTo(drawPoint.x + step / 2, drawPoint.y + step / 4)
-                path.lineTo(drawPoint.x + step / 2, drawPoint.y + 3 * step / 4)
-                path.moveTo(drawPoint.x + step / 2, drawPoint.y + 3 * step / 4)
-                path.lineTo(drawPoint.x + step, drawPoint.y + 3 * step / 4)
-                path.moveTo(drawPoint.x + step, drawPoint.y + 3 * step / 4)
+                canvas.drawLine(drawPoint.x + step, drawPoint.y + step / 4,
+                        drawPoint.x + step / 2, drawPoint.y + step / 4,elementPartPaint)
+                canvas.drawLine(drawPoint.x + step / 2, drawPoint.y + step / 4,
+                        drawPoint.x + step / 2, drawPoint.y + 3 * step / 4,elementPartPaint)
+                canvas.drawLine(drawPoint.x + step / 2, drawPoint.y + 3 * step / 4,
+                        drawPoint.x + step, drawPoint.y + 3 * step / 4,elementPartPaint)
             }
             else -> {
-
             }
         }
-        canvas.drawPath(path, elementPartPaint)
         drawPinCircle(pin, canvas)
     }
 
@@ -270,50 +270,38 @@ class RenderHelper(private val rect: Rect) {
         canvas.drawCircle(drawPoint.x + step / 2, drawPoint.y + step / 2, step / 3.5f, netPaint)
         canvas.drawCircle(drawPoint.x + step / 2, drawPoint.y + step / 2, step / 5.5f, netPaint)
 
-        val path = Path()
-        path.moveTo(drawPoint.x + step / 2, drawPoint.y)
-        path.lineTo(drawPoint.x + step / 2, drawPoint.y + step)
-        path.moveTo(drawPoint.x + step / 2, drawPoint.y + step)
-        canvas.drawPath(path, netPaint)
-        path.reset()
-        path.moveTo(drawPoint.x, drawPoint.y + step / 2)
-        path.lineTo(drawPoint.x + step, drawPoint.y + step / 2)
-        path.moveTo(drawPoint.x + step, drawPoint.y + step / 2)
-        canvas.drawPath(path, netPaint)
-        path.reset()
+        canvas.drawLine(drawPoint.x + step / 2, drawPoint.y,
+                drawPoint.x + step / 2, drawPoint.y + step,netPaint)
+        canvas.drawLine(drawPoint.x, drawPoint.y + step / 2,
+                drawPoint.x + step, drawPoint.y + step / 2,netPaint)
         //From left up to right down
         var degree = 225
         val orgX = (drawPoint.x + step) - (drawPoint.x + step / 2)
         val orgY = (drawPoint.y + step / 2) - (drawPoint.y + step / 2)
-        var rotatedX = orgX * Math.cos(degree * Math.PI / 180) -
+        var rotatedXStart = orgX * Math.cos(degree * Math.PI / 180) -
                 orgY * Math.sin(degree * Math.PI / 180) + (drawPoint.x + step / 2)
-        var rotatedY = orgX * Math.sin(degree * Math.PI / 180) +
+        var rotatedYStart = orgX * Math.sin(degree * Math.PI / 180) +
                 orgY * Math.cos(degree * Math.PI / 180) + (drawPoint.y + step / 2)
-        path.moveTo(rotatedX.toFloat(), rotatedY.toFloat())
         degree = 45
-        rotatedX = orgX * Math.cos(degree * Math.PI / 180) -
+        var rotatedXEnd = orgX * Math.cos(degree * Math.PI / 180) -
                 orgY * Math.sin(degree * Math.PI / 180) + (drawPoint.x + step / 2)
-        rotatedY = orgX * Math.sin(degree * Math.PI / 180) +
+        var rotatedYEnd = orgX * Math.sin(degree * Math.PI / 180) +
                 orgY * Math.cos(degree * Math.PI / 180) + (drawPoint.y + step / 2)
-        path.lineTo(rotatedX.toFloat(), rotatedY.toFloat())
-        path.moveTo(rotatedX.toFloat(), rotatedY.toFloat())
-        canvas.drawPath(path, netPaint)
-        path.reset()
+        canvas.drawLine(rotatedXStart.toFloat(), rotatedYStart.toFloat(),
+                rotatedXEnd.toFloat(), rotatedYEnd.toFloat(),netPaint)
         //From right up to left down
         degree = 315
-        rotatedX = orgX * Math.cos(degree * Math.PI / 180) -
+        rotatedXStart = orgX * Math.cos(degree * Math.PI / 180) -
                 orgY * Math.sin(degree * Math.PI / 180) + (drawPoint.x + step / 2)
-        rotatedY = orgX * Math.sin(degree * Math.PI / 180) +
+        rotatedYStart = orgX * Math.sin(degree * Math.PI / 180) +
                 orgY * Math.cos(degree * Math.PI / 180) + (drawPoint.y + step / 2)
-        path.moveTo(rotatedX.toFloat(), rotatedY.toFloat())
         degree = 135
-        rotatedX = orgX * Math.cos(degree * Math.PI / 180) -
+        rotatedXEnd = orgX * Math.cos(degree * Math.PI / 180) -
                 orgY * Math.sin(degree * Math.PI / 180) + (drawPoint.x + step / 2)
-        rotatedY = orgX * Math.sin(degree * Math.PI / 180) +
+        rotatedYEnd = orgX * Math.sin(degree * Math.PI / 180) +
                 orgY * Math.cos(degree * Math.PI / 180) + (drawPoint.y + step / 2)
-        path.lineTo(rotatedX.toFloat(), rotatedY.toFloat())
-        path.moveTo(rotatedX.toFloat(), rotatedY.toFloat())
-        canvas.drawPath(path, netPaint)
+        canvas.drawLine(rotatedXStart.toFloat(), rotatedYStart.toFloat(),
+                rotatedXEnd.toFloat(), rotatedYEnd.toFloat(),netPaint)
     }
 
     private fun drawConnectorRubber(net: Net, pin: Pin, canvas: Canvas){
@@ -321,11 +309,23 @@ class RenderHelper(private val rect: Rect) {
         val drawPointNet = drawMatrix[pointNet.y][pointNet.x]!!.drawPoint
         val pointPin = pin.getPoint()
         val drawPointPin = drawMatrix[pointPin.y][pointPin.x]!!.drawPoint
-        val path = Path()
-        path.moveTo(drawPointNet.x + step / 2, drawPointNet.y + step / 2)
-        path.lineTo(drawPointPin.x + step / 2, drawPointPin.y + step / 2)
-        path.moveTo(drawPointPin.x + step / 2, drawPointPin.y + step / 2)
-        canvas.drawPath(path,connectorPaint)
+        canvas.drawLine(drawPointNet.x + step / 2,drawPointNet.y + step / 2,
+                drawPointPin.x + step / 2, drawPointPin.y + step / 2,connectorPaint)
+    }
+
+    private fun drawConnectorRout(line:List<Point>,canvas: Canvas) {
+        var startPoint = line.first()
+        line.forEach { endPoint ->
+            if (startPoint != endPoint) {
+                val xStart = step * startPoint.x + step / 2
+                val yStart = step * startPoint.y + step / 2
+                val xEnd = step * endPoint.x + step / 2
+                val yEnd = step * endPoint.y + step / 2
+                canvas.drawLine(xStart, yStart,
+                        xEnd, yEnd, connectorPaint)
+                startPoint = endPoint
+            }
+        }
     }
 
     private fun initPaint(){

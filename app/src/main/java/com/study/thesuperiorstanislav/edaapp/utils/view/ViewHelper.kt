@@ -35,7 +35,7 @@ object ViewHelper {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
 
-    fun createViewWithEditText(context: Context, resources: Resources): Pair<View, Int> {
+    fun createViewAddNet(context: Context, resources: Resources): Pair<View, Int> {
         val linearLayout = LinearLayout(context)
         val lp = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -44,15 +44,13 @@ object ViewHelper {
         val dpAsPixels16 = (16 * scale + 0.5f).toInt()
         val dpAsPixels8 = (8 * scale + 0.5f).toInt()
         lp.setMargins(dpAsPixels16, dpAsPixels8, dpAsPixels16, dpAsPixels8)
-        val editText = EditText(context)
-        editText.id = View.generateViewId()
-        editText.layoutParams = lp
+        val editText = generateEditText(context,lp)
         editText.hint = resources.getString(R.string.hint_add_net)
         linearLayout.addView(editText, lp)
         return Pair(linearLayout, editText.id)
     }
 
-    fun createViewWithEditTextAndSwitch(context: Context, resources: Resources): Pair<View, Pair<Int,Int>> {
+    fun createViewSaveFile(context: Context, resources: Resources): Pair<View, Pair<Int,Int>> {
         val linearLayout = LinearLayout(context)
         linearLayout.orientation = LinearLayout.VERTICAL
         val lp = LinearLayout.LayoutParams(
@@ -62,15 +60,72 @@ object ViewHelper {
         val dpAsPixels16 = (16 * scale + 0.5f).toInt()
         val dpAsPixels8 = (8 * scale + 0.5f).toInt()
         lp.setMargins(dpAsPixels16, dpAsPixels8, dpAsPixels16, dpAsPixels8)
-        val editText = EditText(context)
-        editText.id = View.generateViewId()
-        editText.layoutParams = lp
+        val editText = generateEditText(context,lp)
         editText.hint = resources.getString(R.string.hint_save_file)
-        val switch = Switch(context)
-        switch.id = View.generateViewId()
-        switch.layoutParams = lp
+        val switch = generateSwitch(context,lp)
+        switch.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked)
+                switch.text = ViewHelper.formatResStr(resources,
+                        R.string.save_type, resources.getString(R.string.allegro))
+            else
+                switch.text = ViewHelper.formatResStr(resources,
+                        R.string.save_type, resources.getString(R.string.calay90))
+        }
+        switch.text = ViewHelper.formatResStr(resources,
+                R.string.save_type, resources.getString(R.string.calay90))
         linearLayout.addView(editText, lp)
         linearLayout.addView(switch, lp)
         return Pair(linearLayout, Pair(editText.id,switch.id))
+    }
+
+    fun createViewRoutingSettings(context: Context, resources: Resources): Pair<View, Array<Int>> {
+        val linearLayout = LinearLayout(context)
+        linearLayout.orientation = LinearLayout.VERTICAL
+        val lp = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT)
+        val scale = resources.displayMetrics.density
+        val dpAsPixels16 = (16 * scale + 0.5f).toInt()
+        val dpAsPixels8 = (8 * scale + 0.5f).toInt()
+        lp.setMargins(dpAsPixels16, dpAsPixels8, dpAsPixels16, dpAsPixels8)
+        val switchAlgorithm = generateSwitch(context,lp)
+        switchAlgorithm.text = resources.getString(R.string.lee_algorithm)
+        switchAlgorithm.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked)
+                switchAlgorithm.text = resources.getString(R.string.a_star_algorithm)
+            else
+                switchAlgorithm.text = resources.getString(R.string.lee_algorithm)
+        }
+        val switchDirection = generateSwitch(context,lp)
+        switchDirection.text = resources.getString(R.string.orthogonal)
+        switchDirection.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked)
+                switchDirection.text = resources.getString(R.string.orthogonal_diagonal)
+            else
+                switchDirection.text = resources.getString(R.string.orthogonal)
+        }
+        val switchIntersection = generateSwitch(context,lp)
+        switchIntersection.text = resources.getString(R.string.intersection)
+        linearLayout.addView(switchAlgorithm, lp)
+        linearLayout.addView(switchDirection, lp)
+        linearLayout.addView(switchIntersection, lp)
+        return Pair(linearLayout, arrayOf(
+                switchAlgorithm.id,
+                switchDirection.id,
+                switchIntersection.id))
+    }
+
+    private fun generateEditText(context: Context, lp:LinearLayout.LayoutParams): EditText {
+        val editText = EditText(context)
+        editText.id = View.generateViewId()
+        editText.layoutParams = lp
+        return editText
+    }
+
+    private fun generateSwitch(context: Context, lp:LinearLayout.LayoutParams): Switch {
+        val switch = Switch(context)
+        switch.id = View.generateViewId()
+        switch.layoutParams = lp
+        return switch
     }
 }
