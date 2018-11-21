@@ -24,7 +24,7 @@ class DoTheRouting(private val circuitRepository: CircuitDataSource): UseCaseWit
                     val algorithm = LeeAlgorithm(drawMatrixCopy)
                     linesList.clear()
                     circuit.listPins.forEachIndexed { index, pin ->
-                        val responseValueForProgress = ResponseValue(circuit,circuitName,drawMatrix,linesList)
+                        val responseValueForProgress = ResponseValue(circuit,circuitName,drawMatrix,createLinesListCopy(linesList))
                         val progressValue = ProgressValue(circuit.listPins.size,index+1,responseValueForProgress)
                         useCaseCallbackWithProgress?.onProgress(progressValue)
 
@@ -74,6 +74,14 @@ class DoTheRouting(private val circuitRepository: CircuitDataSource): UseCaseWit
                 drawMatrix[y][x]?.copy()
             }
         }
+    }
+
+    private fun createLinesListCopy(linesList: List<List<Point>>): List<List<Point>> {
+        val linesListCopy = mutableListOf<List<Point>>()
+        linesList.forEach {
+            linesListCopy.add(it)
+        }
+        return linesListCopy
     }
 
 

@@ -1,6 +1,11 @@
 package com.study.thesuperiorstanislav.edaapp.editor.domain.model
 
 data class Point(var x: Int, var y: Int){
+
+    fun merge(point: Point):Point {
+        return Point(this.x + point.x, this.y + point.y)
+    }
+
     override fun toString(): String {
         return "X: $x, Y: $y"
     }

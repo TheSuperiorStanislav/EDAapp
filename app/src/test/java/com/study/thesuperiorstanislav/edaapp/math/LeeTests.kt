@@ -17,13 +17,13 @@ class LeeTests {
         val obj = DrawObject(drawPoint,ObjectType.Net, DrawType.NET)
         val emp:DrawObject? = null
         val drawMatrix = arrayOf(
-                arrayOf(obj, emp, emp, emp, emp, emp),
-                arrayOf(emp, obj, emp, obj, emp, emp),
+                arrayOf(obj, obj, emp, emp, emp, obj),
                 arrayOf(emp, obj, emp, obj, emp, obj),
+                arrayOf(emp, obj, emp, emp, emp, obj),
                 arrayOf(emp, emp, emp, emp, emp, obj))
         val leeAlgorithm = LeeAlgorithm(drawMatrix)
-        val startPoint = Point(5,3)
-        val endPoint = Point(0,0)
+        val startPoint = Point(3,0)
+        val endPoint = Point(1,3)
         val leeReturnData = leeAlgorithm.doTheThing(startPoint,endPoint,true)
         Assert.assertNotNull(leeReturnData)
     }
@@ -51,6 +51,27 @@ class LeeTests {
         leeReturnData = leeAlgorithm.doTheThing(startPoint, endPoint,false)
         Assert.assertNotNull(leeReturnData?.path)
         Assert.assertEquals(11,leeReturnData?.path?.size)
+    }
+
+    @Test
+    fun testLeeIntersection() {
+        val drawPoint = DrawPoint(0f, 0f)
+        val obj = DrawObject(drawPoint, ObjectType.Net, DrawType.NET)
+        val emp:DrawObject? = null
+        val drawMatrix: Array<Array<DrawObject?>> = arrayOf(
+                arrayOf(emp, obj, obj, emp, emp, emp, emp, emp, emp, emp, emp, emp),
+                arrayOf(obj, emp, obj, emp, emp, emp, emp, emp, emp, emp, emp, emp),
+                arrayOf(emp, emp, emp, emp, emp, emp, emp, emp, emp, emp, emp, emp),
+                arrayOf(emp, emp, emp, emp, emp, emp, emp, emp, obj, obj, emp, emp),
+                arrayOf(emp, obj, obj, obj, obj, emp, emp, emp, emp, emp, emp, emp),
+                arrayOf(emp, emp, emp, emp, emp, emp, emp, emp, emp, obj, obj, emp),
+                arrayOf(emp, emp, emp, emp, emp, emp, emp, emp, emp, obj, obj, emp),
+                arrayOf(emp, emp, emp, emp, emp, emp, emp, emp, emp, emp, emp, emp))
+        val leeAlgorithm = LeeAlgorithm(drawMatrix)
+        val startPoint = Point(6, 6)
+        val endPoint = Point(0, 0)
+        val leeReturnData = leeAlgorithm.doTheThing(startPoint, endPoint,true)
+        Assert.assertNull(leeReturnData?.path)
     }
 
     @Test
