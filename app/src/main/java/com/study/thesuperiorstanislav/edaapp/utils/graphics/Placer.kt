@@ -19,8 +19,8 @@ class Placer(private val drawMatrix: Array<Array<DrawObject?>>,
         circuit.listElements.forEach {
             placeElement(it)
         }
-        circuit.listNets.forEach {
-            placeNet(it)
+        circuit.listNets.forEachReversedWithIndex { _, net ->
+            placeNet(net)
         }
         return drawMatrix
     }
@@ -121,7 +121,7 @@ class Placer(private val drawMatrix: Array<Array<DrawObject?>>,
 
     private fun isElementPlacedHorizontal(element: Element, point: Point):Boolean{
         return when (element.getDrawType()) {
-            TWO_PART,THREE_PART -> drawMatrix[point.y][point.x + 1] != null
+            TWO_PART, THREE_PART, FOUR_PART -> drawMatrix[point.y][point.x + 1] != null
             else -> drawMatrix[point.y][point.x + 2] != null
         }
     }
