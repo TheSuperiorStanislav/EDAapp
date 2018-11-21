@@ -23,9 +23,10 @@ class DoTheRouting(private val circuitRepository: CircuitDataSource): UseCaseWit
                     val drawMatrixCopy = createDrawMatrixCopy(drawMatrix)
                     val algorithm = LeeAlgorithm(drawMatrixCopy)
                     linesList.clear()
+
                     circuit.listPins.forEachIndexed { index, pin ->
-                        val responseValueForProgress = ResponseValue(circuit,circuitName,drawMatrix,createLinesListCopy(linesList))
-                        val progressValue = ProgressValue(circuit.listPins.size,index+1,responseValueForProgress)
+                        val responseValueForProgress = ResponseValue(circuit, circuitName, drawMatrix, createLinesListCopy(linesList))
+                        val progressValue = ProgressValue(circuit.listPins.size, index + 1, responseValueForProgress)
                         useCaseCallbackWithProgress?.onProgress(progressValue)
 
                         val pinPoint = pin.getPoint()
@@ -33,30 +34,12 @@ class DoTheRouting(private val circuitRepository: CircuitDataSource): UseCaseWit
                         val algorithmReturnData = algorithm.doTheThing(pinPoint, netPoint, isDiagonal)
                         if (algorithmReturnData != null) {
                             linesList.add(algorithmReturnData.path as MutableList<Point>)
-                            var firstPoint = linesList.last().first()
-                            val toRemove = mutableListOf<Point>()
-                            linesList.last().forEach { point ->
-                                if (!isIntersectionAllowed)
-                                    drawMatrixCopy[point.y][point.x] = DrawObject(DrawPoint(0f, 0f),
-                                            ObjectType.Connector, DrawType.LINE)
-                                if (firstPoint != point) {
-                                    if (firstPoint.x == point.x || firstPoint.y == point.y) {
-                                        toRemove.add(point)
-                                    } else {
-                                        if (!toRemove.isEmpty())
-                                            toRemove.remove(toRemove.last())
-                                        firstPoint = point
-                                    }
-                                }
-                            }
-                            if (!toRemove.isEmpty())
-                                toRemove.remove(toRemove.last())
-                            toRemove.forEach {
-                                linesList.last().remove(it)
-                            }
+                            if (!isIntersectionAllowed)
+                                fillDrawMatrix(linesList.last(), drawMatrixCopy)
+                            optimizeLine(linesList.last(), isDiagonal)
                         }
                     }
-                    val responseValue = ResponseValue(circuit,circuitName,drawMatrix,linesList)
+                    val responseValue = ResponseValue(circuit, circuitName, drawMatrix, linesList)
                     useCaseCallbackWithProgress?.onSuccess(responseValue)
                 }
 
@@ -66,6 +49,41 @@ class DoTheRouting(private val circuitRepository: CircuitDataSource): UseCaseWit
                 }
             })
         }
+    }
+
+    private fun fillDrawMatrix(line:MutableList<Point>,drawMatrix: Array<Array<DrawObject?>>){
+        line.forEach { point ->
+            drawMatrix[point.y][point.x] = DrawObject(DrawPoint(0f, 0f),
+                    ObjectType.Connector, DrawType.LINE)
+        }
+    }
+
+    private fun optimizeLine(line:MutableList<Point>, isDiagonal: Boolean){
+        var latestPoint = line.first()
+        val toRemove = mutableListOf<Point>()
+        line.forEach { point ->
+            if (latestPoint != point) {
+                if (comparePoints(latestPoint,point,isDiagonal)) {
+                    toRemove.add(point)
+                } else {
+                    if (!toRemove.isEmpty())
+                        toRemove.remove(toRemove.last())
+                    latestPoint = point
+                }
+            }
+        }
+        if (!toRemove.isEmpty())
+            toRemove.remove(toRemove.last())
+        toRemove.forEach {
+            line.remove(it)
+        }
+    }
+
+    private fun comparePoints(point1:Point,point2:Point,isDiagonal: Boolean): Boolean {
+        return if (isDiagonal)
+            (point1.x == point2.x || point1.y == point2.y || (Math.abs(point1.x - point2.x) == 1 && Math.abs(point1.y - point2.y) == 1))
+        else
+            (point1.x == point2.x || point1.y == point2.y)
     }
 
     private fun createDrawMatrixCopy(drawMatrix: Array<Array<DrawObject?>>): Array<Array<DrawObject?>> {
