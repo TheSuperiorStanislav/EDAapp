@@ -6,6 +6,10 @@ data class Point(var x: Int, var y: Int){
         return Point(this.x + point.x, this.y + point.y)
     }
 
+    fun merge(x: Int, y: Int):Point {
+        return Point(this.x + x, this.y + y)
+    }
+
     override fun toString(): String {
         return "X: $x, Y: $y"
     }

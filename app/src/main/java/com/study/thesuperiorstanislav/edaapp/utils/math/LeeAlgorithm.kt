@@ -30,17 +30,17 @@ class LeeAlgorithm(private val drawMatrix:Array<Array<DrawObject?>>) {
                 row.forEachIndexed { x, point ->
                     if (point == curPoint)
                         if (isDiagonal) {
-                            pointDirsOrgDiagonal.filter { checkDirs(Point(it.x + x, it.y + y)) }
+                            pointDirsOrgDiagonal.filter { checkDirs(it.merge(x,y)) }
                                     .forEach { p ->
-                                        if (checkSquare(Point(x, y), Point(p.x + x, p.y + y), pathNet, curPoint)) {
+                                        if (checkSquare(Point(x, y), p.merge(x,y), pathNet, curPoint)) {
                                             stillSearching = true
                                             steps++
                                         }
                                     }
                         } else
-                            pointDirsOrg.filter { checkDirs(Point(it.x + x, it.y + y)) }
+                            pointDirsOrg.filter { checkDirs(it.merge(x,y)) }
                                     .forEach { p ->
-                                        if (fillSquare(Point(p.x + x, p.y + y), pathNet, curPoint)) {
+                                        if (fillSquare(p.merge(x,y), pathNet, curPoint)) {
                                             stillSearching = true
                                             steps++
                                         }
@@ -48,9 +48,9 @@ class LeeAlgorithm(private val drawMatrix:Array<Array<DrawObject?>>) {
 
                     if (point == curPointDig) {
                         if (isDiagonal)
-                            pointDirsOrgDiagonal.filter { checkDirs(Point(it.x + x, it.y + y)) }
+                            pointDirsOrgDiagonal.filter { checkDirs(it.merge(x,y))}
                                     .forEach { p ->
-                                        if (checkSquare(Point(x, y), Point(p.x + x, p.y + y), pathNet, curPointDig)) {
+                                        if (checkSquare(Point(x, y), p.merge(x,y), pathNet, curPointDig)) {
                                             stillSearching = true
                                             steps++
                                         }
