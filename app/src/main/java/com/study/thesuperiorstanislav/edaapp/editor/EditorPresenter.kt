@@ -42,30 +42,6 @@ class EditorPresenter(private val editorView: EditorContract.View,
                 })
     }
 
-    override fun saveFile() {
-        val requestValue = GetData.RequestValues()
-        UseCaseHandler.execute(getData, requestValue,
-                object : UseCase.UseCaseCallback<GetData.ResponseValue> {
-                    override fun onSuccess(response: GetData.ResponseValue) {
-                        // The editorView may not be able to handle UI updates anymore
-                        if (!editorView.isActive) {
-                            return
-                        }
-
-                        editorView.saveFile(response.circuit)
-                    }
-
-                    override fun onError(error: UseCase.Error) {
-                        // The editorView may not be able to handle UI updates anymore
-                        if (!editorView.isActive) {
-                            return
-                        }
-
-                        editorView.onError(error)
-                    }
-                })
-    }
-
     override fun cacheCircuit(circuit: Circuit,circuitName: String) {
 
         val requestValue = CacheDataFromFile.RequestValues(circuit,circuitName)

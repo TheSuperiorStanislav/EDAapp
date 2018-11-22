@@ -1,7 +1,6 @@
 package com.study.thesuperiorstanislav.edaapp.editor
 
 
-import android.Manifest
 import android.app.Activity
 import android.app.Dialog
 import android.content.Intent
@@ -18,18 +17,17 @@ import com.study.thesuperiorstanislav.edaapp.editor.domain.model.Circuit
 import com.study.thesuperiorstanislav.edaapp.utils.file.AllegroFile
 import com.study.thesuperiorstanislav.edaapp.utils.file.Calay90File
 import kotlinx.android.synthetic.main.fragment_editor.*
-import android.os.Environment
 import android.util.Log
 import android.widget.EditText
 import android.widget.Switch
 import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContextCompat
 import com.study.thesuperiorstanislav.edaapp.editor.domain.model.draw.DrawObject
 import com.study.thesuperiorstanislav.edaapp.utils.file.ScreenShotTaker
 import com.study.thesuperiorstanislav.edaapp.utils.view.ViewHelper
 import java.io.*
 import androidx.core.content.FileProvider
 import com.study.thesuperiorstanislav.edaapp.BuildConfig
+import com.study.thesuperiorstanislav.edaapp.utils.file.CircuitFileSaver
 
 
 class EditorFragment : Fragment(), EditorContract.View {
@@ -41,8 +39,11 @@ class EditorFragment : Fragment(), EditorContract.View {
     private val readRequestCode = 42
     private val saveScreenShotCode = 43
     private val saveFileCode = 44
+    private val takeScreenShotForShareCode = 45
+    private val saveFileForShareCode = 46
 
     private var dialog: Dialog? = null
+    private var circuit: Circuit = Circuit(mutableListOf(), mutableListOf(), mutableListOf())
     private var circuitName = ""
     private var isAllegro = false
 
@@ -71,7 +72,7 @@ class EditorFragment : Fragment(), EditorContract.View {
             R.id.menu_screenshot ->
                 takeScreenShot()
             R.id.menu_share ->
-                shareScreenShot()
+                showShareDialog()
             R.id.add_element ->
                 circuitView.changeEditEvent(CircuitView.EditEvent.ADD_ELEMENT)
             R.id.add_net ->
@@ -106,33 +107,7 @@ class EditorFragment : Fragment(), EditorContract.View {
         }
         activity?.title = "${resources.getString(R.string.app_name)}/$circuitName"
         this.circuitName = circuitName
-    }
-
-    override fun saveFile(circuit: Circuit) {
-        if (verifyStoragePermissions(saveFileCode)) {
-            val dirPath = "${Environment.getExternalStorageDirectory().absolutePath}/EDA/Circuits"
-            val dir = File(dirPath)
-            if (!dir.exists())
-                dir.mkdirs()
-            val file = File(dirPath, "$circuitName.net")
-            if (!file.exists())
-                file.createNewFile()
-            val stream = FileOutputStream(file)
-            try {
-                if (isAllegro)
-                    stream.write(AllegroFile.write(circuit).toByteArray())
-                else
-                    stream.write(Calay90File.write(circuit).toByteArray())
-                activity?.title = "${resources.getString(R.string.app_name)}/$circuitName"
-                ViewHelper.showSnackBar(main_layout, ViewHelper.formatResStr(resources,
-                        R.string.saved_in, dirPath))
-            } catch (e: Exception) {
-                e.printStackTrace()
-                onError(UseCase.Error(UseCase.Error.UNKNOWN_ERROR, e.localizedMessage))
-            } finally {
-                stream.close()
-            }
-        }
+        this.circuit = circuit
     }
 
     override fun onError(error: UseCase.Error) {
@@ -173,7 +148,21 @@ class EditorFragment : Fragment(), EditorContract.View {
                 if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED)
                     Log.i("Permission_Storage", "Permission has been denied by user")
                 else {
-                    presenter?.saveFile()
+                    saveFile()
+                }
+            }
+            takeScreenShotForShareCode -> {
+                if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED)
+                    Log.i("Permission_Storage", "Permission has been denied by user")
+                else {
+                    shareScreenShot()
+                }
+            }
+            saveFileForShareCode -> {
+                if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED)
+                    Log.i("Permission_Storage", "Permission has been denied by user")
+                else {
+                    shareFile(circuit,circuitName)
                 }
             }
         }
@@ -237,7 +226,7 @@ class EditorFragment : Fragment(), EditorContract.View {
                 if (!editText.text.isEmpty()) {
                     isAllegro = switch.isChecked
                     circuitName = editText.text.toString()
-                    presenter?.saveFile()
+                    saveFile()
                     dialogInterface.dismiss()
                 }
             }
@@ -284,12 +273,64 @@ class EditorFragment : Fragment(), EditorContract.View {
         }
     }
 
-    private fun verifyStoragePermissions(requestCode: Int): Boolean {
-        return if (ContextCompat.checkSelfPermission(context!!, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), requestCode)
-            false
-        } else
-            true
+    private fun saveFile() {
+        try {
+            val dirPath = CircuitFileSaver.saveFile(this,circuit,circuitName, isAllegro)
+            if (dirPath != "")
+                ViewHelper.showSnackBar(main_layout, ViewHelper.formatResStr(resources,
+                        R.string.saved_in, dirPath))
+        } catch (e: Exception) {
+            onError(UseCase.Error(UseCase.Error.UNKNOWN_ERROR, e.localizedMessage))
+        }
+    }
+
+    private fun shareFile(circuit: Circuit, circuitName: String) {
+        share(CircuitFileSaver.saveFileForShare(this,circuit,circuitName,isAllegro))
+    }
+
+    private fun share(exportPath:File?){
+        if (exportPath != null) {
+            val sendIntent = Intent()
+            if (context != null) {
+                val photoURI = FileProvider.getUriForFile(context!!, BuildConfig.APPLICATION_ID + ".provider", exportPath)
+                sendIntent.action = Intent.ACTION_SEND
+                sendIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                sendIntent.type = "*/*"
+                sendIntent.putExtra(Intent.EXTRA_STREAM, photoURI)
+                startActivity(sendIntent)
+            }
+        }
+    }
+
+    private fun showShareDialog(){
+        val pairForDialog = ViewHelper.createViewShare(context!!, resources)
+        val view = pairForDialog.first
+        val switchTypeId = pairForDialog.second.first
+        val switchFileTypeId = pairForDialog.second.second
+
+        val shareDialog: AlertDialog = this.let {
+            val builder = AlertDialog.Builder(context!!)
+            builder.apply {
+                setTitle(R.string.share)
+                setMessage(R.string.share_message)
+                setView(view)
+                setPositiveButton(R.string.share) { _, _ ->
+                    val switchType = view.findViewById<Switch>(switchTypeId)!!
+                    val switchFileType = view.findViewById<Switch>(switchFileTypeId)!!
+                    if (switchType.isChecked){
+                        isAllegro = switchFileType.isChecked
+                        saveFile()
+                    }else{
+                        shareScreenShot()
+                    }
+                }
+                setNegativeButton(R.string.cancel) { dialog, _ ->
+                    dialog.dismiss()
+                }
+            }
+            builder.create()
+        }
+        shareDialog.show()
     }
 
 }

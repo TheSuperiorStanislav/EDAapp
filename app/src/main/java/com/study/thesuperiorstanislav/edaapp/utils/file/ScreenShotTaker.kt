@@ -5,7 +5,6 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
-import android.graphics.Path
 import android.os.Environment
 import android.view.View
 import androidx.core.content.ContextCompat

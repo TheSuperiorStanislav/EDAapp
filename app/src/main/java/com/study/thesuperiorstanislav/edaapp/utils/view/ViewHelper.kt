@@ -78,6 +78,45 @@ object ViewHelper {
         return Pair(linearLayout, Pair(editText.id,switch.id))
     }
 
+    fun createViewShare(context: Context, resources: Resources): Pair<View, Pair<Int,Int>> {
+        val linearLayout = LinearLayout(context)
+        linearLayout.orientation = LinearLayout.VERTICAL
+        val lp = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT)
+        val scale = resources.displayMetrics.density
+        val dpAsPixels16 = (16 * scale + 0.5f).toInt()
+        val dpAsPixels8 = (8 * scale + 0.5f).toInt()
+        lp.setMargins(dpAsPixels16, dpAsPixels8, dpAsPixels16, dpAsPixels8)
+        val switchFileType = generateSwitch(context,lp)
+        switchFileType.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked)
+                switchFileType.text = ViewHelper.formatResStr(resources,
+                        R.string.save_type, resources.getString(R.string.allegro))
+            else
+                switchFileType.text = ViewHelper.formatResStr(resources,
+                        R.string.save_type, resources.getString(R.string.calay90))
+        }
+        switchFileType.text = ViewHelper.formatResStr(resources,
+                R.string.save_type, resources.getString(R.string.calay90))
+        val switchShareType = generateSwitch(context,lp)
+        switchShareType.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                switchShareType.text = resources.getString(R.string.file)
+                switchFileType.isEnabled = true
+            }
+            else {
+                switchShareType.text = resources.getString(R.string.screenshot)
+                switchFileType.isEnabled = false
+            }
+        }
+        switchShareType.text =  resources.getString(R.string.screenshot)
+        switchFileType.isEnabled = false
+        linearLayout.addView(switchShareType, lp)
+        linearLayout.addView(switchFileType, lp)
+        return Pair(linearLayout, Pair(switchShareType.id,switchFileType.id))
+    }
+
     fun createViewRoutingSettings(context: Context, resources: Resources): Pair<View, Array<Int>> {
         val linearLayout = LinearLayout(context)
         linearLayout.orientation = LinearLayout.VERTICAL
