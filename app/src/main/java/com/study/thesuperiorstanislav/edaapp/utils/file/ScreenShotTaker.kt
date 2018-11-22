@@ -5,6 +5,7 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Path
 import android.os.Environment
 import android.view.View
 import androidx.core.content.ContextCompat
@@ -17,6 +18,18 @@ import java.util.*
 
 object ScreenShotTaker {
     private const val saveScreenShotCode = 43
+    private const val takeScreenShotForShareCode = 45
+    private val dirPathScreenShot = "${Environment.getExternalStorageDirectory().absolutePath}/EDA/ScreenShots"
+    private val dirPathShare = "${Environment.getExternalStorageDirectory().absolutePath}/EDA/.share"
+
+    fun takeScreenShotForShare(fragment: Fragment,view: View,circuitName:String): File? {
+        return if (verifyStoragePermissions(fragment,takeScreenShotForShareCode)) {
+            saveScreenShot(getScreenShot(view), "$circuitName-share.png",dirPathShare)
+            return File(dirPathShare,"$circuitName-share.png")
+        }
+        else
+            null
+    }
 
     fun takeScreenShot(fragment: Fragment,view: View,circuitName:String): String {
         val millis = Date().time
@@ -24,7 +37,7 @@ object ScreenShotTaker {
                 .getDateTimeInstance()
                 .format(millis)
         return if (verifyStoragePermissions(fragment,saveScreenShotCode))
-            saveScreenShot(getScreenShot(view), "$circuitName-$timeStamp.png")
+            saveScreenShot(getScreenShot(view), "$circuitName-$timeStamp.png",dirPathScreenShot)
         else
             ""
     }
@@ -50,8 +63,7 @@ object ScreenShotTaker {
         return bitmap
     }
 
-    private fun saveScreenShot(bm: Bitmap, fileName: String):String {
-        val dirPath = "${Environment.getExternalStorageDirectory().absolutePath}/EDA/ScreenShots"
+    private fun saveScreenShot(bm: Bitmap, fileName: String,dirPath: String):String {
         val dir = File(dirPath)
         if (!dir.exists())
             dir.mkdirs()

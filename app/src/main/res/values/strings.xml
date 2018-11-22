@@ -3,6 +3,7 @@
     <string name="load_file">Load file</string>
     <string name="save_file">Save file</string>
     <string name="screenshot">Take screenshot</string>
+    <string name="share">Share</string>
     <string name="processing_data">Processing data</string>
     <string name="please_wait">Please wait....</string>
     <string name="editor">Editor</string>

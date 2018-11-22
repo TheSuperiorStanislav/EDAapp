@@ -28,6 +28,8 @@ import com.study.thesuperiorstanislav.edaapp.editor.domain.model.draw.DrawObject
 import com.study.thesuperiorstanislav.edaapp.utils.file.ScreenShotTaker
 import com.study.thesuperiorstanislav.edaapp.utils.view.ViewHelper
 import java.io.*
+import androidx.core.content.FileProvider
+import com.study.thesuperiorstanislav.edaapp.BuildConfig
 
 
 class EditorFragment : Fragment(), EditorContract.View {
@@ -68,6 +70,8 @@ class EditorFragment : Fragment(), EditorContract.View {
                 showSaveFileDialog()
             R.id.menu_screenshot ->
                 takeScreenShot()
+            R.id.menu_share ->
+                shareScreenShot()
             R.id.add_element ->
                 circuitView.changeEditEvent(CircuitView.EditEvent.ADD_ELEMENT)
             R.id.add_net ->
@@ -262,6 +266,21 @@ class EditorFragment : Fragment(), EditorContract.View {
                         R.string.saved_in, dirPath))
         } catch (e: Exception) {
             onError(UseCase.Error(UseCase.Error.UNKNOWN_ERROR, e.localizedMessage))
+        }
+    }
+
+    private fun shareScreenShot(){
+        val exportPath = ScreenShotTaker.takeScreenShotForShare(this,circuitView,circuitName)
+        if (exportPath != null) {
+            val sendIntent = Intent()
+            if (context != null) {
+                val photoURI = FileProvider.getUriForFile(context!!, BuildConfig.APPLICATION_ID + ".provider", exportPath)
+                sendIntent.action = Intent.ACTION_SEND
+                sendIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                sendIntent.type = "*/*"
+                sendIntent.putExtra(Intent.EXTRA_STREAM, photoURI)
+                startActivity(sendIntent)
+            }
         }
     }
 
