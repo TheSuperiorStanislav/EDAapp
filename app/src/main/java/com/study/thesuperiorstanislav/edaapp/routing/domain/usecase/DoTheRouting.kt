@@ -64,7 +64,7 @@ class DoTheRouting(private val circuitRepository: CircuitDataSource): UseCaseWit
         val toRemove = mutableListOf<Point>()
         line.forEach { point ->
             if (latestPoint != point) {
-                if (latestDiagonal){
+                if (latestDiagonal && isDiagonal){
                     if (comparePointsDiagonal(latestPoint,point)) {
                         toRemove.add(point)
                     } else {
@@ -74,16 +74,17 @@ class DoTheRouting(private val circuitRepository: CircuitDataSource): UseCaseWit
                         latestDiagonal = false
                     }
                 }else{
-                    if (comparePoints(latestPoint,point)) {
-                        toRemove.add(point)
-                    } else if (comparePointsDiagonal(latestPoint,point)) {
-                        toRemove.add(point)
-                        latestDiagonal = true
-                    }
-                    else {
-                        if (!toRemove.isEmpty())
-                            toRemove.remove(toRemove.last())
-                        latestPoint = point
+                    when {
+                        comparePoints(latestPoint,point) -> toRemove.add(point)
+                        comparePointsDiagonal(latestPoint,point) -> {
+                            toRemove.add(point)
+                            latestDiagonal = true
+                        }
+                        else -> {
+                            if (!toRemove.isEmpty())
+                                toRemove.remove(toRemove.last())
+                            latestPoint = point
+                        }
                     }
                 }
 
