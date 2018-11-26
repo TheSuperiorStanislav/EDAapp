@@ -3,21 +3,9 @@ package com.study.thesuperiorstanislav.edaapp.utils.math
 import com.study.thesuperiorstanislav.edaapp.editor.domain.model.Point
 import com.study.thesuperiorstanislav.edaapp.editor.domain.model.draw.DrawObject
 
-class LeeAlgorithm(private val drawMatrix:Array<Array<DrawObject?>>) {
-    private val xMax:Int = drawMatrix.first().size
-    private val yMax:Int = drawMatrix.size
-    private val occupied = -1.0
-    private val empty = -2.0
-    private val pointDirsOrg = arrayOf(
-            Point(1, 0), Point(0, 1),
-            Point(-1, 0), Point(0, -1))
-    private val pointDirsOrgDiagonal = arrayOf(
-            Point(1, 0), Point(1, 1),
-            Point(0, 1), Point(-1, 1),
-            Point(-1, 0), Point(-1, -1),
-            Point(0, -1), Point(1, -1))
+class LeeAlgorithm(drawMatrix:Array<Array<DrawObject?>>): RoutingAlgorithm(drawMatrix) {
 
-    fun doTheThing(startPoint: Point, endPoint: Point, isDiagonal: Boolean): LeeReturnData? {
+    override fun doTheThing(startPoint: Point, endPoint: Point, isDiagonal: Boolean): AlgorithmReturnData? {
         val pathNet = createPathNet()
         pathNet[startPoint.y][startPoint.x] = 0.0
         pathNet[endPoint.y][endPoint.x] = empty
@@ -65,7 +53,7 @@ class LeeAlgorithm(private val drawMatrix:Array<Array<DrawObject?>>) {
         return if (pathNet[endPoint.y][endPoint.x] == empty)
             null
         else
-            LeeReturnData(restorePath(endPoint, pathNet, isDiagonal), steps)
+            AlgorithmReturnData(restorePath(endPoint, pathNet, isDiagonal), steps)
     }
 
     private fun createPathNet(): Array<Array<Double>> {
@@ -214,28 +202,4 @@ class LeeAlgorithm(private val drawMatrix:Array<Array<DrawObject?>>) {
         }
         return pathList
     }
-
-    //For Testing
-    private fun drawPathNet(pathNet: Array<Array<Double>>, steps: Int) {
-        System.out.println("Steps $steps")
-        pathNet.forEachIndexed { _, row ->
-            var str = ""
-            row.forEachIndexed { x, point ->
-                val strPoint = when {
-                    point > 99 -> "$point"
-                    point > 9 -> " $point"
-                    point == occupied -> " (|) "
-                    point == empty -> "     "
-                    else -> "  $point"
-                }
-                str += if (x == 0)
-                    "|$strPoint|"
-                else
-                    "$strPoint|"
-            }
-            System.out.println(str)
-        }
-    }
-
-    data class LeeReturnData(val path: List<Point>, val steps: Int)
 }
