@@ -23,16 +23,18 @@ class DoTheRouting(private val circuitRepository: CircuitDataSource): UseCaseWit
                     val drawMatrixCopy = createDrawMatrixCopy(drawMatrix)
                     val algorithm = LeeAlgorithm(drawMatrixCopy)
                     linesList.clear()
+                    var stepsTotal = 0
 
                     circuit.listPins.forEachIndexed { index, pin ->
                         val responseValueForProgress = ResponseValue(circuit, circuitName, drawMatrix, createLinesListCopy(linesList))
-                        val progressValue = ProgressValue(circuit.listPins.size, index + 1, responseValueForProgress)
+                        val progressValue = ProgressValue(circuit.listPins.size, index + 1,stepsTotal, responseValueForProgress)
                         useCaseCallbackWithProgress?.onProgress(progressValue)
 
                         val pinPoint = pin.getPoint()
                         val netPoint = pin.getNet()!!.getPoint()
                         val algorithmReturnData = algorithm.doTheThing(pinPoint, netPoint, isDiagonal)
                         if (algorithmReturnData != null) {
+                            stepsTotal += algorithmReturnData.steps
                             linesList.add(algorithmReturnData.path as MutableList<Point>)
                             if (!isIntersectionAllowed)
                                 fillDrawMatrix(linesList.last(), drawMatrixCopy)
@@ -124,7 +126,7 @@ class DoTheRouting(private val circuitRepository: CircuitDataSource): UseCaseWit
 
     class RequestValue(val isAStarAlgorithm: Boolean,val isDiagonal: Boolean,val isIntersectionAllowed: Boolean) : UseCase.RequestValues
 
-    class ProgressValue(val pinsCount:Int,val doneCount:Int,val responseValue: ResponseValue) : UseCaseWithProgress.ProgressValue
+    class ProgressValue(val pinsCount:Int,val doneCount:Int,val steps: Int,val responseValue: ResponseValue) : UseCaseWithProgress.ProgressValue
 
     class ResponseValue(val circuit: Circuit, val circuitName: String, val drawMatrix: Array<Array<DrawObject?>>, val linesList: List<List<Point>>) : UseCase.ResponseValue
 }

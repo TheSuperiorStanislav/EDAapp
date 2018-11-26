@@ -80,6 +80,7 @@
     <string name="lee_algorithm">Lee algorithm</string>
     <string name="a_star_algorithm">A* algorithm</string>
     <string name="intersection">Intersection</string>
+    <string name="steps_count_text">Steps: %1$s</string>
 
     <string name="yes">Yes</string>
     <string name="no">No</string>

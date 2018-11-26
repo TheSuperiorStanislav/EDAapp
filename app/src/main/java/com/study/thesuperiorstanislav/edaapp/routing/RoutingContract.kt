@@ -15,7 +15,7 @@ interface RoutingContract {
 
         fun showData(circuit: Circuit, circuitName: String, drawMatrix: Array<Array<DrawObject?>>, linesList: List<List<Point>>)
 
-        fun postRoutingProgress(pinsCount:Int, doneCount:Int)
+        fun postRoutingProgress(pinsCount:Int, doneCount:Int, steps :Int)
 
         fun onError(error: UseCase.Error)
 

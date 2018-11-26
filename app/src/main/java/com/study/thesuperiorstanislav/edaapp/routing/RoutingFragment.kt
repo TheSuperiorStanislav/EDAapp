@@ -146,10 +146,11 @@ class RoutingFragment : Fragment(), RoutingContract.View {
         this.circuit = circuit
     }
 
-    override fun postRoutingProgress(pinsCount: Int, doneCount: Int) {
+    override fun postRoutingProgress(pinsCount: Int, doneCount: Int,steps :Int) {
         if (dialogProgress == null)
             dialogProgress = createProgressDialog()
         dialogProgress?.show()
+        dialogProgress?.steps_count?.text = ViewHelper.formatResStr(resources, R.string.steps_count_text, steps)
         dialogProgress?.progressBar?.max = pinsCount
         dialogProgress?.progressBar?.progress = doneCount
     }

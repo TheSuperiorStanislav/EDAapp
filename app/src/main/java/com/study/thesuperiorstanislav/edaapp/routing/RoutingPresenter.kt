@@ -111,8 +111,10 @@ class RoutingPresenter(private val routingView: RoutingContract.View,
                         }
 
                         val response = progress.responseValue
-                        routingView.postRoutingProgress(progress.pinsCount,progress.doneCount)
-                        routingView.showData(response.circuit, response.circuitName, response.drawMatrix, response.linesList)
+                        routingView.postRoutingProgress(progress.pinsCount,progress.doneCount,
+                                progress.steps)
+                        routingView.showData(response.circuit, response.circuitName,
+                                response.drawMatrix, response.linesList)
                     }
 
                     override fun onError(error: UseCase.Error) {
