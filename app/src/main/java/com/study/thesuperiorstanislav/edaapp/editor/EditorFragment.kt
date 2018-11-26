@@ -319,7 +319,7 @@ class EditorFragment : Fragment(), EditorContract.View {
                     val switchFileType = view.findViewById<Switch>(switchFileTypeId)!!
                     if (switchType.isChecked){
                         isAllegro = switchFileType.isChecked
-                        saveFile()
+                        shareFile(circuit,circuitName)
                     }else{
                         shareScreenShot()
                     }

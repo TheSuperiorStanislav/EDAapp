@@ -10,7 +10,7 @@
         android:title="@string/save_file"
         app:showAsAction="ifRoom"/>
     <item android:id="@+id/menu_screenshot"
-        android:icon="@drawable/ic_screenshoot_white_24dp"
+        android:icon="@drawable/ic_screenshot_white_24dp"
         android:title="@string/save_file"
         app:showAsAction="ifRoom"/>
     <item android:id="@+id/menu_share"

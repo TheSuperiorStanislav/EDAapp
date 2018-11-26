@@ -71,7 +71,10 @@ class NavActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelected
         if (id == null) {
             val ft = supportFragmentManager.beginTransaction()
             val fragment = EditorFragment()
-            fragment.setPresenter(EditorPresenter(fragment, GetData(CircuitRepository), CacheDataFromFile(CircuitRepository), CacheDrawMatrix(CircuitRepository)))
+            fragment.setPresenter(EditorPresenter(fragment,
+                    GetData(CircuitRepository),
+                    CacheDataFromFile(CircuitRepository),
+                    CacheDrawMatrix(CircuitRepository)))
             ft.replace(R.id.content_frame, fragment)
             if (!isFinishing)
                 ft.commitAllowingStateLoss()
@@ -80,7 +83,10 @@ class NavActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelected
             R.id.nav_editor -> {
                 val ft = supportFragmentManager.beginTransaction()
                 val fragment = EditorFragment()
-                fragment.setPresenter(EditorPresenter(fragment, GetData(CircuitRepository), CacheDataFromFile(CircuitRepository), CacheDrawMatrix(CircuitRepository)))
+                fragment.setPresenter(EditorPresenter(fragment,
+                        GetData(CircuitRepository),
+                        CacheDataFromFile(CircuitRepository),
+                        CacheDrawMatrix(CircuitRepository)))
                 ft.replace(R.id.content_frame, fragment)
                 if (!isFinishing)
                     ft.commitAllowingStateLoss()
@@ -88,7 +94,11 @@ class NavActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelected
             R.id.nav_routing -> {
                 val ft = supportFragmentManager.beginTransaction()
                 val fragment = RoutingFragment()
-                fragment.setPresenter(RoutingPresenter(fragment, GetData(CircuitRepository), DoTheRouting(CircuitRepository)))
+                fragment.setPresenter(RoutingPresenter(fragment,
+                        GetData(CircuitRepository),
+                        CacheDataFromFile(CircuitRepository),
+                        CacheDrawMatrix(CircuitRepository),
+                        DoTheRouting(CircuitRepository)))
                 ft.replace(R.id.content_frame, fragment)
                 if (!isFinishing)
                     ft.commitAllowingStateLoss()

@@ -1,9 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/menu_load"
+        android:icon="@drawable/ic_open_file_white_24dp"
+        android:title="@string/load_file"
+        app:showAsAction="ifRoom"/>
     <item android:id="@+id/menu_screenshot"
-        android:icon="@drawable/ic_screenshoot_white_24dp"
-        android:title="@string/save_file"
+        android:icon="@drawable/ic_screenshot_white_24dp"
+        android:title="@string/screenshot"
+        app:showAsAction="ifRoom"/>
+    <item android:id="@+id/menu_share"
+        android:icon="@drawable/ic_share_white_24dp"
+        android:title="@string/share"
         app:showAsAction="ifRoom"/>
     <item android:id="@+id/menu_routing"
         android:icon="@drawable/ic_routing_white_24dp"

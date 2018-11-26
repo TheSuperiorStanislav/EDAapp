@@ -28,6 +28,10 @@ interface RoutingContract {
 
         fun getData()
 
+        fun cacheCircuit(circuit: Circuit,circuitName: String)
+
+        fun cacheDrawMatrix(drawMatrix: Array<Array<DrawObject?>>)
+
         fun doRouting(isAStarAlgorithm:Boolean,isDiagonal:Boolean,isIntersectionAllowed:Boolean)
     }
 }
