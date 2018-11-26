@@ -4,8 +4,8 @@ import com.study.thesuperiorstanislav.edaapp.editor.domain.model.Point
 import com.study.thesuperiorstanislav.edaapp.editor.domain.model.draw.DrawObject
 
 abstract class RoutingAlgorithm(protected val drawMatrix:Array<Array<DrawObject?>>) {
-    protected val xMax:Int = drawMatrix.first().size
-    protected val yMax:Int = drawMatrix.size
+    private val xMax:Int = drawMatrix.first().size
+    private val yMax:Int = drawMatrix.size
     protected val occupied = -1.0
     protected val empty = -2.0
     protected val pointDirsOrg = arrayOf(
@@ -18,6 +18,21 @@ abstract class RoutingAlgorithm(protected val drawMatrix:Array<Array<DrawObject?
             Point(0, -1), Point(1, -1))
 
     abstract fun doTheThing(startPoint: Point, endPoint: Point, isDiagonal: Boolean): AlgorithmReturnData?
+
+    protected fun createPathNet(): Array<Array<Double>> {
+        return Array(yMax) { y ->
+            Array(xMax) { x ->
+                if (drawMatrix[y][x] == null)
+                    empty
+                else
+                    occupied
+            }
+        }
+    }
+
+    protected fun checkDirs(point: Point): Boolean {
+        return point.y >= 0 && point.x >= 0 && point.y < yMax && point.x < xMax
+    }
 
     //For Testing
     protected fun drawPathNet(pathNet: Array<Array<Double>>, steps: Int) {

@@ -56,21 +56,6 @@ class LeeAlgorithm(drawMatrix:Array<Array<DrawObject?>>): RoutingAlgorithm(drawM
             AlgorithmReturnData(restorePath(endPoint, pathNet, isDiagonal), steps)
     }
 
-    private fun createPathNet(): Array<Array<Double>> {
-        return Array(yMax) { y ->
-            Array(xMax) { x ->
-                if (drawMatrix[y][x] == null)
-                    empty
-                else
-                    occupied
-            }
-        }
-    }
-
-    private fun checkDirs(point: Point): Boolean {
-        return point.y >= 0 && point.x >= 0 && point.y < yMax && point.x < xMax
-    }
-
     private fun fillSquare(point: Point, pathNet: Array<Array<Double>>, curPoint: Double): Boolean {
         return if (pathNet[point.y][point.x] == empty || curPoint + 1 < pathNet[point.y][point.x]) {
             pathNet[point.y][point.x] = 1.0 + curPoint
