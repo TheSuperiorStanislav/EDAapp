@@ -76,7 +76,7 @@ class DoTheRouting(private val circuitRepository: CircuitDataSource): UseCaseWit
                 }else{
                     when {
                         comparePoints(latestPoint,point) -> toRemove.add(point)
-                        comparePointsDiagonal(latestPoint,point) -> {
+                        comparePointsDiagonal(latestPoint,point) && isDiagonal -> {
                             toRemove.add(point)
                             latestDiagonal = true
                         }
