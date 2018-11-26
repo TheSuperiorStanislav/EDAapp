@@ -10,8 +10,12 @@
         android:title="@string/save_file"
         app:showAsAction="ifRoom"/>
     <item android:id="@+id/menu_screenshot"
-        android:icon="@drawable/ic_screenshoot_white_24dp"
+        android:icon="@drawable/ic_screenshot_white_24dp"
         android:title="@string/save_file"
+        app:showAsAction="ifRoom"/>
+    <item android:id="@+id/menu_share"
+        android:icon="@drawable/ic_share_white_24dp"
+        android:title="@string/share"
         app:showAsAction="ifRoom"/>
     <item android:id="@+id/add_element"
         android:title="@string/add_element" />

@@ -15,7 +15,7 @@ interface RoutingContract {
 
         fun showData(circuit: Circuit, circuitName: String, drawMatrix: Array<Array<DrawObject?>>, linesList: List<List<Point>>)
 
-        fun postRoutingProgress(pinsCount:Int, doneCount:Int)
+        fun postRoutingProgress(pinsCount:Int, doneCount:Int, steps :Int)
 
         fun onError(error: UseCase.Error)
 
@@ -27,6 +27,10 @@ interface RoutingContract {
     interface Presenter : BasePresenter {
 
         fun getData()
+
+        fun cacheCircuit(circuit: Circuit,circuitName: String)
+
+        fun cacheDrawMatrix(drawMatrix: Array<Array<DrawObject?>>)
 
         fun doRouting(isAStarAlgorithm:Boolean,isDiagonal:Boolean,isIntersectionAllowed:Boolean)
     }

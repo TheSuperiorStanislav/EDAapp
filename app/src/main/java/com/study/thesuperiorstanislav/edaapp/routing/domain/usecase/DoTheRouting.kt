@@ -9,6 +9,7 @@ import com.study.thesuperiorstanislav.edaapp.editor.domain.model.draw.DrawPoint
 import com.study.thesuperiorstanislav.edaapp.editor.domain.model.draw.DrawType
 import com.study.thesuperiorstanislav.edaapp.editor.domain.model.draw.ObjectType
 import com.study.thesuperiorstanislav.edaapp.usecase.UseCaseWithProgress
+import com.study.thesuperiorstanislav.edaapp.utils.math.AStarAlgorithm
 import com.study.thesuperiorstanislav.edaapp.utils.math.LeeAlgorithm
 
 class DoTheRouting(private val circuitRepository: CircuitDataSource): UseCaseWithProgress<DoTheRouting.ProgressValue,DoTheRouting.RequestValue, DoTheRouting.ResponseValue>() {
@@ -21,18 +22,24 @@ class DoTheRouting(private val circuitRepository: CircuitDataSource): UseCaseWit
                     val isDiagonal = requestValues.isDiagonal
                     val isIntersectionAllowed = requestValues.isIntersectionAllowed
                     val drawMatrixCopy = createDrawMatrixCopy(drawMatrix)
-                    val algorithm = LeeAlgorithm(drawMatrixCopy)
+                    val algorithm = if (isAStarAlgorithm)
+                        AStarAlgorithm(drawMatrixCopy)
+                    else
+                        LeeAlgorithm(drawMatrixCopy)
+
                     linesList.clear()
+                    var stepsTotal = 0
 
                     circuit.listPins.forEachIndexed { index, pin ->
                         val responseValueForProgress = ResponseValue(circuit, circuitName, drawMatrix, createLinesListCopy(linesList))
-                        val progressValue = ProgressValue(circuit.listPins.size, index + 1, responseValueForProgress)
+                        val progressValue = ProgressValue(circuit.listPins.size, index + 1, stepsTotal, responseValueForProgress)
                         useCaseCallbackWithProgress?.onProgress(progressValue)
 
                         val pinPoint = pin.getPoint()
                         val netPoint = pin.getNet()!!.getPoint()
                         val algorithmReturnData = algorithm.doTheThing(pinPoint, netPoint, isDiagonal)
                         if (algorithmReturnData != null) {
+                            stepsTotal += algorithmReturnData.steps
                             linesList.add(algorithmReturnData.path as MutableList<Point>)
                             if (!isIntersectionAllowed)
                                 fillDrawMatrix(linesList.last(), drawMatrixCopy)
@@ -51,25 +58,43 @@ class DoTheRouting(private val circuitRepository: CircuitDataSource): UseCaseWit
         }
     }
 
-    private fun fillDrawMatrix(line:MutableList<Point>,drawMatrix: Array<Array<DrawObject?>>){
+    private fun fillDrawMatrix(line: MutableList<Point>, drawMatrix: Array<Array<DrawObject?>>) {
         line.forEach { point ->
             drawMatrix[point.y][point.x] = DrawObject(DrawPoint(0f, 0f),
                     ObjectType.Connector, DrawType.LINE)
         }
     }
 
-    private fun optimizeLine(line:MutableList<Point>, isDiagonal: Boolean){
+    private fun optimizeLine(line: MutableList<Point>, isDiagonal: Boolean) {
         var latestPoint = line.first()
+        var latestDiagonal = false
         val toRemove = mutableListOf<Point>()
         line.forEach { point ->
             if (latestPoint != point) {
-                if (comparePoints(latestPoint,point,isDiagonal)) {
-                    toRemove.add(point)
+                if (latestDiagonal && isDiagonal) {
+                    if (comparePointsDiagonal(latestPoint, point)) {
+                        toRemove.add(point)
+                    } else {
+                        if (!toRemove.isEmpty())
+                            toRemove.remove(toRemove.last())
+                        latestPoint = point
+                        latestDiagonal = false
+                    }
                 } else {
-                    if (!toRemove.isEmpty())
-                        toRemove.remove(toRemove.last())
-                    latestPoint = point
+                    when {
+                        comparePoints(latestPoint, point) -> toRemove.add(point)
+                        comparePointsDiagonal(latestPoint, point) && isDiagonal -> {
+                            toRemove.add(point)
+                            latestDiagonal = true
+                        }
+                        else -> {
+                            if (!toRemove.isEmpty())
+                                toRemove.remove(toRemove.last())
+                            latestPoint = point
+                        }
+                    }
                 }
+
             }
         }
         if (!toRemove.isEmpty())
@@ -79,11 +104,12 @@ class DoTheRouting(private val circuitRepository: CircuitDataSource): UseCaseWit
         }
     }
 
-    private fun comparePoints(point1:Point,point2:Point,isDiagonal: Boolean): Boolean {
-        return if (isDiagonal)
-            (point1.x == point2.x || point1.y == point2.y || (Math.abs(point1.x - point2.x) == 1 && Math.abs(point1.y - point2.y) == 1))
-        else
-            (point1.x == point2.x || point1.y == point2.y)
+    private fun comparePoints(point1: Point, point2: Point): Boolean {
+        return point1.x == point2.x || point1.y == point2.y
+    }
+
+    private fun comparePointsDiagonal(point1: Point, point2: Point): Boolean {
+        return Math.abs(point1.x - point2.x) == Math.abs(point1.y - point2.y)
     }
 
     private fun createDrawMatrixCopy(drawMatrix: Array<Array<DrawObject?>>): Array<Array<DrawObject?>> {
@@ -103,9 +129,9 @@ class DoTheRouting(private val circuitRepository: CircuitDataSource): UseCaseWit
     }
 
 
-    class RequestValue(val isAStarAlgorithm: Boolean,val isDiagonal: Boolean,val isIntersectionAllowed: Boolean) : UseCase.RequestValues
+    class RequestValue(val isAStarAlgorithm: Boolean, val isDiagonal: Boolean, val isIntersectionAllowed: Boolean) : UseCase.RequestValues
 
-    class ProgressValue(val pinsCount:Int,val doneCount:Int,val responseValue: ResponseValue) : UseCaseWithProgress.ProgressValue
+    class ProgressValue(val pinsCount: Int, val doneCount: Int, val steps: Int, val responseValue: ResponseValue) : UseCaseWithProgress.ProgressValue
 
     class ResponseValue(val circuit: Circuit, val circuitName: String, val drawMatrix: Array<Array<DrawObject?>>, val linesList: List<List<Point>>) : UseCase.ResponseValue
 }

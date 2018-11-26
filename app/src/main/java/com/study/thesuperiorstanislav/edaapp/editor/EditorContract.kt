@@ -14,8 +14,6 @@ interface EditorContract {
 
         fun showData(circuit: Circuit,circuitName: String,drawMatrix: Array<Array<DrawObject?>>)
 
-        fun saveFile(circuit: Circuit)
-
         fun onError(error: UseCase.Error)
 
         fun onLoadingError(error: UseCase.Error)
@@ -29,7 +27,5 @@ interface EditorContract {
         fun cacheCircuit(circuit: Circuit,circuitName: String)
 
         fun cacheDrawMatrix(drawMatrix: Array<Array<DrawObject?>>)
-
-        fun saveFile()
     }
 }
