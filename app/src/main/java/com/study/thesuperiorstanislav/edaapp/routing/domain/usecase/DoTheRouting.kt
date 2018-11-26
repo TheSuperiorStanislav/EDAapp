@@ -60,16 +60,34 @@ class DoTheRouting(private val circuitRepository: CircuitDataSource): UseCaseWit
 
     private fun optimizeLine(line:MutableList<Point>, isDiagonal: Boolean){
         var latestPoint = line.first()
+        var latestDiagonal = false
         val toRemove = mutableListOf<Point>()
         line.forEach { point ->
             if (latestPoint != point) {
-                if (comparePoints(latestPoint,point,isDiagonal)) {
-                    toRemove.add(point)
-                } else {
-                    if (!toRemove.isEmpty())
-                        toRemove.remove(toRemove.last())
-                    latestPoint = point
+                if (latestDiagonal && isDiagonal){
+                    if (comparePointsDiagonal(latestPoint,point)) {
+                        toRemove.add(point)
+                    } else {
+                        if (!toRemove.isEmpty())
+                            toRemove.remove(toRemove.last())
+                        latestPoint = point
+                        latestDiagonal = false
+                    }
+                }else{
+                    when {
+                        comparePoints(latestPoint,point) -> toRemove.add(point)
+                        comparePointsDiagonal(latestPoint,point) && isDiagonal -> {
+                            toRemove.add(point)
+                            latestDiagonal = true
+                        }
+                        else -> {
+                            if (!toRemove.isEmpty())
+                                toRemove.remove(toRemove.last())
+                            latestPoint = point
+                        }
+                    }
                 }
+
             }
         }
         if (!toRemove.isEmpty())
@@ -79,11 +97,12 @@ class DoTheRouting(private val circuitRepository: CircuitDataSource): UseCaseWit
         }
     }
 
-    private fun comparePoints(point1:Point,point2:Point,isDiagonal: Boolean): Boolean {
-        return if (isDiagonal)
-            (point1.x == point2.x || point1.y == point2.y || (Math.abs(point1.x - point2.x) == 1 && Math.abs(point1.y - point2.y) == 1))
-        else
-            (point1.x == point2.x || point1.y == point2.y)
+    private fun comparePoints(point1:Point,point2:Point): Boolean {
+        return point1.x == point2.x || point1.y == point2.y
+    }
+
+    private fun comparePointsDiagonal(point1:Point,point2:Point): Boolean {
+        return Math.abs(point1.x - point2.x) == Math.abs(point1.y - point2.y)
     }
 
     private fun createDrawMatrixCopy(drawMatrix: Array<Array<DrawObject?>>): Array<Array<DrawObject?>> {
