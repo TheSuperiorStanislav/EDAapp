@@ -316,7 +316,7 @@ class Placer(private val drawMatrix: Array<Array<DrawObject?>>,
                                 ObjectType.Pin, DrawType.PIN_CORNER_UP_RIGHT)
                     }
                 }
-                else -> drawObject = if (pinNum % 2 == 0) {
+                else -> drawObject = if (pinNum % 2 != 0) {
                     DrawObject(DrawPoint(step * (x + place), step * y),
                             ObjectType.Pin, DrawType.PIN_SIDE_DOWN)
                 } else {
@@ -324,12 +324,13 @@ class Placer(private val drawMatrix: Array<Array<DrawObject?>>,
                             ObjectType.Pin, DrawType.PIN_SIDE_UP)
                 }
             }
-            if (pinNum % 2 == 0) {
-                drawMatrix[y - 1][x + place] = drawObject
-                pin.move(x + place, y - 1)
-            } else {
+            if (pinNum % 2 != 0) {
                 drawMatrix[y][x + place] = drawObject
                 pin.move(x + place, y)
+
+            } else {
+                drawMatrix[y - 1][x + place] = drawObject
+                pin.move(x + place, y - 1)
             }
         }
         element.move(x, y)

@@ -37,7 +37,7 @@ class NavActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelected
 
     override fun onResume() {
         super.onResume()
-        showFragment(nav_view.checkedItem?.itemId)
+        showDefaultFragment(nav_view.checkedItem?.itemId)
     }
 
     override fun onBackPressed() {
@@ -64,6 +64,20 @@ class NavActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelected
             super.onActivityResult(requestCode, resultCode, data)
             val fragment = supportFragmentManager.findFragmentById(R.id.content_frame)
             fragment?.onActivityResult(requestCode, resultCode, data)
+        }
+    }
+
+    private fun showDefaultFragment(id: Int?){
+        if (id == null) {
+            val ft = supportFragmentManager.beginTransaction()
+            val fragment = EditorFragment()
+            fragment.setPresenter(EditorPresenter(fragment,
+                    GetData(CircuitRepository),
+                    CacheDataFromFile(CircuitRepository),
+                    CacheDrawMatrix(CircuitRepository)))
+            ft.replace(R.id.content_frame, fragment)
+            if (!isFinishing)
+                ft.commitAllowingStateLoss()
         }
     }
 

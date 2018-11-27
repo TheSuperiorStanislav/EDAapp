@@ -37,9 +37,9 @@ class DoTheRouting(private val circuitRepository: CircuitDataSource): UseCaseWit
 
                         val pinPoint = pin.getPoint()
                         val netPoint = pin.getNet()!!.getPoint()
-                        val algorithmReturnData = algorithm.doTheThing(pinPoint, netPoint, isDiagonal)
-                        if (algorithmReturnData != null) {
-                            stepsTotal += algorithmReturnData.steps
+                        val algorithmReturnData = algorithm.findPath(pinPoint, netPoint, isDiagonal)
+                        stepsTotal += algorithmReturnData.steps
+                        if (algorithmReturnData.path != null) {
                             linesList.add(algorithmReturnData.path as MutableList<Point>)
                             if (!isIntersectionAllowed)
                                 fillDrawMatrix(linesList.last(), drawMatrixCopy)

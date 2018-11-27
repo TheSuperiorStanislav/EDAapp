@@ -24,8 +24,8 @@ class LeeTests {
         val leeAlgorithm = LeeAlgorithm(drawMatrix)
         val startPoint = Point(3,0)
         val endPoint = Point(1,3)
-        val leeReturnData = leeAlgorithm.doTheThing(startPoint,endPoint,true)
-        Assert.assertNotNull(leeReturnData)
+        val leeReturnData = leeAlgorithm.findPath(startPoint,endPoint,true)
+        Assert.assertNotNull(leeReturnData.path)
     }
 
     @Test
@@ -45,12 +45,12 @@ class LeeTests {
         val leeAlgorithm = LeeAlgorithm(drawMatrix)
         val startPoint = Point(3, 6)
         val endPoint = Point(3, 0)
-        var leeReturnData = leeAlgorithm.doTheThing(startPoint, endPoint,true)
-        Assert.assertNotNull(leeReturnData?.path)
-        Assert.assertEquals(7,leeReturnData?.path?.size)
-        leeReturnData = leeAlgorithm.doTheThing(startPoint, endPoint,false)
-        Assert.assertNotNull(leeReturnData?.path)
-        Assert.assertEquals(11,leeReturnData?.path?.size)
+        var leeReturnData = leeAlgorithm.findPath(startPoint, endPoint,true)
+        Assert.assertNotNull(leeReturnData.path)
+        Assert.assertEquals(7,leeReturnData.path?.size)
+        leeReturnData = leeAlgorithm.findPath(startPoint, endPoint,false)
+        Assert.assertNotNull(leeReturnData.path)
+        Assert.assertEquals(11,leeReturnData.path?.size)
     }
 
     @Test
@@ -70,8 +70,8 @@ class LeeTests {
         val leeAlgorithm = LeeAlgorithm(drawMatrix)
         val startPoint = Point(6, 6)
         val endPoint = Point(0, 0)
-        val leeReturnData = leeAlgorithm.doTheThing(startPoint, endPoint,true)
-        Assert.assertNull(leeReturnData?.path)
+        val leeReturnData = leeAlgorithm.findPath(startPoint, endPoint,true)
+        Assert.assertNull(leeReturnData.path)
     }
 
     @Test
@@ -87,7 +87,7 @@ class LeeTests {
         val leeAlgorithm = LeeAlgorithm(drawMatrix)
         val startPoint = Point(5,3)
         val endPoint = Point(0,0)
-        val leeReturnData = leeAlgorithm.doTheThing(startPoint,endPoint,false)
+        val leeReturnData = leeAlgorithm.findPath(startPoint,endPoint,false)
         Assert.assertNull(leeReturnData)
     }
 }

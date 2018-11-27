@@ -17,6 +17,7 @@ import androidx.annotation.LayoutRes
 import android.widget.ArrayAdapter
 import androidx.annotation.Nullable
 import android.widget.AdapterView.OnItemClickListener
+import androidx.core.content.ContextCompat
 import com.study.thesuperiorstanislav.edaapp.editor.domain.model.*
 import com.study.thesuperiorstanislav.edaapp.editor.domain.model.draw.DrawObject
 import com.study.thesuperiorstanislav.edaapp.utils.view.ViewHelper
@@ -28,7 +29,7 @@ class CircuitView : View {
 
 
     private val rect = Rect()
-    private var renderHelper: RenderHelper = RenderHelper(rect)
+    private var renderHelper: RenderHelper = RenderHelper(rect,context)
     private var circuit: Circuit = Circuit(mutableListOf(), mutableListOf(), mutableListOf())
     private var routingLines:List<List<Point>> = listOf()
 
@@ -39,11 +40,13 @@ class CircuitView : View {
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
         this.getLocalVisibleRect(rect)
-        renderHelper = RenderHelper(rect)
+        renderHelper = RenderHelper(rect, context)
     }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
+
+        setBackgroundColor(ContextCompat.getColor(context, R.color.colorCircuitBackground))
 
         renderHelper.drawLines(canvas)
 
