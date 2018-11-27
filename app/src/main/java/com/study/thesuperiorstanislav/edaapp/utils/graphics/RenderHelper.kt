@@ -9,7 +9,6 @@ import androidx.core.content.ContextCompat
 import com.study.thesuperiorstanislav.edaapp.R
 import com.study.thesuperiorstanislav.edaapp.editor.domain.model.*
 import com.study.thesuperiorstanislav.edaapp.editor.domain.model.draw.DrawObject
-import com.study.thesuperiorstanislav.edaapp.editor.domain.model.draw.DrawType
 import com.study.thesuperiorstanislav.edaapp.editor.domain.model.draw.DrawType.*
 import com.study.thesuperiorstanislav.edaapp.editor.domain.model.draw.ObjectType
 
@@ -151,28 +150,25 @@ class RenderHelper(private val rect: Rect,private val context: Context) {
     }
 
     private fun drawElement(element: Element, canvas: Canvas) {
-        val elementSize = element.getPins().size-1
         val pinFirst = element.getPins().first().getPoint()
         val pinLast = element.getPins().last().getPoint()
-        val pinSecond = element.getPins()[1].getPoint()
-        val pinPenultimate = element.getPins()[elementSize-1].getPoint()
         val drawFirst = drawMatrix[pinFirst.y][pinFirst.x]!!.drawPoint
         val drawLast = drawMatrix[pinLast.y][pinLast.x]!!.drawPoint
-        val drawSecond = drawMatrix[pinSecond.y][pinSecond.x]!!.drawPoint
-        val drawPenultimate = drawMatrix[pinPenultimate.y][pinPenultimate.x]!!.drawPoint
+        val drawRect = Rect()
         when (element.getDrawType()) {
             Element.DrawType.TWO_PART -> {
-                if (drawMatrix[pinFirst.y][pinFirst.x]!!.drawType == DrawType.PIN_LINE_UP) {
-                    canvas.drawLine(drawFirst.x + step / 4, drawFirst.y + step / 2,
-                            drawLast.x + step / 4, drawLast.y + step / 2, elementPartPaint)
-                    canvas.drawLine(drawFirst.x + 3 * step / 4, drawFirst.y + step / 2,
-                            drawLast.x + 3 * step / 4, drawLast.y + step / 2, elementPartPaint)
-                } else {
-                    canvas.drawLine(drawFirst.x + step / 2, drawFirst.y + step / 4,
-                            drawLast.x + step / 2, drawLast.y + step / 4, elementPartPaint)
-                    canvas.drawLine(drawFirst.x + step / 2, drawFirst.y + 3 * step / 4,
-                            drawLast.x + step / 2, drawLast.y + 3 * step / 4, elementPartPaint)
+                if (drawFirst.y != drawLast.y) {
+                    drawRect.top = (drawFirst.y + step / 2).toInt()
+                    drawRect.bottom = (drawLast.y + step / 2).toInt()
+                    drawRect.left = (drawFirst.x + step / 4).toInt()
+                    drawRect.right = (drawFirst.x + 3 * step / 4).toInt()
+                }else{
+                    drawRect.top = (drawFirst.y + step / 4).toInt()
+                    drawRect.bottom = (drawLast.y + 3 * step / 4).toInt()
+                    drawRect.left = (drawFirst.x + step / 2).toInt()
+                    drawRect.right = (drawLast.x + step / 2).toInt()
                 }
+                canvas.drawRect(drawRect,elementPartPaint)
                 element.getPins().forEach {
                     drawPinCircle(it, canvas)
                 }
@@ -183,14 +179,16 @@ class RenderHelper(private val rect: Rect,private val context: Context) {
                 }
             }
             else -> {
-                canvas.drawLine(drawFirst.x + step / 2, drawFirst.y + step / 2,
-                        drawPenultimate.x + step / 2, drawPenultimate.y + step / 2,elementPartPaint)
-                canvas.drawLine(drawSecond.x + step / 2, drawSecond.y + step / 2,
-                        drawLast.x + step / 2, drawLast.y + step / 2,elementPartPaint)
-                canvas.drawLine(drawFirst.x + step / 2, drawFirst.y + step / 2,
-                        drawSecond.x + step / 2, drawSecond.y + step / 2,elementPartPaint)
-                canvas.drawLine(drawPenultimate.x + step / 2, drawPenultimate.y + step / 2,
-                        drawLast.x + step / 2, drawLast.y + step / 2,elementPartPaint)
+                if (drawFirst.y > drawLast.y) {
+                    drawRect.top = (drawLast.y + step / 2).toInt()
+                    drawRect.bottom = (drawFirst.y + step / 2).toInt()
+                }else{
+                    drawRect.top = (drawFirst.y + step / 2).toInt()
+                    drawRect.bottom = (drawLast.y + step / 2).toInt()
+                }
+                drawRect.left = (drawFirst.x + step / 2).toInt()
+                drawRect.right = (drawLast.x + step / 2).toInt()
+                canvas.drawRect(drawRect,elementPartPaint)
                 element.getPins().forEach {
                     drawPinCircle(it, canvas)
                 }
@@ -217,36 +215,36 @@ class RenderHelper(private val rect: Rect,private val context: Context) {
                         drawPoint.x + step, drawPoint.y + step / 4,elementPartPaint)
             }
             PIN_LINE_UP -> {
-                canvas.drawLine(drawPoint.x + step / 4, drawPoint.y + step,
-                        drawPoint.x + step / 4, drawPoint.y + step / 2,elementPartPaint)
-                canvas.drawLine(drawPoint.x + step / 4, drawPoint.y + step / 2,
-                        drawPoint.x + 3 * step / 4, drawPoint.y + step / 2,elementPartPaint)
-                canvas.drawLine(drawPoint.x + 3 * step / 4, drawPoint.y + step / 2,
-                        drawPoint.x + 3 * step / 4, drawPoint.y + step,elementPartPaint)
+                val drawRect = Rect()
+                drawRect.top = (drawPoint.y + step / 2).toInt()
+                drawRect.bottom = (drawPoint.y + step).toInt()
+                drawRect.left = (drawPoint.x + step / 4).toInt()
+                drawRect.right = (drawPoint.x + 3 * step / 4).toInt()
+                canvas.drawRect(drawRect,elementPartPaint)
             }
             PIN_LINE_DOWN -> {
-                canvas.drawLine(drawPoint.x + step / 4, drawPoint.y,
-                        drawPoint.x + step / 4, drawPoint.y + step / 2,elementPartPaint)
-                canvas.drawLine(drawPoint.x + step / 4, drawPoint.y + step / 2,
-                        drawPoint.x + 3 * step / 4, drawPoint.y + step / 2,elementPartPaint)
-                canvas.drawLine(drawPoint.x + 3 * step / 4, drawPoint.y + step / 2,
-                        drawPoint.x + 3 * step / 4, drawPoint.y,elementPartPaint)
+                val drawRect = Rect()
+                drawRect.top = (drawPoint.y).toInt()
+                drawRect.bottom = (drawPoint.y + + step / 2).toInt()
+                drawRect.left = (drawPoint.x + step / 4).toInt()
+                drawRect.right = (drawPoint.x + 3 * step / 4).toInt()
+                canvas.drawRect(drawRect,elementPartPaint)
             }
             PIN_LINE_RIGHT -> {
-                canvas.drawLine(drawPoint.x, drawPoint.y + step / 4,
-                        drawPoint.x + step / 2, drawPoint.y + step / 4,elementPartPaint)
-                canvas.drawLine(drawPoint.x + step / 2, drawPoint.y + step / 4,
-                        drawPoint.x + step / 2, drawPoint.y + 3 * step / 4,elementPartPaint)
-                canvas.drawLine(drawPoint.x + step / 2, drawPoint.y + 3 * step / 4,
-                        drawPoint.x, drawPoint.y + 3 * step / 4,elementPartPaint)
+                val drawRect = Rect()
+                drawRect.top = (drawPoint.y + step / 4).toInt()
+                drawRect.bottom = (drawPoint.y + 3 * step / 4).toInt()
+                drawRect.left = (drawPoint.x).toInt()
+                drawRect.right = (drawPoint.x + step / 2).toInt()
+                canvas.drawRect(drawRect,elementPartPaint)
             }
             PIN_LINE_LEFT -> {
-                canvas.drawLine(drawPoint.x + step, drawPoint.y + step / 4,
-                        drawPoint.x + step / 2, drawPoint.y + step / 4,elementPartPaint)
-                canvas.drawLine(drawPoint.x + step / 2, drawPoint.y + step / 4,
-                        drawPoint.x + step / 2, drawPoint.y + 3 * step / 4,elementPartPaint)
-                canvas.drawLine(drawPoint.x + step / 2, drawPoint.y + 3 * step / 4,
-                        drawPoint.x + step, drawPoint.y + 3 * step / 4,elementPartPaint)
+                val drawRect = Rect()
+                drawRect.top = (drawPoint.y + step / 4).toInt()
+                drawRect.bottom = (drawPoint.y + 3 * step / 4).toInt()
+                drawRect.left = (drawPoint.x + step / 2).toInt()
+                drawRect.right = (drawPoint.x + step).toInt()
+                canvas.drawRect(drawRect, elementPartPaint)
             }
             else -> {
             }
@@ -351,7 +349,7 @@ class RenderHelper(private val rect: Rect,private val context: Context) {
         elementPartPaint.isAntiAlias = true
         elementPartPaint.isDither = true
         elementPartPaint.color = ContextCompat.getColor(context, R.color.colorElement)
-        elementPartPaint.style = Paint.Style.STROKE
+        elementPartPaint.style = Paint.Style.FILL_AND_STROKE
         elementPartPaint.strokeJoin = Paint.Join.ROUND
         elementPartPaint.strokeCap = Paint.Cap.ROUND
         elementPartPaint.strokeWidth = 5f
@@ -362,7 +360,7 @@ class RenderHelper(private val rect: Rect,private val context: Context) {
         pinPaint.style = Paint.Style.FILL
         pinPaint.strokeJoin = Paint.Join.ROUND
         pinPaint.strokeCap = Paint.Cap.ROUND
-        pinPaint.strokeWidth = 4f
+        pinPaint.strokeWidth = 5f
 
         pinConnectedPaint.isAntiAlias = true
         pinConnectedPaint.isDither = true
@@ -370,7 +368,7 @@ class RenderHelper(private val rect: Rect,private val context: Context) {
         pinConnectedPaint.style = Paint.Style.FILL
         pinConnectedPaint.strokeJoin = Paint.Join.ROUND
         pinConnectedPaint.strokeCap = Paint.Cap.ROUND
-        pinConnectedPaint.strokeWidth = 4f
+        pinConnectedPaint.strokeWidth = 5f
 
         connectorPaint.isAntiAlias = true
         connectorPaint.isDither = true
