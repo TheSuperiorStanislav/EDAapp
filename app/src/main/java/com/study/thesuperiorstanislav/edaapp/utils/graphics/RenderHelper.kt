@@ -1,16 +1,19 @@
 package com.study.thesuperiorstanislav.edaapp.utils.graphics
 
+import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Rect
 import android.graphics.Paint
 import android.graphics.Color
+import androidx.core.content.ContextCompat
+import com.study.thesuperiorstanislav.edaapp.R
 import com.study.thesuperiorstanislav.edaapp.editor.domain.model.*
 import com.study.thesuperiorstanislav.edaapp.editor.domain.model.draw.DrawObject
 import com.study.thesuperiorstanislav.edaapp.editor.domain.model.draw.DrawType
 import com.study.thesuperiorstanislav.edaapp.editor.domain.model.draw.DrawType.*
 import com.study.thesuperiorstanislav.edaapp.editor.domain.model.draw.ObjectType
 
-class RenderHelper(private val rect: Rect) {
+class RenderHelper(private val rect: Rect,private val context: Context) {
     var drawMatrix: Array<Array<DrawObject?>> = emptyArray()
         set(value) {
             if (value.isEmpty()) {
@@ -339,7 +342,7 @@ class RenderHelper(private val rect: Rect) {
 
         netPaint.isAntiAlias = true
         netPaint.isDither = true
-        netPaint.color = Color.MAGENTA
+        netPaint.color = ContextCompat.getColor(context, R.color.colorNet)
         netPaint.style = Paint.Style.STROKE
         netPaint.strokeJoin = Paint.Join.ROUND
         netPaint.strokeCap = Paint.Cap.ROUND
@@ -347,7 +350,7 @@ class RenderHelper(private val rect: Rect) {
 
         elementPartPaint.isAntiAlias = true
         elementPartPaint.isDither = true
-        elementPartPaint.color = Color.BLACK
+        elementPartPaint.color = ContextCompat.getColor(context, R.color.colorElement)
         elementPartPaint.style = Paint.Style.STROKE
         elementPartPaint.strokeJoin = Paint.Join.ROUND
         elementPartPaint.strokeCap = Paint.Cap.ROUND
@@ -355,7 +358,7 @@ class RenderHelper(private val rect: Rect) {
 
         pinPaint.isAntiAlias = true
         pinPaint.isDither = true
-        pinPaint.color = Color.RED
+        pinPaint.color = ContextCompat.getColor(context, R.color.colorPinDisConnected)
         pinPaint.style = Paint.Style.FILL
         pinPaint.strokeJoin = Paint.Join.ROUND
         pinPaint.strokeCap = Paint.Cap.ROUND
@@ -363,7 +366,7 @@ class RenderHelper(private val rect: Rect) {
 
         pinConnectedPaint.isAntiAlias = true
         pinConnectedPaint.isDither = true
-        pinConnectedPaint.color = Color.GREEN
+        pinConnectedPaint.color = ContextCompat.getColor(context, R.color.colorPinConnected)
         pinConnectedPaint.style = Paint.Style.FILL
         pinConnectedPaint.strokeJoin = Paint.Join.ROUND
         pinConnectedPaint.strokeCap = Paint.Cap.ROUND
@@ -371,15 +374,15 @@ class RenderHelper(private val rect: Rect) {
 
         connectorPaint.isAntiAlias = true
         connectorPaint.isDither = true
-        connectorPaint.color = Color.GREEN
+        connectorPaint.color = ContextCompat.getColor(context, R.color.colorConnector)
         connectorPaint.style = Paint.Style.STROKE
         connectorPaint.strokeJoin = Paint.Join.ROUND
         connectorPaint.strokeCap = Paint.Cap.ROUND
-        connectorPaint.strokeWidth = 3f
+        connectorPaint.strokeWidth = 4f
 
         selectedPaint.isAntiAlias = true
         selectedPaint.isDither = true
-        selectedPaint.color = Color.CYAN
+        selectedPaint.color = ContextCompat.getColor(context, R.color.colorSelect)
         selectedPaint.style = Paint.Style.FILL
         selectedPaint.strokeJoin = Paint.Join.ROUND
         selectedPaint.strokeCap = Paint.Cap.ROUND
