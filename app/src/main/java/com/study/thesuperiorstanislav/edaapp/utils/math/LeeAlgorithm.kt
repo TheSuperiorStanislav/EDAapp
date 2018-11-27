@@ -5,7 +5,7 @@ import com.study.thesuperiorstanislav.edaapp.editor.domain.model.draw.DrawObject
 
 class LeeAlgorithm(drawMatrix:Array<Array<DrawObject?>>): RoutingAlgorithm(drawMatrix) {
 
-    override fun doTheThing(startPoint: Point, endPoint: Point, isDiagonal: Boolean): AlgorithmReturnData? {
+    override fun doTheThing(startPoint: Point, endPoint: Point, isDiagonal: Boolean): AlgorithmReturnData {
         val pathNet = createPathNet()
         pathNet[startPoint.y][startPoint.x] = 0.0
         pathNet[endPoint.y][endPoint.x] = empty
@@ -62,7 +62,7 @@ class LeeAlgorithm(drawMatrix:Array<Array<DrawObject?>>): RoutingAlgorithm(drawM
             curPointDig = curPoint + 0.5
         } while (stillSearching && pathNet[endPoint.y][endPoint.x] == empty)
         return if (pathNet[endPoint.y][endPoint.x] == empty)
-            null
+            return AlgorithmReturnData(null,steps)
         else
             AlgorithmReturnData(restorePath(endPoint, pathNet, isDiagonal), steps)
     }

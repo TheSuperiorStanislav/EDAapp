@@ -153,5 +153,5 @@ abstract class RoutingAlgorithm(protected val drawMatrix:Array<Array<DrawObject?
         }
     }
 
-    data class AlgorithmReturnData(val path: List<Point>, val steps: Int)
+    data class AlgorithmReturnData(val path: List<Point>?, val steps: Int)
 }

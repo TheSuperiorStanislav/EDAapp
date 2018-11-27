@@ -25,7 +25,7 @@ class LeeTests {
         val startPoint = Point(3,0)
         val endPoint = Point(1,3)
         val leeReturnData = leeAlgorithm.doTheThing(startPoint,endPoint,true)
-        Assert.assertNotNull(leeReturnData)
+        Assert.assertNotNull(leeReturnData.path)
     }
 
     @Test
@@ -46,11 +46,11 @@ class LeeTests {
         val startPoint = Point(3, 6)
         val endPoint = Point(3, 0)
         var leeReturnData = leeAlgorithm.doTheThing(startPoint, endPoint,true)
-        Assert.assertNotNull(leeReturnData?.path)
-        Assert.assertEquals(7,leeReturnData?.path?.size)
+        Assert.assertNotNull(leeReturnData.path)
+        Assert.assertEquals(7,leeReturnData.path?.size)
         leeReturnData = leeAlgorithm.doTheThing(startPoint, endPoint,false)
-        Assert.assertNotNull(leeReturnData?.path)
-        Assert.assertEquals(11,leeReturnData?.path?.size)
+        Assert.assertNotNull(leeReturnData.path)
+        Assert.assertEquals(11,leeReturnData.path?.size)
     }
 
     @Test
@@ -71,7 +71,7 @@ class LeeTests {
         val startPoint = Point(6, 6)
         val endPoint = Point(0, 0)
         val leeReturnData = leeAlgorithm.doTheThing(startPoint, endPoint,true)
-        Assert.assertNull(leeReturnData?.path)
+        Assert.assertNull(leeReturnData.path)
     }
 
     @Test
