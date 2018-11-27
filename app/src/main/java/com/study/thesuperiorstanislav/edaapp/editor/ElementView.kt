@@ -4,6 +4,8 @@ import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
+import androidx.core.content.ContextCompat
+import com.study.thesuperiorstanislav.edaapp.R
 import com.study.thesuperiorstanislav.edaapp.editor.domain.model.Element
 import com.study.thesuperiorstanislav.edaapp.editor.domain.model.Pin
 import com.study.thesuperiorstanislav.edaapp.editor.domain.model.draw.DrawObject
@@ -197,7 +199,7 @@ class ElementView:View {
     private fun initPaint(){
         elementPartPaint.isAntiAlias = true
         elementPartPaint.isDither = true
-        elementPartPaint.color = Color.BLACK
+        elementPartPaint.color = ContextCompat.getColor(context, R.color.colorElement)
         elementPartPaint.style = Paint.Style.STROKE
         elementPartPaint.strokeJoin = Paint.Join.ROUND
         elementPartPaint.strokeCap = Paint.Cap.ROUND
@@ -205,7 +207,7 @@ class ElementView:View {
 
         pinPaint.isAntiAlias = true
         pinPaint.isDither = true
-        pinPaint.color = Color.RED
+        pinPaint.color = ContextCompat.getColor(context, R.color.colorPinDisConnected)
         pinPaint.style = Paint.Style.FILL
         pinPaint.strokeJoin = Paint.Join.ROUND
         pinPaint.strokeCap = Paint.Cap.ROUND
