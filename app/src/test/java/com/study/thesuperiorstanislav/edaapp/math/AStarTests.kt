@@ -23,7 +23,7 @@ class AStarTests {
         val aStarAlgorithm = AStarAlgorithm(drawMatrix)
         val startPoint = Point(3,0)
         val endPoint = Point(1,3)
-        val algorithmReturnData = aStarAlgorithm.doTheThing(startPoint,endPoint,true)
+        val algorithmReturnData = aStarAlgorithm.findPath(startPoint,endPoint,true)
         Assert.assertNotNull(algorithmReturnData.path)
     }
 
@@ -40,7 +40,7 @@ class AStarTests {
         val aStarAlgorithm = AStarAlgorithm(drawMatrix)
         val startPoint = Point(3,0)
         val endPoint = Point(1,3)
-        val algorithmReturnData = aStarAlgorithm.doTheThing(startPoint,endPoint,true)
+        val algorithmReturnData = aStarAlgorithm.findPath(startPoint,endPoint,true)
         Assert.assertNull(algorithmReturnData)
     }
 
@@ -61,10 +61,10 @@ class AStarTests {
         val aStarAlgorithm = AStarAlgorithm(drawMatrix)
         val startPoint = Point(3, 6)
         val endPoint = Point(3, 0)
-        var algorithmReturnData = aStarAlgorithm.doTheThing(startPoint, endPoint,true)
+        var algorithmReturnData = aStarAlgorithm.findPath(startPoint, endPoint,true)
         Assert.assertNotNull(algorithmReturnData.path)
         Assert.assertEquals(7,algorithmReturnData.path?.size)
-        algorithmReturnData = aStarAlgorithm.doTheThing(startPoint, endPoint,false)
+        algorithmReturnData = aStarAlgorithm.findPath(startPoint, endPoint,false)
         Assert.assertNotNull(algorithmReturnData.path)
         Assert.assertEquals(11,algorithmReturnData.path?.size)
     }
@@ -86,10 +86,10 @@ class AStarTests {
         val aStarAlgorithm = AStarAlgorithm(drawMatrix)
         val startPoint = Point(2, 7)
         val endPoint = Point(8, 1)
-        var algorithmReturnData = aStarAlgorithm.doTheThing(startPoint, endPoint,true)
+        var algorithmReturnData = aStarAlgorithm.findPath(startPoint, endPoint,true)
         Assert.assertNotNull(algorithmReturnData.path)
         Assert.assertEquals(11,algorithmReturnData.path?.size)
-        algorithmReturnData = aStarAlgorithm.doTheThing(startPoint, endPoint,false)
+        algorithmReturnData = aStarAlgorithm.findPath(startPoint, endPoint,false)
         Assert.assertNotNull(algorithmReturnData.path)
         Assert.assertEquals(13,algorithmReturnData.path?.size)
     }

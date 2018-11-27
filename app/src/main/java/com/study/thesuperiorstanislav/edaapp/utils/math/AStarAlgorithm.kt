@@ -5,7 +5,7 @@ import com.study.thesuperiorstanislav.edaapp.editor.domain.model.draw.DrawObject
 import kotlin.collections.HashSet
 
 class AStarAlgorithm(drawMatrix:Array<Array<DrawObject?>>): RoutingAlgorithm(drawMatrix) {
-    override fun doTheThing(startPoint: Point, endPoint: Point, isDiagonal: Boolean): AlgorithmReturnData {
+    override fun findPath(startPoint: Point, endPoint: Point, isDiagonal: Boolean): AlgorithmReturnData {
         val openSet = HashSet<Point>()
         openSet.add(startPoint)
         val closeSet= HashSet<Point>()
