@@ -53,6 +53,7 @@ class RoutingFragment : Fragment(), RoutingContract.View {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
+        retainInstance = true
         return inflater.inflate(R.layout.fragment_routing, container, false)
     }
 
@@ -129,6 +130,11 @@ class RoutingFragment : Fragment(), RoutingContract.View {
         super.onResume()
         presenter?.start()
 
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        dialogProgress?.dismiss()
     }
 
     override fun setPresenter(presenter: RoutingContract.Presenter) {

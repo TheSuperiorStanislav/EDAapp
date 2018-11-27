@@ -49,6 +49,7 @@ class EditorFragment : Fragment(), EditorContract.View {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
+        retainInstance = true
         return inflater.inflate(R.layout.fragment_editor, container, false)
     }
 

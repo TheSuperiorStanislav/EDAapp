@@ -17,7 +17,7 @@ abstract class RoutingAlgorithm(protected val drawMatrix:Array<Array<DrawObject?
             Point(-1, 0), Point(-1, -1),
             Point(0, -1), Point(1, -1))
 
-    abstract fun findPath(startPoint: Point, endPoint: Point, isDiagonal: Boolean): AlgorithmReturnData?
+    abstract fun findPath(startPoint: Point, endPoint: Point, isDiagonal: Boolean): AlgorithmReturnData
 
     protected fun createPathNet(): Array<Array<Double>> {
         return Array(yMax) { y ->
