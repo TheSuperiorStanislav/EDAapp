@@ -88,7 +88,9 @@ abstract class RoutingAlgorithm(protected val drawMatrix:Array<Array<DrawObject?
                 pointDirsOrgDiagonal.forEach { p ->
                     val xDir = p.x + x
                     val yDir = p.y + y
-                    if (checkDirs(Point(xDir, yDir)) && !isFoundDir) {
+                    val curPoint = Point(x,y)
+                    val newPoint = Point(xDir,yDir)
+                    if (checkDirs(newPoint) && checkSquare(curPoint, newPoint, pathNet) && !isFoundDir) {
                         if (pathNet[yDir][xDir] == len) {
                             x = xDir
                             y = yDir

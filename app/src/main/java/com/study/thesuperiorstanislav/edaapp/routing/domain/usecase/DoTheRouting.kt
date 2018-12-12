@@ -60,6 +60,7 @@ class DoTheRouting(private val circuitRepository: CircuitDataSource): UseCaseWit
 
     private fun fillDrawMatrix(line: MutableList<Point>, drawMatrix: Array<Array<DrawObject?>>) {
         line.forEach { point ->
+            if (point != line.last() || point != line.first())
             drawMatrix[point.y][point.x] = DrawObject(DrawPoint(0f, 0f),
                     ObjectType.Connector, DrawType.LINE)
         }
