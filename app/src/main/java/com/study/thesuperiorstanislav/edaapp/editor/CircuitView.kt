@@ -292,7 +292,7 @@ class CircuitView : View {
                 val builder = AlertDialog.Builder(context)
                 builder.apply {
                     setTitle(ViewHelper.formatResStr(resources, R.string.delete_element, obj))
-                    setMessage(R.string.sure_delete_net)
+                    setMessage(R.string.sure_delete_element)
                     setPositiveButton(R.string.yes) { dialog, _ ->
                         renderHelper.removeObject(obj)
                         obj.getPins().forEach { pin ->
