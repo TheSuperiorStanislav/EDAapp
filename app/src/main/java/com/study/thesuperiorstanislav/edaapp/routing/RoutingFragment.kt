@@ -143,7 +143,7 @@ class RoutingFragment : Fragment(), RoutingContract.View {
 
     override fun showData(circuit: Circuit, circuitName: String, drawMatrix: Array<Array<DrawObject?>>, linesList: List<List<Point>>) {
         if (circuitView != null) {
-            val drawMatrixToCache = circuitView?.setCircuit(circuit, drawMatrix, linesList)!!
+            val drawMatrixToCache = circuitView?.setCircuit(circuit, circuitName, drawMatrix, linesList)!!
             if (!drawMatrixToCache.isEmpty() && drawMatrix.isEmpty() && linesList.isEmpty())
                 presenter?.cacheDrawMatrix(drawMatrixToCache)
         }

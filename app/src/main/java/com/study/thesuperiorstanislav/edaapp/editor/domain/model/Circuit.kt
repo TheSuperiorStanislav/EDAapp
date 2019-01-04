@@ -56,4 +56,10 @@ class Circuit(val listElements: MutableList<Element>,
         }
         return "$type$count"
     }
+
+    fun clear(){
+        listElements.clear()
+        listNets.clear()
+        listPins.clear()
+    }
 }

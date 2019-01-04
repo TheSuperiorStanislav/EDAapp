@@ -49,6 +49,7 @@
     <string name="calay90">Calay90</string>
     <string name="message_save_file">Enter file name and choose save type.\nAfter that press save.</string>
 
+    <string name="not_enough_place">Not enough place to draw %1$s</string>
     <string name="add_element">Add Element</string>
     <string name="message_add_element">To add element, enter it\'s name and press add</string>
     <string name="add_net">Add Net</string>
