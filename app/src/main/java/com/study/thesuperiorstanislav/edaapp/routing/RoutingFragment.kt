@@ -5,8 +5,10 @@ import android.app.Activity
 import android.app.Dialog
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
+import android.provider.OpenableColumns
 import android.util.Log
 import android.view.*
 import android.widget.Switch
@@ -21,17 +23,11 @@ import com.study.thesuperiorstanislav.edaapp.usecase.UseCase
 import com.study.thesuperiorstanislav.edaapp.editor.domain.model.Circuit
 import com.study.thesuperiorstanislav.edaapp.editor.domain.model.Point
 import com.study.thesuperiorstanislav.edaapp.editor.domain.model.draw.DrawObject
-import com.study.thesuperiorstanislav.edaapp.utils.file.AllegroFile
-import com.study.thesuperiorstanislav.edaapp.utils.file.Calay90File
-import com.study.thesuperiorstanislav.edaapp.utils.file.CircuitFileSaver
-import com.study.thesuperiorstanislav.edaapp.utils.file.ScreenShotTaker
+import com.study.thesuperiorstanislav.edaapp.utils.file.*
 import com.study.thesuperiorstanislav.edaapp.utils.view.ViewHelper
 import kotlinx.android.synthetic.main.dialog_routing_progress.*
 import kotlinx.android.synthetic.main.fragment_routing.*
-import java.io.BufferedReader
 import java.io.File
-import java.io.IOException
-import java.io.InputStreamReader
 
 
 class RoutingFragment : Fragment(), RoutingContract.View {
@@ -121,7 +117,12 @@ class RoutingFragment : Fragment(), RoutingContract.View {
             if (resultData != null) {
                 val uri: Uri? = resultData.data
                 setFileName(uri!!)
-                readTextFromUri(uri)
+                val inputStream = activity?.contentResolver?.openInputStream(uri)
+                val circuitFromFile = CircuitFileReader.readTextFromUri(inputStream)
+                if (circuitFromFile != null)
+                    presenter?.cacheCircuit(circuitFromFile,circuitName)
+                else
+                    onError(UseCase.Error(UseCase.Error.LOAD_ERROR,ViewHelper.formatResStr(resources,R.string.load_file_error,circuitName)))
             }
         }
     }
@@ -177,19 +178,14 @@ class RoutingFragment : Fragment(), RoutingContract.View {
     }
 
     private fun setFileName(uri: Uri) {
-        if (uri.path != null)
-            circuitName = uri.path!!.split("/").last().split(".").first()
-    }
-
-    @Throws(IOException::class)
-    private fun readTextFromUri(uri: Uri) {
-        val inputStream = activity?.contentResolver?.openInputStream(uri)
-        val reader = BufferedReader(InputStreamReader(inputStream))
-        val line = reader.readLine()
-        if (line == "\$PACKAGES") {
-            presenter?.cacheCircuit(AllegroFile.read(reader),circuitName)
-        } else {
-            presenter?.cacheCircuit(Calay90File.read(line, reader),circuitName)
+        if (uri.path != null) {
+            val cursor: Cursor? = activity?.contentResolver?.query(uri, null, null, null, null, null)
+            cursor?.use {
+                if (it.moveToFirst()) {
+                    circuitName =
+                            it.getString(it.getColumnIndex(OpenableColumns.DISPLAY_NAME))
+                }
+            }
         }
     }
 

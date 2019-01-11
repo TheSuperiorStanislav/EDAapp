@@ -43,6 +43,7 @@
     <string name="net">сеть</string>
     <string name="connection">соединение</string>
 
+    <string name="load_file_error">Невозможно открыть файл: %1$s</string>
     <string name="save_type">Формат данных %1$s</string>
     <string name="saved_in">Сохранено в %1$s</string>
     <string name="hint_save_file">Введите имя файла</string>

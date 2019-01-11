@@ -42,6 +42,7 @@
     <string name="net">net</string>
     <string name="connection">connection</string>
 
+    <string name="load_file_error">Can\'t open this file: %1$s</string>
     <string name="save_type">Save type: %1$s</string>
     <string name="saved_in">Saved in %1$s</string>
     <string name="hint_save_file">Enter file\'s name</string>

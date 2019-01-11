@@ -16,44 +16,48 @@ object Calay90File {
         var line = firstLine
         var lastNet = Net("")
         var isNetOver = true
-        while (line != null) {
-            val splitLine = line
-                    .split(" ")
-                    .asSequence()
-                    .filter { it != "" }
-                    .toMutableList()
+        try {
+            while (line != null) {
+                val splitLine = line
+                        .split(" ")
+                        .asSequence()
+                        .filter { it != "" }
+                        .toMutableList()
 
-            if (isNetOver) {
-                listNets.add(Net(splitLine[0]))
-                lastNet = listNets.last()
-                splitLine.remove(listNets.last().toString())
-            }
-
-            isNetOver = line.last() == ';'
-
-            splitLine.forEach { str ->
-
-                val splitIt = str
-                        .replace(",", "")
-                        .replace(";", "")
-                        .replace("(", "")
-                        .replace(")", "")
-                        .split("'")
-
-                if (!listElements.contains(Element(splitIt.first()))) {
-                    listElements.add(Element(splitIt.first()))
+                if (isNetOver) {
+                    listNets.add(Net(splitLine[0]))
+                    lastNet = listNets.last()
+                    splitLine.remove(listNets.last().toString())
                 }
 
-                val curElement = listElements.find { it == Element(splitIt.first()) }
+                isNetOver = line.last() == ';'
 
-                curElement?.setPin(splitIt.last().toInt() - 1, true,lastNet)
-                lastNet.addPin(curElement?.getPins()!![splitIt.last().toInt() - 1])
-                listPins.add(curElement.getPins()[splitIt.last().toInt() - 1])
+                splitLine.forEach { str ->
 
+                    val splitIt = str
+                            .replace(",", "")
+                            .replace(";", "")
+                            .replace("(", "")
+                            .replace(")", "")
+                            .split("'")
+
+                    if (!listElements.contains(Element(splitIt.first()))) {
+                        listElements.add(Element(splitIt.first()))
+                    }
+
+                    val curElement = listElements.find { it == Element(splitIt.first()) }
+
+                    curElement?.setPin(splitIt.last().toInt() - 1, true, lastNet)
+                    lastNet.addPin(curElement?.getPins()!![splitIt.last().toInt() - 1])
+                    listPins.add(curElement.getPins()[splitIt.last().toInt() - 1])
+
+                }
+                line = reader.readLine()
             }
-            line = reader.readLine()
+            return Circuit(listElements, listNets, listPins)
+        } catch (e: NumberFormatException){
+            throw (ReadNetFileException("Can't open this net file!"))
         }
-        return Circuit(listElements,listNets,listPins)
     }
 
     fun write(circuit: Circuit):String {
