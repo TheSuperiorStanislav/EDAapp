@@ -5,10 +5,7 @@ import android.app.Activity
 import android.app.Dialog
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.database.Cursor
-import android.net.Uri
 import android.os.Bundle
-import android.provider.OpenableColumns
 import android.view.*
 import com.google.android.material.snackbar.Snackbar
 import androidx.fragment.app.Fragment
@@ -126,10 +123,11 @@ class EditorFragment : Fragment(), EditorContract.View {
         if (requestCode == readRequestCode && resultCode == Activity.RESULT_OK) {
             if (resultData != null) {
                 dialog?.show()
-                val uri: Uri? = resultData.data
-                setFileName(uri!!)
+                val uri = resultData.data!!
+                val cursor = activity?.contentResolver?.query(uri, null, null, null, null, null)
                 val inputStream = activity?.contentResolver?.openInputStream(uri)
-                val circuitFromFile = CircuitFileReader.readTextFromUri(inputStream)
+                circuitName = CircuitFileReader.getFileName(cursor)
+                val circuitFromFile = CircuitFileReader.readTextFromInputStream(inputStream)
                 if (circuitFromFile != null)
                     presenter?.cacheCircuit(circuitFromFile,circuitName)
                 else
@@ -168,18 +166,6 @@ class EditorFragment : Fragment(), EditorContract.View {
                     Log.i("Permission_Storage", "Permission has been denied by user")
                 else {
                     shareFile(circuit,circuitName)
-                }
-            }
-        }
-    }
-
-    private fun setFileName(uri: Uri) {
-        if (uri.path != null) {
-            val cursor: Cursor? = activity?.contentResolver?.query(uri, null, null, null, null, null)
-            cursor?.use {
-                if (it.moveToFirst()) {
-                    circuitName =
-                            it.getString(it.getColumnIndex(OpenableColumns.DISPLAY_NAME))
                 }
             }
         }

@@ -5,10 +5,7 @@ import android.app.Activity
 import android.app.Dialog
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.database.Cursor
-import android.net.Uri
 import android.os.Bundle
-import android.provider.OpenableColumns
 import android.util.Log
 import android.view.*
 import android.widget.Switch
@@ -115,10 +112,11 @@ class RoutingFragment : Fragment(), RoutingContract.View {
                                   resultData: Intent?) {
         if (requestCode == readRequestCode && resultCode == Activity.RESULT_OK) {
             if (resultData != null) {
-                val uri: Uri? = resultData.data
-                setFileName(uri!!)
+                val uri = resultData.data!!
+                val cursor = activity?.contentResolver?.query(uri, null, null, null, null, null)
                 val inputStream = activity?.contentResolver?.openInputStream(uri)
-                val circuitFromFile = CircuitFileReader.readTextFromUri(inputStream)
+                circuitName = CircuitFileReader.getFileName(cursor)
+                val circuitFromFile = CircuitFileReader.readTextFromInputStream(inputStream)
                 if (circuitFromFile != null)
                     presenter?.cacheCircuit(circuitFromFile,circuitName)
                 else
@@ -175,18 +173,6 @@ class RoutingFragment : Fragment(), RoutingContract.View {
 
     override fun onLoadingError(error: UseCase.Error) {
         dialogProgress?.dismiss()
-    }
-
-    private fun setFileName(uri: Uri) {
-        if (uri.path != null) {
-            val cursor: Cursor? = activity?.contentResolver?.query(uri, null, null, null, null, null)
-            cursor?.use {
-                if (it.moveToFirst()) {
-                    circuitName =
-                            it.getString(it.getColumnIndex(OpenableColumns.DISPLAY_NAME))
-                }
-            }
-        }
     }
 
     private fun performFileSearch() {
