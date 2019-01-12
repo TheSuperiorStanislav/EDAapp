@@ -133,19 +133,23 @@ class RenderHelper(private val rect: Rect,private val context: Context) {
     }
 
     fun drawCircuit(circuit: Circuit,routingLines:List<List<Point>>,canvas: Canvas) {
-        if (routingLines.isEmpty())
-            circuit.listPins.forEach { pin ->
-                drawConnectorRubber(pin.getNet()!!, pin, canvas)
+        try {
+            if (routingLines.isEmpty())
+                circuit.listPins.forEach { pin ->
+                    drawConnectorRubber(pin.getNet()!!, pin, canvas)
+                }
+            else
+                routingLines.forEach { line ->
+                    drawConnectorRout(line, canvas)
+                }
+            circuit.listElements.forEach {
+                drawElement(it, canvas)
             }
-        else
-            routingLines.forEach { line ->
-                drawConnectorRout(line, canvas)
+            circuit.listNets.forEach {
+                drawNet(it, canvas)
             }
-        circuit.listElements.forEach {
-            drawElement(it, canvas)
-        }
-        circuit.listNets.forEach {
-            drawNet(it, canvas)
+        } catch (e: ArrayIndexOutOfBoundsException){
+            throw NoPlaceLeftException("Not enough space to draw circuit!")
         }
     }
 
@@ -386,4 +390,6 @@ class RenderHelper(private val rect: Rect,private val context: Context) {
         selectedPaint.strokeCap = Paint.Cap.ROUND
         selectedPaint.strokeWidth = 3f
     }
+
+    class NoPlaceLeftException(message: String) : Exception(message)
 }

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">EDA</string>
+    <string name="file">Файл</string>
+    <string name="load_file">Открыть файл</string>
+    <string name="save_file">Сохранить файл</string>
+    <string name="screenshot">Скриншот</string>
+    <string name="take_screenshot">Сделать скриншот</string>
+    <string name="share">Поделиться</string>
+    <string name="share_message">Выберите чем поделиться.</string>
+    <string name="processing_data">Обработка данных</string>
+    <string name="please_wait">Пожалуйста подождите....</string>
+    <string name="editor">Редактор</string>
+    <string name="routing">Трассировка</string>
+    <string name="do_routing">Выполнить трассировка</string>
+    <string name="the_superior_stanislav">The Superior Stanislav\nElectronic design automation app</string>
+    <string name="https_github_com_thesuperiorstanislav">https://github.com/TheSuperiorStanislav</string>
+    <string name="nav_header_desc">GitHub Avatar</string>
+
+    <string name="element">элемент</string>
+    <string name="element_name">Имя элемента: %1$s</string>
+    <string name="element_type">Тип элемента: %1$s</string>
+    <string name="element_max_pins">Макс. кол-во пинов: %1$d</string>
+    <string-array name="elements_array">
+        <item>B</item>
+        <item>C</item>
+        <item>DA</item>
+        <item>DD</item>
+        <item>HA</item>
+        <item>HL</item>
+        <item>MLTP</item>
+        <item>SA</item>
+        <item>SB</item>
+        <item>SNP</item>
+        <item>U</item>
+        <item>VD</item>
+        <item>VS</item>
+        <item>VT</item>
+        <item>R</item>
+        <item>RX</item>
+        <item>X</item>
+    </string-array>
+    <string name="net">сеть</string>
+    <string name="connection">соединение</string>
+
+    <string name="load_file_error">Невозможно открыть файл: %1$s</string>
+    <string name="save_type">Формат данных %1$s</string>
+    <string name="saved_in">Сохранено в %1$s</string>
+    <string name="hint_save_file">Введите имя файла</string>
+    <string name="allegro">Allegro</string>
+    <string name="calay90">Calay90</string>
+    <string name="message_save_file">Введите имя файла и выберите формат данных.\nЗатем нажмите сохранить.</string>
+
+    <string name="not_enough_place">Не достаточно места для схемы: %1$s</string>
+    <string name="add_element">Добавить элемент</string>
+    <string name="message_add_element">Чтобы добавить элемент, введите его имя и нажмите кнопку Добавить</string>
+    <string name="add_net">Добавить сеть</string>
+    <string name="message_add_net">Чтобы добавить сеть, введите ее имя и нажмите кнопку Добавить</string>
+    <string name="hint_add_net">Введите имя сети</string>
+    <string name="edit_connection">Изменить соединение</string>
+    <string name="move_object">Переместить объект</string>
+    <string name="move_element">Переместить элемент</string>
+    <string name="move_net">Переместить сеть</string>
+    <string name="delete_object_menu">Удалить объект</string>
+    <string name="delete_element_menu">Удалить элемент</string>
+    <string name="delete_element">Удалить элемент - %1$s</string>
+    <string name="sure_delete_element">Вы уверены, что хотите удалить этот элемент?</string>
+    <string name="delete_net_menu">Удалить сеть</string>
+    <string name="delete_net">Удалить сеть- %1$s</string>
+    <string name="sure_delete_net">Вы уверены, что хотите удалить эту сеть?</string>
+    <string name="delete_connection_menu">Удалить соединение</string>
+    <string name="delete_connection">Удалить соединение между %1$s и %2$s</string>
+    <string name="sure_delete_connection">Вы уверены, что хотите удалить это соединение?</string>
+
+    <string name="error_place">Не могу разместить %1$s здесь!</string>
+    <string name="error_delete_connection">Нет соединение для удаления!</string>
+    <string name="error_edit_connection">Пин - %1$s уже подключен!</string>
+
+    <string name="start_routing">Начать трассировку</string>
+    <string name="routing_settings">Параметры трассировки</string>
+    <string name="orthogonal">Ортогональный</string>
+    <string name="orthogonal_diagonal">Ортогонально-диагональный</string>
+    <string name="lee_algorithm">Алгоритм Ли</string>
+    <string name="a_star_algorithm">Алгоритм A со звездочкой</string>
+    <string name="intersection">Пересечения</string>
+    <string name="steps_count_text">Шаги %1$s</string>
+
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
+    <string name="add">Добавить</string>
+    <string name="cancel">Отмена</string>
+    <string name="save">Сохранить</string>
+    <string name="start">Начать</string>
+
+    <!--Fragment(auto gen)-->
+    <string name="hello_blank_fragment">Привет пустой фрагмент</string>
+    <!--Navigation drawer text(auto gen)-->
+    <string name="navigation_drawer_open">Открыть панель навигации</string>
+    <string name="navigation_drawer_close">Закрыть панель навигации</string>
+</resources>

@@ -5,7 +5,6 @@ import android.app.Activity
 import android.app.Dialog
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Bundle
 import android.view.*
 import com.google.android.material.snackbar.Snackbar
@@ -14,20 +13,17 @@ import androidx.fragment.app.Fragment
 import com.study.thesuperiorstanislav.edaapp.R
 import com.study.thesuperiorstanislav.edaapp.usecase.UseCase
 import com.study.thesuperiorstanislav.edaapp.editor.domain.model.Circuit
-import com.study.thesuperiorstanislav.edaapp.utils.file.AllegroFile
-import com.study.thesuperiorstanislav.edaapp.utils.file.Calay90File
 import kotlinx.android.synthetic.main.fragment_editor.*
 import android.util.Log
 import android.widget.EditText
 import android.widget.Switch
 import androidx.appcompat.app.AlertDialog
 import com.study.thesuperiorstanislav.edaapp.editor.domain.model.draw.DrawObject
-import com.study.thesuperiorstanislav.edaapp.utils.file.ScreenShotTaker
 import com.study.thesuperiorstanislav.edaapp.utils.view.ViewHelper
 import java.io.*
 import androidx.core.content.FileProvider
 import com.study.thesuperiorstanislav.edaapp.BuildConfig
-import com.study.thesuperiorstanislav.edaapp.utils.file.CircuitFileSaver
+import com.study.thesuperiorstanislav.edaapp.utils.file.*
 
 
 class EditorFragment : Fragment(), EditorContract.View {
@@ -102,9 +98,9 @@ class EditorFragment : Fragment(), EditorContract.View {
 
     override fun showData(circuit: Circuit, circuitName: String, drawMatrix: Array<Array<DrawObject?>>) {
         if (circuitView != null) {
-            val drawMatrixToCache = circuitView?.setCircuit(circuit, drawMatrix, listOf())!!
+            val drawMatrixToCache = circuitView?.setCircuit(circuit, circuitName, drawMatrix, listOf())!!
             if (!drawMatrixToCache.isEmpty())
-                presenter?.cacheDrawMatrix(circuitView?.setCircuit(circuit, drawMatrix, listOf())!!)
+                presenter?.cacheDrawMatrix(circuitView?.setCircuit(circuit, circuitName, drawMatrix, listOf())!!)
         }
         activity?.title = "${resources.getString(R.string.app_name)}/$circuitName"
         this.circuitName = circuitName
@@ -127,9 +123,15 @@ class EditorFragment : Fragment(), EditorContract.View {
         if (requestCode == readRequestCode && resultCode == Activity.RESULT_OK) {
             if (resultData != null) {
                 dialog?.show()
-                val uri: Uri? = resultData.data
-                setFileName(uri!!)
-                readTextFromUri(uri)
+                val uri = resultData.data!!
+                val cursor = activity?.contentResolver?.query(uri, null, null, null, null, null)
+                val inputStream = activity?.contentResolver?.openInputStream(uri)
+                circuitName = CircuitFileReader.getFileName(cursor)
+                val circuitFromFile = CircuitFileReader.readTextFromInputStream(inputStream)
+                if (circuitFromFile != null)
+                    presenter?.cacheCircuit(circuitFromFile,circuitName)
+                else
+                    onError(UseCase.Error(UseCase.Error.LOAD_ERROR,ViewHelper.formatResStr(resources,R.string.load_file_error,circuitName)))
                 dialog?.dismiss()
             }
         }
@@ -166,23 +168,6 @@ class EditorFragment : Fragment(), EditorContract.View {
                     shareFile(circuit,circuitName)
                 }
             }
-        }
-    }
-
-    private fun setFileName(uri: Uri) {
-        if (uri.path != null)
-            circuitName = uri.path!!.split("/").last().split(".").first()
-    }
-
-    @Throws(IOException::class)
-    private fun readTextFromUri(uri: Uri) {
-        val inputStream = activity?.contentResolver?.openInputStream(uri)
-        val reader = BufferedReader(InputStreamReader(inputStream))
-        val line = reader.readLine()
-        if (line == "\$PACKAGES") {
-            presenter?.cacheCircuit(AllegroFile.read(reader),circuitName)
-        } else {
-            presenter?.cacheCircuit(Calay90File.read(line, reader),circuitName)
         }
     }
 

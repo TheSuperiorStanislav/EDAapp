@@ -2,6 +2,7 @@ package com.study.thesuperiorstanislav.edaapp.editor
 
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.PorterDuff
 import android.graphics.Rect
 import android.util.AttributeSet
 import android.view.MotionEvent
@@ -31,6 +32,7 @@ class CircuitView : View {
     private val rect = Rect()
     private var renderHelper: RenderHelper = RenderHelper(rect,context)
     private var circuit: Circuit = Circuit(mutableListOf(), mutableListOf(), mutableListOf())
+    private var circuitName = "Untitled"
     private var routingLines:List<List<Point>> = listOf()
 
     private var editEvent = EditEvent.VIEW
@@ -57,7 +59,15 @@ class CircuitView : View {
             renderHelper.drawSelectedSquare(startPoint, canvas)
 
         if (renderHelper.isMatrixInit)
-            renderHelper.drawCircuit(circuit, routingLines, canvas)
+            try {
+                renderHelper.drawCircuit(circuit, routingLines, canvas)
+            }catch (e: RenderHelper.NoPlaceLeftException){
+                canvas.drawColor(ContextCompat.getColor(context, R.color.colorCircuitBackground),
+                        PorterDuff.Mode.MULTIPLY)
+                clearCircuit()
+                ViewHelper.showSnackBar(this,
+                        ViewHelper.formatResStr(resources,R.string.not_enough_place,circuitName))
+            }
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -86,8 +96,9 @@ class CircuitView : View {
         return true
     }
 
-    fun setCircuit(circuit: Circuit,drawMatrix: Array<Array<DrawObject?>> ,routingLines:List<List<Point>>): Array<Array<DrawObject?>> {
+    fun setCircuit(circuit: Circuit,circuitName: String,drawMatrix: Array<Array<DrawObject?>> ,routingLines:List<List<Point>>): Array<Array<DrawObject?>> {
         this.circuit = circuit
+        this.circuitName = circuitName
         this.routingLines = routingLines
         renderHelper.drawMatrix = drawMatrix
         renderHelper.isMatrixInit = !drawMatrix.isEmpty()
@@ -281,7 +292,7 @@ class CircuitView : View {
                 val builder = AlertDialog.Builder(context)
                 builder.apply {
                     setTitle(ViewHelper.formatResStr(resources, R.string.delete_element, obj))
-                    setMessage(R.string.sure_delete_net)
+                    setMessage(R.string.sure_delete_element)
                     setPositiveButton(R.string.yes) { dialog, _ ->
                         renderHelper.removeObject(obj)
                         obj.getPins().forEach { pin ->
@@ -381,6 +392,11 @@ class CircuitView : View {
     private fun makePoint(x:Float,y:Float): Point {
         return Point((x / renderHelper.step).toInt(),
                 (y / renderHelper.step).toInt())
+    }
+
+    private fun clearCircuit() {
+        circuit.clear()
+        renderHelper.isMatrixInit = false
     }
 
     enum class EditEvent {
